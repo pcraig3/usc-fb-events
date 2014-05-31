@@ -72,7 +72,7 @@ class Test_Events {
 		//add_action( '@TODO', array( $this, 'action_method_name' ) );
 		//add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
-        add_shortcode( 'testplugin', array( $this, 'testplugin_func') );
+        add_shortcode( 'testevents', array( $this, 'testplugin_func') );
 
     }
 
@@ -98,10 +98,7 @@ class Test_Events {
                     'show'  => 'count',
                     'max'   => 10,
                 ), $atts ),
-            EXTR_SKIP);
-
-        if($get !== 'events')
-            return;
+            OVERWRITE);
 
         //function returns Facebook events as a json array.
         //in the future, we'll have this take a parameter
@@ -136,6 +133,8 @@ class Test_Events {
      * @return string           a list of events from Facebook
      */
     private function events_list( $events_array ) {
+
+        return '<h4>EVENTS_LIST</h4>';
 
         $html_string = '<blockquote id="all-events">';
 
