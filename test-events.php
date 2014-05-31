@@ -14,6 +14,7 @@
  * Description:       gets events and shows events
  * Version:           0.1.0
  * Author:            Paul Craig
+ * Author URI:        https://profiles.wordpress.org/pcraig3/
  * Text Domain:       test-events
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt

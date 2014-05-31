@@ -89,16 +89,16 @@ class Test_Events {
     public function testplugin_func ( $atts ) {
 
         //initialize your variables
-        $get = $show = $result = false;
+        $get = $show = $limit = $result = false;
 
         extract(
             shortcode_atts(
                 array(
                     'get'   => 'events',
                     'show'  => 'count',
-                    'max'   => 10,
+                    'limit'   => 10,
                 ), $atts ),
-            OVERWRITE);
+            EXTR_OVERWRITE);
 
         //function returns Facebook events as a json array.
         //in the future, we'll have this take a parameter
@@ -106,11 +106,17 @@ class Test_Events {
 
         if( is_array( $returned_array ) ) {
 
-            $testplugin_function = (string) $get . "_" . (string) $show;
+            $parameters = array(
+
+                $returned_array,
+                intval($limit),
+            );
+
+            $testevents_function = (string) $get . "_" . (string) $show;
 
             ob_start();
 
-            echo call_user_func( array( $this, $testplugin_function ), $returned_array );
+            echo call_user_func_array( array( $this, $testevents_function ), $parameters );
 
             $result = ob_get_clean();
         }
@@ -126,37 +132,58 @@ class Test_Events {
     /**
      * Return HTML code to list a bunch of Facebook events
      *
-     * @param $events_array      an array of events from Facebook
+     * @param $events_array     an array of events from Facebook
+     * @param int $limit        an integer number of events to return.  defaults to the total returned objects.
      *
      * @since    0.1.0
      *
      * @return string           a list of events from Facebook
      */
-    private function events_list( $events_array ) {
+    private function events_list( $events_array, $limit = 0 ) {
 
-        return '<h4>EVENTS_LIST</h4>';
+        $html_string = '<blockquote id="events">';
 
-        $html_string = '<blockquote id="all-events">';
+        //if there is a 'total' and no max has been specified
+        if( isset($events_array['total']) && $limit < 1 ) {
 
-        $max = intval( $events_array['total'] );
+            //set the max to the total number of events
+            $limit = intval( $events_array['total']);
+        }
 
-        for($i = 0; $i < $max; $i++) {
+        //if something goes wrong, then stop the method
+        if( $limit < 1 ) {
+            //@TODO: write some kind of exception
+            return;
+        }
 
-            $current_event = $events_array['events'][$i];
+        $total = ($events_array['total']);
+
+        //we are removing other key/values by doing this here.
+        $events_array = array_reverse($events_array['events']);
+
+        $temp_array = array();
+
+        for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
+
+            $current_event = $events_array[$i];
+
+            array_push($temp_array, $current_event);
 
             /*
             $email = sanitize_email( $current_club['email'] );
             $fb_url = esc_url( $current_club['facebookUrl'] );
             $tw_url = esc_url( $current_club['twitterUrl'] );
             */
+
+            //no images as yet.
             $img_url = "";
 
-            if($current_event['profileImageUrl'])
+            if( isset( $current_event['profileImageUrl'] ) )
                 $img_url = esc_url( "http://" . $current_event['profileImageUrl'] );
 
 
-            $html_string .= '<a href="http://testwestern.com/clubs/' . intval( $current_event['organizationId'] ) . '/" target="_self">';
-            $html_string .= '<div class="event-box flag clearfix">';
+            $html_string .= '<a href="http://facebook.com/' . esc_url( $current_event['eid'] ) . '/" target="_self">';
+            $html_string .= '<div class="events__box flag clearfix">';
 
             $html_string.= '<div class="flag__image">';
 
@@ -166,7 +193,7 @@ class Test_Events {
             $html_string .= '</div>';
 
             $html_string .= '<div class="flag__body">';
-            $html_string .= '<p title="' . esc_attr( $current_event['organizationId'] ) .
+            $html_string .= '<p title="' . esc_attr( $current_event['host'] ) .
                 '">' . esc_html( $current_event['name'] );
 
             /* if($email)
@@ -181,11 +208,12 @@ class Test_Events {
                      '" title="View Twitter profile" >Twitter</a>';
             */
             $html_string .= '</p></div>';
-            $html_string .= '<span class="event-list-num">' . (intval( $current_event['id'] ) + 1) . '</span>';
-            $html_string .= '</div><!--end of event-box--></a>';
+            $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
+            $html_string .= '</div><!--end of events__box--></a>';
+
         }
 
-        $html_string .= "</blockquote><!--end of #all-events-->";
+        $html_string .= "</blockquote><!--end of #events-->";
 
         return $html_string;
     }
@@ -200,7 +228,7 @@ class Test_Events {
     public static function call_api() {
 
         //the url where to get Facebook events
-        $ch = curl_init('http://testwestern.com/github/json.php');
+        $ch = curl_init('testwestern.com/api/events/events/2014-04-01');
 
         curl_setopt( $ch, CURLOPT_HEADER, false ); //TRUE to include the header in the output.
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); //TRUE to return transfer as a string instead of outputting it out directly.
