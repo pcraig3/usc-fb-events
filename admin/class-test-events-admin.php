@@ -23,7 +23,7 @@ class Test_Events_Admin {
 	/**
 	 * Instance of this class.
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 *
 	 * @var      object
 	 */
@@ -32,7 +32,7 @@ class Test_Events_Admin {
 	/**
 	 * Slug of the plugin screen.
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 *
 	 * @var      string
 	 */
@@ -42,7 +42,7 @@ class Test_Events_Admin {
 	 * Initialize the plugin by loading admin scripts & styles and adding a
 	 * settings page and menu.
 	 *
-	 * @since     0.0.1
+	 * @since     0.1.0
 	 */
 	private function __construct() {
 
@@ -86,7 +86,7 @@ class Test_Events_Admin {
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since     0.0.1
+	 * @since     0.1.0
 	 *
 	 * @return    object    A single instance of this class.
 	 */
@@ -112,7 +112,7 @@ class Test_Events_Admin {
 	/**
 	 * Register and enqueue admin-specific style sheet.
 	 *
-	 * @since     0.0.1
+	 * @since     0.1.0
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -132,7 +132,7 @@ class Test_Events_Admin {
 	/**
 	 * Register and enqueue admin-specific JavaScript.
 	 *
-	 * @since     0.0.1
+	 * @since     0.1.0
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -152,7 +152,7 @@ class Test_Events_Admin {
 	/**
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 */
 	public function add_plugin_admin_menu() {
 
@@ -181,7 +181,7 @@ class Test_Events_Admin {
 	/**
 	 * Render the settings page for this plugin.
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 */
 	public function display_plugin_admin_page() {
 		include_once( 'views/admin.php' );
@@ -190,8 +190,8 @@ class Test_Events_Admin {
 	/**
 	 * Add settings action link to the plugins page.
 	 *
-	 * @since    0.0.1
-	 */
+	 * @since    0.1.0
+	 *
 	public function add_action_links( $links ) {
 
 		return array_merge(
@@ -210,7 +210,7 @@ class Test_Events_Admin {
 	 *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 */
 	public function action_method_name() {
 		// Define your action hook callback here
@@ -223,7 +223,7 @@ class Test_Events_Admin {
 	 *           Filters: http://codex.wordpress.org/Plugin_API#Filters
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
 	 *
-	 * @since    0.0.1
+	 * @since    0.1.0
 	 */
 	public function filter_method_name() {
 		// Define your filter hook callback here
