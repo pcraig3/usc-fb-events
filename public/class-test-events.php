@@ -20,11 +20,11 @@ class Test_Events {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   0.1.0
+	 * @since   0.2.0
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.1.0';
+	const VERSION = '0.2.0';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -52,7 +52,7 @@ class Test_Events {
 	 * Initialize the plugin by setting localization and loading public scripts
 	 * and styles.
 	 *
-	 * @since     0.1.0
+	 * @since     0.2.0
 	 */
 	private function __construct() {
 
@@ -135,7 +135,7 @@ class Test_Events {
      * @param $events_array     an array of events from Facebook
      * @param int $limit        an integer number of events to return.  defaults to the total returned objects.
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @return string           a list of events from Facebook
      */
@@ -143,11 +143,17 @@ class Test_Events {
 
         $html_string = '<blockquote id="events">';
 
-        //if there is a 'total' and no max has been specified
-        if( isset($events_array['total']) && $limit < 1 ) {
+        //if there is a 'total'
+        if( isset($events_array['total']) ) {
+
+            $total = intval( $events_array['total'] );
+        }
+
+        //if the limit is too low, or greater than the total number of returned events
+        if ( $limit < 1 || $limit > $total ) {
 
             //set the max to the total number of events
-            $limit = intval( $events_array['total']);
+            $limit = $total;
         }
 
         //if something goes wrong, then stop the method
@@ -155,8 +161,6 @@ class Test_Events {
             //@TODO: write some kind of exception
             return;
         }
-
-        $total = ($events_array['total']);
 
         //we are removing other key/values by doing this here.
         $events_array = array_reverse($events_array['events']);
@@ -169,12 +173,6 @@ class Test_Events {
 
             array_push($temp_array, $current_event);
 
-            /*
-            $email = sanitize_email( $current_club['email'] );
-            $fb_url = esc_url( $current_club['facebookUrl'] );
-            $tw_url = esc_url( $current_club['twitterUrl'] );
-            */
-
             //no images as yet.
             $img_url = "";
 
@@ -182,7 +180,7 @@ class Test_Events {
                 $img_url = esc_url( "http://" . $current_event['profileImageUrl'] );
 
 
-            $html_string .= '<a href="http://facebook.com/' . esc_url( $current_event['eid'] ) . '/" target="_self">';
+            $html_string .= '<a href="' . esc_url( 'http://facebook.com/' . $current_event['eid'] . "/" ) . '" target="_self">';
             $html_string .= '<div class="events__box flag clearfix">';
 
             $html_string.= '<div class="flag__image">';
@@ -196,17 +194,6 @@ class Test_Events {
             $html_string .= '<p title="' . esc_attr( $current_event['host'] ) .
                 '">' . esc_html( $current_event['name'] );
 
-            /* if($email)
-                 $html_string .= ' | <a href="mailto:' . antispambot( $email, 1 ) .
-                     '" title="Click to e-mail" >Email</a>';
-             if($fb_url)
-                 $html_string .= ' | <a href="' . $fb_url .
-                     '" title="View Facebook page" >Facebook</a>';
-
-             if($tw_url)
-                 $html_string .= ' | <a href="' . $tw_url .
-                     '" title="View Twitter profile" >Twitter</a>';
-            */
             $html_string .= '</p></div>';
             $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
             $html_string .= '</div><!--end of events__box--></a>';
@@ -221,7 +208,7 @@ class Test_Events {
     /**
      * Calls some page which calls our Facebook events api
      *
-     * @since    0.1.0
+     * @since    0.2.0
      *
      * @return array       at this point, return open Facebook events as an indexed array
      */
