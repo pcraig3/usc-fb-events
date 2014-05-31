@@ -19,6 +19,7 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
  * GitHub Plugin URI: https://github.com/pcraig3/test-events
+ * GitHub Branch:     master
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 
@@ -48,7 +49,6 @@ add_action( 'plugins_loaded', array( 'Test_Events', 'get_instance' ) );
  *----------------------------------------------------------------------------*/
 
 /*
- *
  * If you want to include Ajax within the dashboard, change the following
  * conditional to:
  *

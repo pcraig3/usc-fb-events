@@ -12,9 +12,6 @@
  * Plugin class. This class should ideally be used to work with the
  * public-facing side of the WordPress site.
  *
- * If you're interested in introducing administrative or dashboard
- * functionality, then refer to `class-test-events-admin.php`
- *
  * @package Test_Events
  * @author  Paul Craig <pcraig3@uwo.ca>
  */
@@ -31,7 +28,6 @@ class Test_Events {
 
 	/*
 	 * Unique identifier for your plugin.
-	 *
 	 *
 	 * The variable name is used as the text domain when internationalizing strings
 	 * of text. Its value should match the Text Domain file header in the main
@@ -76,9 +72,164 @@ class Test_Events {
 		//add_action( '@TODO', array( $this, 'action_method_name' ) );
 		//add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
-	}
+        add_shortcode( 'testplugin', array( $this, 'testplugin_func') );
 
-	/**
+    }
+
+    /**
+     * Function meant to target the [testplugin] shortcode.  Grabs the attributes in the shortcode to
+     * call a function somewhere down there.
+     *
+     * @param $atts         create an associative array based on attributes and values in the shortcode
+     *
+     * @since    1.1.0
+     *
+     * @return string       a complimentary adjective for students
+     */
+    public function testplugin_func ( $atts ) {
+
+        //initialize your variables
+        $get = $show = $result = false;
+
+        extract(
+            shortcode_atts(
+                array(
+                    'get'   => 'events',
+                    'show'  => 'count',
+                    'max'   => 10,
+                ), $atts ),
+            EXTR_SKIP);
+
+        if($get !== 'events')
+            return;
+
+        //function returns Facebook events as a json array.
+        //in the future, we'll have this take a parameter
+        $returned_array = $this->call_api();
+
+        if( is_array( $returned_array ) ) {
+
+            $testplugin_function = (string) $get . "_" . (string) $show;
+
+            ob_start();
+
+            echo call_user_func( array( $this, $testplugin_function ), $returned_array );
+
+            $result = ob_get_clean();
+        }
+
+        if( $result ) {
+
+            return $result;
+        }
+
+        return "false";
+    }
+
+    /**
+     * Return HTML code to list a bunch of Facebook events
+     *
+     * @param $events_array      an array of events from Facebook
+     *
+     * @since    0.1.0
+     *
+     * @return string           a list of events from Facebook
+     */
+    private function events_list( $events_array ) {
+
+        $html_string = '<blockquote id="all-events">';
+
+        $max = intval( $events_array['total'] );
+
+        for($i = 0; $i < $max; $i++) {
+
+            $current_event = $events_array['events'][$i];
+
+            /*
+            $email = sanitize_email( $current_club['email'] );
+            $fb_url = esc_url( $current_club['facebookUrl'] );
+            $tw_url = esc_url( $current_club['twitterUrl'] );
+            */
+            $img_url = "";
+
+            if($current_event['profileImageUrl'])
+                $img_url = esc_url( "http://" . $current_event['profileImageUrl'] );
+
+
+            $html_string .= '<a href="http://testwestern.com/clubs/' . intval( $current_event['organizationId'] ) . '/" target="_self">';
+            $html_string .= '<div class="event-box flag clearfix">';
+
+            $html_string.= '<div class="flag__image">';
+
+            if($img_url)
+                $html_string .= '<img src="' . $img_url . '">';
+
+            $html_string .= '</div>';
+
+            $html_string .= '<div class="flag__body">';
+            $html_string .= '<p title="' . esc_attr( $current_event['organizationId'] ) .
+                '">' . esc_html( $current_event['name'] );
+
+            /* if($email)
+                 $html_string .= ' | <a href="mailto:' . antispambot( $email, 1 ) .
+                     '" title="Click to e-mail" >Email</a>';
+             if($fb_url)
+                 $html_string .= ' | <a href="' . $fb_url .
+                     '" title="View Facebook page" >Facebook</a>';
+
+             if($tw_url)
+                 $html_string .= ' | <a href="' . $tw_url .
+                     '" title="View Twitter profile" >Twitter</a>';
+            */
+            $html_string .= '</p></div>';
+            $html_string .= '<span class="event-list-num">' . (intval( $current_event['id'] ) + 1) . '</span>';
+            $html_string .= '</div><!--end of event-box--></a>';
+        }
+
+        $html_string .= "</blockquote><!--end of #all-events-->";
+
+        return $html_string;
+    }
+
+    /**
+     * Calls some page which calls our Facebook events api
+     *
+     * @since    0.1.0
+     *
+     * @return array       at this point, return open Facebook events as an indexed array
+     */
+    public static function call_api() {
+
+        //the url where to get Facebook events
+        $ch = curl_init('http://testwestern.com/github/json.php');
+
+        curl_setopt( $ch, CURLOPT_HEADER, false ); //TRUE to include the header in the output.
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); //TRUE to return transfer as a string instead of outputting it out directly.
+        //curl_setopt($ch, CURLOPT_FRESH_CONNECT, true); //TRUE to force the use of a new connection instead of a cached one.
+
+        $returnedString = curl_exec( $ch );
+        curl_close( $ch );
+
+        // Define the errors.
+        /* $constants = get_defined_constants(true);
+
+        /*$json_errors = array();
+        foreach ($constants["json"] as $name => $value) {
+            if (!strncmp($name, "JSON_ERROR_", 11)) {
+                $json_errors[$value] = $name;
+            }
+        }
+
+        echo '<h1>';
+        echo 'Last error: ', $json_errors[json_last_error()], PHP_EOL, PHP_EOL;
+        echo '</h1>';
+        die;
+        */
+
+        return json_decode( $returnedString, true );
+    }
+
+    /**
 	 * Return the plugin slug.
 	 *
 	 * @since    0.1.0
