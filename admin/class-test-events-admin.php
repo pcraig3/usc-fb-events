@@ -1,12 +1,11 @@
 <?php
 /**
- * Plugin Name.
+ * Test Events.
  *
- * @package   Plugin_Name_Admin
- * @author    Your Name <email@example.com>
+ * @package   Test_Events_Admin
+ * @author    Paul Craig <pcraig3@uwo.ca>
  * @license   GPL-2.0+
- * @link      http://example.com
- * @copyright 2014 Your Name or Company Name
+ * @copyright 2014
  */
 
 /**
@@ -14,19 +13,17 @@
  * administrative side of the WordPress site.
  *
  * If you're interested in introducing public-facing
- * functionality, then refer to `class-plugin-name.php`
+ * functionality, then refer to `class-test-events.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
- *
- * @package Plugin_Name_Admin
- * @author  Your Name <email@example.com>
+ * @package Test_Events_Admin
+ * @author  Paul Craig <pcraig3@uwo.ca>
  */
-class Plugin_Name_Admin {
+class Test_Events_Admin {
 
 	/**
 	 * Instance of this class.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 *
 	 * @var      object
 	 */
@@ -35,7 +32,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Slug of the plugin screen.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 *
 	 * @var      string
 	 */
@@ -45,7 +42,7 @@ class Plugin_Name_Admin {
 	 * Initialize the plugin by loading admin scripts & styles and adding a
 	 * settings page and menu.
 	 *
-	 * @since     1.0.0
+	 * @since     0.0.1
 	 */
 	private function __construct() {
 
@@ -60,13 +57,8 @@ class Plugin_Name_Admin {
 
 		/*
 		 * Call $plugin_slug from public plugin class.
-		 *
-		 * @TODO:
-		 *
-		 * - Rename "Plugin_Name" to the name of your initial plugin class
-		 *
 		 */
-		$plugin = Plugin_Name::get_instance();
+		$plugin = Test_Events::get_instance();
 		$this->plugin_slug = $plugin->get_plugin_slug();
 
 		// Load admin style sheet and JavaScript.
@@ -86,15 +78,15 @@ class Plugin_Name_Admin {
 		 * Read more about actions and filters:
 		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		add_action( '@TODO', array( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+		//add_action( '@TODO', array( $this, 'action_method_name' ) );
+		//add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
 	}
 
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since     1.0.0
+	 * @since     0.0.1
 	 *
 	 * @return    object    A single instance of this class.
 	 */
@@ -120,11 +112,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Register and enqueue admin-specific style sheet.
 	 *
-	 * @TODO:
-	 *
-	 * - Rename "Plugin_Name" to the name your plugin
-	 *
-	 * @since     1.0.0
+	 * @since     0.0.1
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -136,7 +124,7 @@ class Plugin_Name_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Plugin_Name::VERSION );
+			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Test_Events::VERSION );
 		}
 
 	}
@@ -144,11 +132,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Register and enqueue admin-specific JavaScript.
 	 *
-	 * @TODO:
-	 *
-	 * - Rename "Plugin_Name" to the name your plugin
-	 *
-	 * @since     1.0.0
+	 * @since     0.0.1
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
@@ -160,7 +144,7 @@ class Plugin_Name_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), Plugin_Name::VERSION );
+			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), Test_Events::VERSION );
 		}
 
 	}
@@ -168,7 +152,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function add_plugin_admin_menu() {
 
@@ -181,14 +165,12 @@ class Plugin_Name_Admin {
 		 *
 		 * @TODO:
 		 *
-		 * - Change 'Page Title' to the title of your plugin admin page
-		 * - Change 'Menu Text' to the text for menu item for the plugin settings page
 		 * - Change 'manage_options' to the capability you see fit
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 		 */
 		$this->plugin_screen_hook_suffix = add_options_page(
-			__( 'Page Title', $this->plugin_slug ),
-			__( 'Menu Text', $this->plugin_slug ),
+			__( 'Test Events Page Title', $this->plugin_slug ),
+			__( 'Test Events Menu Text', $this->plugin_slug ),
 			'manage_options',
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
@@ -199,7 +181,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Render the settings page for this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function display_plugin_admin_page() {
 		include_once( 'views/admin.php' );
@@ -208,7 +190,7 @@ class Plugin_Name_Admin {
 	/**
 	 * Add settings action link to the plugins page.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function add_action_links( $links ) {
 
@@ -228,10 +210,10 @@ class Plugin_Name_Admin {
 	 *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function action_method_name() {
-		// @TODO: Define your action hook callback here
+		// Define your action hook callback here
 	}
 
 	/**
@@ -241,10 +223,10 @@ class Plugin_Name_Admin {
 	 *           Filters: http://codex.wordpress.org/Plugin_API#Filters
 	 *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public function filter_method_name() {
-		// @TODO: Define your filter hook callback here
+		// Define your filter hook callback here
 	}
 
 }
