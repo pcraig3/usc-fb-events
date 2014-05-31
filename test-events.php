@@ -57,10 +57,12 @@ add_action( 'plugins_loaded', array( 'Test_Events', 'get_instance' ) );
  * }
  *
  * The code below is intended to to give the lightest footprint possible.
- */
+ *
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
 	require_once( plugin_dir_path( __FILE__ ) . 'admin/class-test-events-admin.php' );
 	add_action( 'plugins_loaded', array( 'Test_Events_Admin', 'get_instance' ) );
 
 }
+
+*/
