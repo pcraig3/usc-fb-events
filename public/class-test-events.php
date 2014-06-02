@@ -184,10 +184,16 @@ class Test_Events {
             $html_string .= '</div>';
 
             $html_string .= '<div class="flag__body">';
-            $html_string .= '<h3 class="alpha" title="' . esc_attr( $current_event['host'] ) .
+            $html_string .= '<h3 class="alpha" title="' .
+                esc_attr( $current_event['host'] . ": " . $current_event['name'] ) .
+                esc_attr( $current_event['host'] . ": " . $current_event['name'] ) .
                 '">' . esc_html( $current_event['name'] ) . '</h3>';
 
-            $html_string .= '<p class="lede">' . esc_html( $current_event['host'] ) . '</p>';
+            $html_string .= '<p class="lede">'
+                . esc_html( date("M j", strtotime($current_event['start_time'] ) ) )
+                . " | "
+                . esc_html( $current_event['host'] )
+                . '</p>';
 
             $html_string .= '</div><!--end of .flag__body-->';
             $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
