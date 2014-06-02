@@ -162,25 +162,18 @@ class Test_Events {
             return;
         }
 
-        //we are removing other key/values by doing this here.
+        //we redefining it as the indexed 'events' array. losing $events_array['total'] for example
         $events_array = array_reverse($events_array['events']);
-
-        $temp_array = array();
 
         for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
 
             $current_event = $events_array[$i];
 
-            array_push($temp_array, $current_event);
-
-            //no images as yet.
-            $img_url = "";
-
-            if( isset( $current_event['profileImageUrl'] ) )
-                $img_url = esc_url( "http://" . $current_event['profileImageUrl'] );
+            if( isset( $current_event['pic_big'] ) )
+                $img_url = esc_url( $current_event['pic_big'] );
 
 
-            $html_string .= '<a href="' . esc_url( 'http://facebook.com/' . $current_event['eid'] . "/" ) . '" target="_self">';
+            $html_string .= '<a href="' . esc_url( 'http://facebook.com/' . $current_event['eid'] . "/" ) . '" target="_blank">';
             $html_string .= '<div class="events__box flag clearfix">';
 
             $html_string.= '<div class="flag__image">';
@@ -191,10 +184,12 @@ class Test_Events {
             $html_string .= '</div>';
 
             $html_string .= '<div class="flag__body">';
-            $html_string .= '<p title="' . esc_attr( $current_event['host'] ) .
-                '">' . esc_html( $current_event['name'] );
+            $html_string .= '<h3 class="alpha" title="' . esc_attr( $current_event['host'] ) .
+                '">' . esc_html( $current_event['name'] ) . '</h3>';
 
-            $html_string .= '</p></div>';
+            $html_string .= '<p class="lede">' . esc_html( $current_event['host'] ) . '</p>';
+
+            $html_string .= '</div><!--end of .flag__body-->';
             $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
             $html_string .= '</div><!--end of events__box--></a>';
 
