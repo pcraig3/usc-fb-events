@@ -20,11 +20,11 @@ class Test_Events {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   0.2.0
+	 * @since   0.2.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.2.0';
+	const VERSION = '0.2.1';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -135,7 +135,7 @@ class Test_Events {
      * @param $events_array     an array of events from Facebook
      * @param int $limit        an integer number of events to return.  defaults to the total returned objects.
      *
-     * @since    0.2.0
+     * @since    0.2.1
      *
      * @return string           a list of events from Facebook
      */
