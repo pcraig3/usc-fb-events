@@ -392,20 +392,24 @@ class Test_Events {
 	/**
 	 * Fired for each blog when the plugin is activated.
 	 *
-	 * @since    0.1.0
+	 * @since    0.2.3
 	 */
 	private static function single_activate() {
 		// Define activation functionality here
+
+        Test_Events::create_fbevents_table();
 	}
 
 	/**
 	 * Fired for each blog when the plugin is deactivated.
 	 *
-	 * @since    0.1.0
+	 * @since    0.2.3
 	 */
 	private static function single_deactivate() {
 		// Define deactivation functionality here
-	}
+
+        Test_Events::drop_fbevents_table();
+    }
 
 	/**
 	 * Load the plugin text domain for translation.
@@ -439,6 +443,73 @@ class Test_Events {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
+
+    /**
+     * Creates our table
+     * Hooked onto our single_activate function
+     * @since 0.2.3
+     */
+    private static function create_fbevents_table(){
+
+        global $wpdb;
+        global $charset_collate;
+
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        $wpdb->fbevents = "test_fbevents";
+
+        /*
+          CREATE TABLE `tes1321908194980`.`test_fbevents` (
+            `eid` BIGINT NOT NULL ,
+            `name` VARCHAR( 255 ) NOT NULL ,
+            `start_time` DATETIME NOT NULL ,
+            `host` VARCHAR( 127 ) NOT NULL ,
+            `location` VARCHAR( 255 ) NULL ,
+            PRIMARY KEY ( `eid` ) ,
+            INDEX ( `name` )
+            ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci
+         */
+
+
+            $sql_create_table = "CREATE TABLE {$wpdb->fbevents} (
+        eid bigint(20) NOT NULL,
+        name varchar(255) NOT NULL,
+        start_time datetime NOT NULL default '0000-00-00 00:00:00',
+        host varchar(127) NOT NULL,
+        location varchar(255) NULL default 'NULL',
+        PRIMARY KEY  (eid),
+        KEY name (name)
+        ) $charset_collate; ";
+
+        dbDelta($sql_create_table);
+
+
+    }
+
+    /**
+     * removes our table
+     * Hooked onto our single_deactivate function
+     * @since 0.2.3
+     */
+    private static function drop_fbevents_table(){
+
+        global $wpdb;
+
+        $wpdb->fbevents = "test_fbevents";
+
+        $sql = "DROP TABLE IF EXISTS $wpdb->fbevents;";
+        $wpdb->query($sql);
+    }
+
+    private function get_fbevents_table_columns(){
+    return array(
+        'eid'=> '%s',
+        'name'=> '%s',
+        'start_time'=>'%s',
+        'host'=>'%s',
+        'location'=>'%s',
+        );
+    }
 
 	/**
 	 * NOTE:  Actions are points in the execution of a page or process
