@@ -473,9 +473,9 @@ class Test_Events {
 
             $sql_create_table = "CREATE TABLE {$wpdb->fbevents} (
         eid bigint(20) NOT NULL,
-        name varchar(255) NOT NULL,
-        start_time datetime NOT NULL default '0000-00-00 00:00:00',
-        host varchar(127) NOT NULL,
+        name varchar(255) NULL default 'NULL',
+        start_time datetime NULL default 'NULL',
+        host varchar(127) NULL default 'NULL',
         location varchar(255) NULL default 'NULL',
         PRIMARY KEY  (eid),
         KEY name (name)
