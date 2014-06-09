@@ -458,31 +458,18 @@ class Test_Events {
 
         $wpdb->fbevents = "test_fbevents";
 
-        /*
-          CREATE TABLE `tes1321908194980`.`test_fbevents` (
-            `eid` BIGINT NOT NULL ,
-            `name` VARCHAR( 255 ) NOT NULL ,
-            `start_time` DATETIME NOT NULL ,
-            `host` VARCHAR( 127 ) NOT NULL ,
-            `location` VARCHAR( 255 ) NULL ,
-            PRIMARY KEY ( `eid` ) ,
-            INDEX ( `name` )
-            ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci
-         */
-
-
             $sql_create_table = "CREATE TABLE {$wpdb->fbevents} (
         eid bigint(20) NOT NULL,
-        name varchar(255) NULL default 'NULL',
-        start_time datetime NULL default 'NULL',
-        host varchar(127) NULL default 'NULL',
-        location varchar(255) NULL default 'NULL',
+        name varchar(255) NULL,
+        start_time datetime NULL,
+        host varchar(127) NULL,
+        location varchar(255) NULL,
+        permitted bool NOT NULL default '1',
         PRIMARY KEY  (eid),
         KEY name (name)
         ) $charset_collate; ";
 
         dbDelta($sql_create_table);
-
 
     }
 
