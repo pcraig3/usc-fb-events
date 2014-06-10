@@ -8,6 +8,11 @@
 
     display: table-row;
 
+    &:hover {
+
+      background: #E9E9E9;
+    }
+
     span {
 
       display: table-cell;

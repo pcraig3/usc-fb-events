@@ -133,7 +133,7 @@ class Test_Events_Admin {
 	/**
 	 * Register and enqueue admin-specific JavaScript.
 	 *
-	 * @since     0.1.0
+	 * @since     0.3.0
 	 *
 	 * @return    null    Return early if no settings page is registered.
 	 */
