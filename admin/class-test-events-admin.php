@@ -277,8 +277,8 @@ class Test_Events_Admin {
 
         if($button_id === 'remove_event_button') {
 
-            $response = Test_Events::insert_fbevent( array(
-                'eid' =>    $eid,
+            $response = Test_Events::update_fbevent( $eid, array(
+                'removed' =>    0,
                 'name' =>   $name,
             ));
         }

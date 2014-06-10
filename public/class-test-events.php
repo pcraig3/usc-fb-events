@@ -518,7 +518,7 @@ class Test_Events {
      * Inserts a fb_event into the database
      *
      *@param $data array An array of key => value pairs to be inserted
-     *@return int The log ID of the created activity log. Or WP_Error or false on failure.
+     *@return int The eid of the created fbevent. Or WP_Error or false on failure.
      */
     public static function insert_fbevent( $data=array() ){
         global $wpdb;
@@ -541,7 +541,7 @@ class Test_Events {
         $column_formats = Test_Events::get_fbevents_table_columns();
 
         //Force fields to lower case
-        $data = array_change_key_case ( $data,  CASE_LOWER );
+        $data = array_change_key_case ( $data, CASE_LOWER );
 
         //White list columns
         $data = array_intersect_key( $data, $column_formats );
@@ -553,6 +553,46 @@ class Test_Events {
         $wpdb->insert($wpdb->fbevents, $data, $column_formats);
 
         return $wpdb->insert_id;
+    }
+
+    /**
+     * Updates an fbevent with supplied data
+     *
+     *@param $eid  eid of the event to be updated
+     *@param $data array An array of column=>value pairs to be updated
+     *@return bool Whether the event was successfully updated.
+     */
+    public static function update_fbevent( $eid, $data=array() ){
+        global $wpdb;
+
+        //eid must be numeric
+        if( ! is_numeric( $eid ) )
+            return false;
+
+        //Check date validity
+        if( isset($data['start_time']) ) {
+            //Convert activity date from local timestamp to GMT mysql format
+            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', $data['start_time'], true );
+        }
+
+        //Initialise column format array
+        $column_formats = Test_Events::get_fbevents_table_columns();
+
+        //Force fields to lower case
+        $data = array_change_key_case ( $data, CASE_LOWER );
+
+        //White list columns
+        $data = array_intersect_key($data, $column_formats);
+
+        //Reorder $column_formats to match the order of columns given in $data
+        $data_keys = array_keys($data);
+        $column_formats = array_merge(array_flip($data_keys), $column_formats);
+
+        if ( false === $wpdb->update($wpdb->fbevents, $data, array('eid'=>$eid), $column_formats) ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
