@@ -66,12 +66,13 @@ class Test_Events_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add the options page and menu item.
-		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		//add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 
+        $this->add_plugin_admin_menu();
 		/*
 		 * Define custom functionality.
 		 *
@@ -167,7 +168,7 @@ class Test_Events_Admin {
 		 *
 		 * - Change 'manage_options' to the capability you see fit
 		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
-		 */
+		 *
 		$this->plugin_screen_hook_suffix = add_options_page(
 			__( 'Test Events Page Title', $this->plugin_slug ),
 			__( 'Test Events Menu Text', $this->plugin_slug ),
@@ -175,7 +176,19 @@ class Test_Events_Admin {
 			$this->plugin_slug,
 			array( $this, 'display_plugin_admin_page' )
 		);
+		*/
 
+        /* Plugin Name: Admin Page Framework Tutorial 01 - Create an Admin Page */
+        if ( ! class_exists( 'AdminPageFramework' ) ) {
+
+            include_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/admin-page-framework/library/admin-page-framework.min.php' );
+        }
+
+        include_once( dirname( __FILE__ ) . '/views/apf-settings.php' );
+
+        // Instantiate the class object.
+        $sp = new APF_SettingsPage("test_events");
+        $sp->setFooterInfoLeft( '<br />Custom Text on the left hand side.', false );
 	}
 
 	/**
@@ -191,7 +204,7 @@ class Test_Events_Admin {
 	 * Add settings action link to the plugins page.
 	 *
 	 * @since    0.1.0
-	 *
+	 */
 	public function add_action_links( $links ) {
 
 		return array_merge(
