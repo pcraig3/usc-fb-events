@@ -1,0 +1,26 @@
+
+.featured_list_find {
+
+  width: 100%;
+  display: table;
+
+  .row {
+
+    display: table-row;
+
+    span {
+
+      display: table-cell;
+      text-align: left;
+      padding: 5px 10px;
+      border-top: 1px solid #AAA;
+    }
+
+    &:last-of-type span {
+
+      border-bottom: 1px solid #AAA;
+    }
+  }
+
+
+}

@@ -37,6 +37,7 @@
 
         echo_test_section_title( "Table of Facebook Events" );
 
+        /*
         $events_array = Test_Events::call_api();
 
         if( is_array( $events_array ) ) {
@@ -54,10 +55,41 @@
 
             }
         }
-
+        */
 
     ?>
 
+    <div class="filterjs">
+        <div class="sidebar_bar">
+            <div class="sidebar_left_find">
+                <div class="sidebar_list">
+                    <h4>Search with filter.js</h4>
+                    <input type="text" id="search_box" class="searchbox" placeholder="Type here...."/>
+                </div>
+            </div>
+            <div class="sidebar_left_find">
+                <div class="sidebar_list">
+                    <h4>Filter by Status</h4>
+                    <ul id="status">
+                        <li>
+                            <input id="active" value="active" type="checkbox">
+                            <span >Active</span>
+                        </li>
+                        <li>
+                            <input id="inactive" value="inactive" type="checkbox">
+                            <span>Inactive</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="featured_services_find">
+            <h1 class="result_count"></h1>
+            <div class="featured_list_find" id="service_list"></div>
+        </div>
+
+        <div class="clear"></div>
+    </div>
 
 	<!-- Provide markup for your options page here. -->
 
