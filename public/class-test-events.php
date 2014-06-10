@@ -74,6 +74,9 @@ class Test_Events {
 
         add_shortcode( 'testevents', array( $this, 'testplugin_func') );
 
+        add_action( 'init', array( $this, 'register_fbevents_table' ), '1' );
+        add_action( 'switch_blog', array( $this, 'register_fbevents_table' ) );
+
     }
 
     /**
@@ -444,6 +447,17 @@ class Test_Events {
 		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
 
+
+    /**
+     * Store our table name in $wpdb with correct prefix
+     * Prefix will vary between sites so hook onto switch_blog too
+     * @since 1.0
+     */
+    public static function register_fbevents_table() {
+        global $wpdb;
+        $wpdb->fbevents = "test_fbevents";
+    }
+
     /**
      * Creates our table
      * Hooked onto our single_activate function
@@ -456,7 +470,8 @@ class Test_Events {
 
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-        $wpdb->fbevents = "test_fbevents";
+        //Call this manually as we may have missed the init hook
+        Test_Events::register_fbevents_table();
 
             $sql_create_table = "CREATE TABLE {$wpdb->fbevents} (
         eid bigint(20) NOT NULL,
@@ -496,6 +511,33 @@ class Test_Events {
         'host'=>'%s',
         'location'=>'%s',
         );
+    }
+
+    /**
+     * Deletes an activity log from the database
+     *
+     *@param $log_id int ID of the activity log to be deleted
+     *@return bool Whether the log was successfully deleted.
+     */
+    function wptuts_delete_log( $log_id ){
+        global $wpdb;
+
+        //Log ID must be positive integer
+        $log_id = absint($log_id);
+
+        if( empty($log_id) )
+            return false;
+
+        do_action('wptuts_delete_log',$log_id);
+
+        $sql = $wpdb->prepare("DELETE from {$wpdb->wptuts_activity_log} WHERE log_id = %d", $log_id);
+
+        if( !$wpdb->query( $sql ) )
+            return false;
+
+        do_action('wptuts_deleted_log',$log_id);
+
+        return true;
     }
 
 	/**
