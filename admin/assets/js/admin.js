@@ -95,6 +95,8 @@
         $jqxhr
             .done(function( data ) {
 
+                console.log(data);
+
                 if(!data['success']) {
                     alert("Error performing " + button_id + " operation, bro.  Look for the problem in 'plugins/test-events/admin/assets/js/admin.js'");
                     return;
@@ -111,7 +113,8 @@
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
-                //console.log(data);
+                console.log(data);
+                console.log(data['response']);
 
             })
             .always(function () {

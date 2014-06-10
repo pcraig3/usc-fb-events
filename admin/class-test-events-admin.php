@@ -275,17 +275,24 @@ class Test_Events_Admin {
         //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
         $response = 	false;
 
-        if($button_id === 'remove_event_button')
-            $response = $this->remove_from_calendar_query($wpdb, $eid);
+        if($button_id === 'remove_event_button') {
+
+            $response = Test_Events::insert_fbevent( array(
+                'eid' =>    $eid,
+                'name' =>   $name,
+            ));
+        }
         if($button_id === 'display_event_button')
-            $response = $this->return_to_calendar_query($wpdb, $eid);
+            $response = Test_Events::delete_fbevent( $eid );
 
         if($response === false) {
             $result['success'] = false;
+            $result['response'] = $response;
         }
         else {
             $result['success'] = true;
             $result['name'] = $name;
+            $result['response'] = $response;
         }
 
         //this is meant to decide what to do whether the call was made from a browser, or if JS is enabled.
@@ -307,17 +314,18 @@ class Test_Events_Admin {
      * @param  string $eid    Facebook Id for an event
      * @return 			     true if mysql query successful.  false if failed.
      */
-    public function remove_from_calendar_query($wpdb, $eid) {
+    public function remove_from_calendar_query($wpdb, $eid, $name) {
 
         return $wpdb->query( $wpdb->prepare(
             "
                 INSERT INTO test_fbevents
-                (eid, removed)
-                VALUES (%f, %d)
+                (eid, name, removed)
+                VALUES (%f, %s, %d)
                 ON DUPLICATE KEY UPDATE
                 removed = VALUES(removed)
             ",
             $eid,
+            $name,
             1
         ) );
     }

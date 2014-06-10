@@ -510,32 +510,74 @@ class Test_Events {
         'start_time'=>'%s',
         'host'=>'%s',
         'location'=>'%s',
+        'removed'=>'%d',
         );
     }
 
     /**
-     * Deletes an activity log from the database
+     * Inserts a fb_event into the database
      *
-     *@param $log_id int ID of the activity log to be deleted
-     *@return bool Whether the log was successfully deleted.
+     *@param $data array An array of key => value pairs to be inserted
+     *@return int The log ID of the created activity log. Or WP_Error or false on failure.
      */
-    function wptuts_delete_log( $log_id ){
+    public static function insert_fbevent( $data=array() ){
         global $wpdb;
 
-        //Log ID must be positive integer
-        $log_id = absint($log_id);
+        //Set default values
+        $data = wp_parse_args($data, array(
+            'removed'=> '1',
+        ));
 
-        if( empty($log_id) )
+        if( ! is_numeric( $data['eid'] ) )
             return false;
 
-        do_action('wptuts_delete_log',$log_id);
+        //Check date validity
+        if( isset($data['start_time']) ) {
+            //Convert activity date from local timestamp to GMT mysql format
+            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', $data['start_time'], true );
+        }
 
-        $sql = $wpdb->prepare("DELETE from {$wpdb->wptuts_activity_log} WHERE log_id = %d", $log_id);
+        //Initialise column format array
+        $column_formats = Test_Events::get_fbevents_table_columns();
+
+        //Force fields to lower case
+        $data = array_change_key_case ( $data,  CASE_LOWER );
+
+        //White list columns
+        $data = array_intersect_key( $data, $column_formats );
+
+        //Reorder $column_formats to match the order of columns given in $data
+        $data_keys = array_keys($data);
+        $column_formats = array_merge(array_flip($data_keys), $column_formats);
+
+        $wpdb->insert($wpdb->fbevents, $data, $column_formats);
+
+        return $wpdb->insert_id;
+    }
+
+    /**
+     * Deletes fbevent from 'test_fbevents'
+     *
+     *@param $eid string (or float) ID of the event to be deleted
+     *@return bool Whether the log was successfully deleted.
+     */
+    public static function delete_fbevent( $eid ){
+        global $wpdb;
+
+        //Event ID must be positive integer
+        $eid = (float) abs($eid);
+
+        if( empty($eid) )
+            return false;
+
+        do_action('delete_fbevent', $eid);
+
+        $sql = $wpdb->prepare("DELETE from {$wpdb->fbevents} WHERE eid = %f", $eid);
 
         if( !$wpdb->query( $sql ) )
             return false;
 
-        do_action('wptuts_deleted_log',$log_id);
+        do_action('deleted_fbevent', $eid);
 
         return true;
     }
