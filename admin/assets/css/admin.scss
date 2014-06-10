@@ -1,8 +1,16 @@
+.featured_events_find {
+
+  width: 100%;
+  height: 300px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
 
 .featured_list_find {
 
-  width: 100%;
-  display: table;
+  width:    100%;
+  display:  table;
 
   .row {
 
@@ -13,11 +21,32 @@
       background: #E9E9E9;
     }
 
+    &.removed {
+
+      background-color: rgb(221, 61, 54);
+      background-color: rgba(221, 61, 54, 0.40);
+
+      &:hover {
+
+        background-color: rgba(221, 61, 54, 0.30);
+      }
+    }
+
+    &.selected {
+      background-color: rgb(0, 116, 162);
+      background-color: rgba(0, 116, 162, 0.40);
+
+      &:hover {
+
+        background-color: rgba(0, 116, 162, 0.30);
+      }
+    }
+
     span {
 
-      display: table-cell;
+      display:    table-cell;
       text-align: left;
-      padding: 5px 10px;
+      padding:    5px 10px;
       border-top: 1px solid #AAA;
     }
 

@@ -5,24 +5,27 @@ jQuery(document).ready(function($) {
   $('#status :checkbox').prop('checked', true);
 
   //@TODO: This sucks
-  $.get( "http://testwestern.com/api/events/events/2014-04-01", function( data ) {
+  $.get( "http://testwestern.com/api/events/events/2014-04-01")
+      .done(function( data ) {
 
-      var data = data.events;
-      $.each(data, function(i, e){ e.id = i+1; });
+      var events = data.events;
+      $.each(events, function(i, e){ e.id = i+1; });
 
-      fJS = filterInit(data);
+      fJS = filterInit( events );
 
-  }, "json" );
+      $('#event_list').trigger( "change" );
+
+  });
 
 });
 
-function filterInit(data) {
+function filterInit( events ) {
 
-  var view = function(data){
-        return "<div class='row'>" +
-            "<span class='name'>" + data.name + "</span>" +
-            "<span class='host'>" + data.host + "</span>" +
-            //"<span class='status'>" + data.status + "</span>" +
+  var view = function( events ){
+        return "<div class='row removed' data-eid='" + events.eid + "' data-start-time='" + events.start_time + " '>" +
+            "<span class='name'>" + events.name + "</span>" +
+            "<span class='host'>" + events.host + "</span>" +
+            //"<span class='status'>" + events.status + "</span>" +
             "</div>";
   }
 
@@ -36,5 +39,5 @@ function filterInit(data) {
     id_field: 'id' //Default is id. This is only for usecase
   };
 
-  return FilterJS(data, "#service_list", view, settings);
+  return FilterJS(events, "#event_list", view, settings);
 }

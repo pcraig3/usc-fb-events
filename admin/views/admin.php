@@ -23,9 +23,21 @@
     function echo_test_paragraph( $paragraph ) {
         echo '<p>' . esc_html( $paragraph ) . '</p>';
     }
+
+    function echo_test_button( $button_text, $id, $tab_index ) {
+
+        $button_text = esc_html( $button_text );
+        $id = esc_attr( $id );
+        $tab_index = ( is_numeric( $tab_index ) ) ? $tab_index : -1;
+
+        submit_button( $button_text, 'large', $id, false,
+            array(
+                'tabindex' 		=> $tab_index,
+                'data-nonce' 	=> wp_create_nonce($id . "_nonce"),
+                'class'			 => 'button',
+            ));
+    }
 ?>
-
-
 
 
 <div class="wrap">
@@ -36,26 +48,6 @@
         echo_test_paragraph( "List all Facebook events since April in a table, please." );
 
         echo_test_section_title( "Table of Facebook Events" );
-
-        /*
-        $events_array = Test_Events::call_api();
-
-        if( is_array( $events_array ) ) {
-
-            $total = $events_array['total'];
-            $events = $events_array['events'];
-
-            while( $total > 0 ) {
-
-                $id = $total--;
-
-                echo_test_paragraph(
-                  "$id. " . $events[$total]['name']
-                );
-
-            }
-        }
-        */
 
     ?>
 
@@ -83,14 +75,17 @@
                 </div>
             </div>
         </div>
-        <div class="featured_services_find">
-            <h1 class="result_count"></h1>
-            <div class="featured_list_find" id="service_list"></div>
+        <div class="featured_events_find">
+            <div class="featured_list_find" id="event_list"></div>
         </div>
-
-        <div class="clear"></div>
+        <div class="clearfix"></div>
     </div>
 
-	<!-- Provide markup for your options page here. -->
+    <?php
+
+        echo_test_button("Remove Event", "remove_event_button", 75);
+        echo_test_button("Display Event", "display_event_button", 80);
+
+    ?>
 
 </div>
