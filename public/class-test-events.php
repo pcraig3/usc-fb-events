@@ -596,23 +596,152 @@ class Test_Events {
     }
 
     /**
+     * Retrieves activity logs from the database matching $query.
+     * $query is an array which can contain the following keys:
+     *
+     * 'fields' - an array of columns to include in returned roles. Or 'count' to count rows. Default: empty (all fields).
+     * 'orderby' - eid or start_time. Default: eid.
+     * 'order' - asc or desc
+     * 'eid' - eid to match, or an array of eids
+     * 'since' - timestamp. Return only activities after this date. Default false, no restriction.
+     * 'until' - timestamp. Return only activities up to this date. Default false, no restriction.
+     *
+     *@param array $query Query
+     *@return array Array of matching logs. False on error.
+     */
+    public static function get_fbevents( $query=array() ){
+        global $wpdb;
+
+        $fields = array();
+        $orderby = "eid";
+        $order = "desc";
+        $eid = $since = $until = false;
+
+        /* Parse defaults */
+        $defaults = array(
+            'fields' => $fields,
+            'orderby'=> $orderby,
+            'order'=>   $order,
+            'eid'=>     $eid,
+            'since'=>   $since,
+            'until'=>   $until,
+        );
+        $query = wp_parse_args($query, $defaults);
+
+        /* Form a cache key from the query */
+        $cache_key = 'get_fbevents:'.md5( serialize($query));
+        $cache = wp_cache_get( $cache_key );
+        if ( false !== $cache ) {
+            $cache = apply_filters('get_fbevents', $cache, $query);
+            return $cache;
+        }
+        extract($query, EXTR_OVERWRITE);
+
+        /* SQL Select */
+        //Whitelist of allowed fields
+        $allowed_fields = array_keys(Test_Events::get_fbevents_table_columns());
+
+        if( is_array($fields) ){
+
+            //Convert fields to lowercase (as our column names are all lower case - see part 1)
+            $fields = array_map('strtolower',$fields);
+
+            //Sanitize by white listing
+            $fields = array_intersect($fields, $allowed_fields);
+
+        }else{
+            $fields = strtolower($fields);
+        }
+
+        //Return only selected fields. Empty is interpreted as all
+        if( empty($fields) ){
+            $select_sql = "SELECT* FROM {$wpdb->fbevents}";
+        }elseif( 'count' == $fields ) {
+            $select_sql = "SELECT COUNT(*) FROM {$wpdb->fbevents}";
+        }else{
+            $select_sql = "SELECT ".implode(',',$fields)." FROM {$wpdb->fbevents}";
+        }
+
+        /*SQL Join */
+        //We don't need this, but we'll allow it be filtered (see 'fbevents_clauses' )
+        $join_sql='';
+
+        /* SQL Where */
+        //Initialise WHERE
+        $where_sql = 'WHERE 1=1';
+        if( !empty($eid) )
+            $where_sql .= $wpdb->prepare(' AND eid=%s', $eid);
+
+        if( !empty($removed) )
+            $where_sql .= $wpdb->prepare(' AND removed=%d', $removed);
+
+        /*$since = absint($since);
+        $until = absint($until);
+
+        if( !empty($since) )
+            $where_sql .= $wpdb->prepare(' AND start_date >= %s', date_i18n( 'Y-m-d H:i:s', $since,true));
+
+        if( !empty($until) )
+            $where_sql .= $wpdb->prepare(' AND start_date <= %s', date_i18n( 'Y-m-d H:i:s', $until,true));
+        */
+
+        /* SQL Order */
+        //Whitelist order
+        $order = strtoupper($order);
+        $order = ( 'ASC' == $order ? 'ASC' : 'DESC' );
+        switch( $orderby ){
+            case 'eid':
+                $order_sql = "ORDER BY eid $order";
+                break;
+            case 'start_time':
+                $order_sql = "ORDER BY start_time $order";
+                break;
+            default:
+                break;
+        }
+
+        /* SQL Limit */
+        $limit_sql = '';
+
+        /* Filter SQL */
+        $pieces = array( 'select_sql', 'join_sql', 'where_sql', 'order_sql', 'limit_sql' );
+        $clauses = apply_filters( 'fbevents_clauses', compact( $pieces ), $query );
+        foreach ( $pieces as $piece )
+            $$piece = isset( $clauses[ $piece ] ) ? $clauses[ $piece ] : '';
+
+        /* Form SQL statement */
+        $sql = "$select_sql $where_sql $order_sql $limit_sql";
+
+        if( 'count' == $fields ){
+            return $wpdb->get_var($sql);
+        }
+
+        /* Perform query */
+        $events = $wpdb->get_results($sql);
+
+        /* Add to cache and filter */
+        wp_cache_add( $cache_key, $events, 24*60*60 );
+        $events = apply_filters('get_fbevents', $events, $query);
+
+        return $events;
+    }
+
+    /**
      * Deletes fbevent from 'test_fbevents'
      *
      *@param $eid string (or float) ID of the event to be deleted
-     *@return bool Whether the log was successfully deleted.
+     *@return bool Whether the fbevent was successfully deleted.
      */
     public static function delete_fbevent( $eid ){
         global $wpdb;
 
-        //Event ID must be positive integer
-        $eid = (float) abs($eid);
-
-        if( empty($eid) )
+        //eid must be numeric
+        if( ! is_numeric( $eid ) )
             return false;
 
         do_action('delete_fbevent', $eid);
 
-        $sql = $wpdb->prepare("DELETE from {$wpdb->fbevents} WHERE eid = %f", $eid);
+        $sql = $wpdb->prepare("DELETE from {$wpdb->fbevents} WHERE eid = %s", $eid);
 
         if( !$wpdb->query( $sql ) )
             return false;

@@ -275,12 +275,17 @@ class Test_Events_Admin {
         //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
         $response = 	false;
 
-        if($button_id === 'remove_event_button') {
+        $fbevent_exists_in_db = Test_Events::get_fbevents( array(
+            'fields' => 'count',
+            'eid' =>    $eid
+        ));
 
-            $response = Test_Events::update_fbevent( $eid, array(
-                'removed' =>    0,
-                'name' =>   $name,
-            ));
+        if($button_id === 'remove_event_button') {
+            //either remove an event or update it.
+            $response = ( $fbevent_exists_in_db ) ?
+                Test_Events::update_fbevent( $eid, array( 'removed' => 1) ) :
+                Test_Events::insert_fbevent( array( 'eid' => $eid, 'removed' => 1, 'name' => $name) );
+
         }
         if($button_id === 'display_event_button')
             $response = Test_Events::delete_fbevent( $eid );
@@ -320,7 +325,7 @@ class Test_Events_Admin {
             "
                 INSERT INTO test_fbevents
                 (eid, name, removed)
-                VALUES (%f, %s, %d)
+                VALUES (%s, %s, %d)
                 ON DUPLICATE KEY UPDATE
                 removed = VALUES(removed)
             ",
@@ -344,7 +349,7 @@ class Test_Events_Admin {
             "
                 INSERT INTO test_fbevents
                 (eid, removed)
-                VALUES (%f, %d)
+                VALUES (%s, %d)
                 ON DUPLICATE KEY UPDATE
                 removed = VALUES(removed)
             ",
