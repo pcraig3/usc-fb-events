@@ -13,6 +13,8 @@
 
         $event_container.on("change", function() {
 
+            ajax_get_removed_events();
+
             $(this).delegate( '[id^="fjs_"]', "click", function() {
                 click_row($(this));
             });
@@ -25,7 +27,6 @@
                 $(this).focus();
             });
         })
-
 
     });
 
@@ -123,6 +124,44 @@
                 //disable_enable_remove_buttons($select);
                 $selected_row.removeClass("selected");
             });
+    }
+
+    function ajax_get_removed_events() {
+
+        //in_progress(true);
+
+        var $jqxhr = $.ajax({
+            type: "POST",
+            url: "admin-ajax.php",
+            data: {
+                action: 	"get_removed_events"
+            },
+            dataType: "json"
+        });
+
+        $jqxhr
+            .done(function( data ) {
+                alert( "Yes" );
+
+                if(! data['success']) {
+
+                    console.log("fail");
+                }
+
+                console.log(data['response']);
+
+
+            })
+            .fail(function(data) {
+                alert( "Fuck" );
+                console.log(data);
+
+            });
+            /*.always(function () {
+
+                //
+            });*/
+
     }
 
 

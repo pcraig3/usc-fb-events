@@ -550,9 +550,9 @@ class Test_Events {
         $data_keys = array_keys($data);
         $column_formats = array_merge(array_flip($data_keys), $column_formats);
 
-        $wpdb->insert($wpdb->fbevents, $data, $column_formats);
+        return $wpdb->insert($wpdb->fbevents, $data, $column_formats);
 
-        return $wpdb->insert_id;
+        //return $wpdb->insert_id;
     }
 
     /**
@@ -615,7 +615,7 @@ class Test_Events {
         $fields = array();
         $orderby = "eid";
         $order = "desc";
-        $eid = $since = $until = false;
+        $eid = $since = $until = $debug = false;
 
         /* Parse defaults */
         $defaults = array(
@@ -675,6 +675,9 @@ class Test_Events {
         if( !empty($removed) )
             $where_sql .= $wpdb->prepare(' AND removed=%d', $removed);
 
+        if( !empty($append) )
+            $where_sql .= $append;
+
         /*$since = absint($since);
         $until = absint($until);
 
@@ -711,6 +714,9 @@ class Test_Events {
 
         /* Form SQL statement */
         $sql = "$select_sql $where_sql $order_sql $limit_sql";
+
+        if($debug)
+            return $sql;
 
         if( 'count' == $fields ){
             return $wpdb->get_var($sql);

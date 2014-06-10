@@ -49,6 +49,9 @@ class Test_Events_Admin {
         add_action("wp_ajax_return_to_or_remove_from_calendar", array( $this, "return_to_or_remove_from_calendar" ) );
         add_action("wp_ajax_nopriv_return_to_or_remove_from_calendar", array( $this, "login_please") );
 
+        add_action("wp_ajax_get_removed_events", array( $this, "get_removed_events" ) );
+        add_action("wp_ajax_nopriv_get_removed_events", array( $this, "login_please") );
+
 		/*
 		 * @TODO :
 		 *
@@ -275,20 +278,30 @@ class Test_Events_Admin {
         //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
         $response = 	false;
 
-        $fbevent_exists_in_db = Test_Events::get_fbevents( array(
-            'fields' => 'count',
-            'eid' =>    $eid
-        ));
-
         if($button_id === 'remove_event_button') {
+            $fbevent_exists_in_db = Test_Events::get_fbevents( array(
+                'fields' => 'count',
+                'eid' =>    $eid
+            ));
+
             //either remove an event or update it.
             $response = ( $fbevent_exists_in_db ) ?
                 Test_Events::update_fbevent( $eid, array( 'removed' => 1) ) :
                 Test_Events::insert_fbevent( array( 'eid' => $eid, 'removed' => 1, 'name' => $name) );
 
         }
-        if($button_id === 'display_event_button')
-            $response = Test_Events::delete_fbevent( $eid );
+        if($button_id === 'display_event_button') {
+            $fbevent_exists_unmodified_in_db = Test_Events::get_fbevents( array(
+                'fields' => 'count',
+                'eid' =>    $eid,
+                'append' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
+            ));
+
+            $response = ( $fbevent_exists_unmodified_in_db ) ?
+                Test_Events::delete_fbevent( $eid ) :
+                Test_Events::update_fbevent( $eid, array( 'removed' => 0) );
+
+        }
 
         if($response === false) {
             $result['success'] = false;
@@ -311,61 +324,29 @@ class Test_Events_Admin {
         die();
     }
 
-    /**
-     * Pretty straightforward.  Add an event to the 'tblCalendarRemovedEvents' table.
-     * Any events in this table will not show up on the public-facing USC calendar.
-     *
-     * @param         $wpdb  the global wbdb.  Facilitates database calls.
-     * @param  string $eid    Facebook Id for an event
-     * @return 			     true if mysql query successful.  false if failed.
-     */
-    public function remove_from_calendar_query($wpdb, $eid, $name) {
+    public function get_removed_events() {
 
-        return $wpdb->query( $wpdb->prepare(
-            "
-                INSERT INTO test_fbevents
-                (eid, name, removed)
-                VALUES (%s, %s, %d)
-                ON DUPLICATE KEY UPDATE
-                removed = VALUES(removed)
-            ",
-            $eid,
-            $name,
-            1
-        ) );
+        /*if ( !wp_verify_nonce( $_POST['nonce'], $button_id . "_nonce")) {
+            exit("No naughty business please");
+        }*/
+
+        global $wpdb;
+
+        $response = Test_Events::get_fbevents( array (
+                'fields' =>     array( 'eid' ),
+                'removed' =>    1,
+                'debug' =>      true
+            )
+        );
+
+        $result['response'] = $response;
+        $result['success'] = ( $response === false ) ? false : true;
+
+        echo json_encode($result);
+        die();
+
     }
 
-    /**
-     * Pretty straightforward.  Delete an event from the 'tblCalendarRemovedEvents' table.
-     * Events not present in this table will show up on the public-facing USC calendar.
-     *
-     * @param         $wpdb  the global wbdb.  Facilitates database calls.
-     * @param  string $eid    Facebook Id for an event
-     * @return 			     true if mysql query successful.  false if failed.
-     */
-    public function return_to_calendar_query($wpdb, $eid) {
-
-        return $wpdb->query( $wpdb->prepare(
-            "
-                INSERT INTO test_fbevents
-                (eid, removed)
-                VALUES (%s, %d)
-                ON DUPLICATE KEY UPDATE
-                removed = VALUES(removed)
-            ",
-            $eid,
-            0
-        ) );
-
-        //@TODO: if everyting else equals null, delete
-        /*return $wpdb->query( $wpdb->prepare(
-            "
-             DELETE FROM tblCalendarRemovedEvents
-             WHERE id = %f
-            ",
-            $id
-        ) );*/
-    }
 
     /**
      * Bare-bones method that rejects non-logged-in users.  Used for all ajax methods.
