@@ -72,19 +72,20 @@
         //in_progress(true);
 
         var $selected_row = $("#event_list").find(".selected");
-        var button_id = $('input.button:enabled').attr("id");
+        var $button = $('input.button:enabled');
+        var button_id = $button.attr("id");
 
-        console.log(button_id + ": " + $selected_row.text());
+        console.log(button_id + ": " + $selected_row.find(".name").text());
 
-        /*$jqxhr = $.ajax({
+        var $jqxhr = $.ajax({
             type: "POST",
             url: "admin-ajax.php",
             data: {
                 action: 	"return_to_or_remove_from_calendar",
-                id:  		$selected_row.data("eid"),
+                eid:  		$selected_row.data("eid"),
                 name: 		$selected_row.find(".name").text(),
-                host: 		$selected_row.find(".host").text(),
-                start_time: $selected_row.data("start-time"),
+                //host: 	$selected_row.find(".host").text(),
+                //start_time: $selected_row.data("start-time"),
                 nonce: 		$button.data("nonce"),
                 button_id: 	button_id
             },
@@ -94,9 +95,10 @@
         $jqxhr
             .done(function( data ) {
 
-                if(!data['success'])
+                if(!data['success']) {
                     alert("Error performing " + button_id + " operation, bro.  Look for the problem in 'plugins/test-events/admin/assets/js/admin.js'");
                     return;
+                }
 
                 //"hide_me".lastIndexOf("hide", 0) <<this is 0
                 ( button_id.lastIndexOf("remove", 0) === 0 ) ?
@@ -105,7 +107,7 @@
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
 
-                alert("Hooray! The event \"" + data['name'] + "\" will be " + button_id + " the calendar.");
+                //alert("Hooray! The event \"" + data['name'] + "\" will be " + button_id + " the calendar.");
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
@@ -117,7 +119,7 @@
                 //in_progress(false);
                 //disable_enable_remove_buttons($select);
                 $selected_row.removeClass("selected");
-            });*/
+            });
     }
 
 

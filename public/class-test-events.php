@@ -464,7 +464,7 @@ class Test_Events {
         start_time datetime NULL,
         host varchar(127) NULL,
         location varchar(255) NULL,
-        permitted bool NOT NULL default '1',
+        removed bool NOT NULL default '0',
         PRIMARY KEY  (eid),
         KEY name (name)
         ) $charset_collate; ";

@@ -22,7 +22,7 @@ jQuery(document).ready(function($) {
 function filterInit( events ) {
 
   var view = function( events ){
-        return "<div class='row removed' data-eid='" + events.eid + "' data-start-time='" + events.start_time + " '>" +
+        return "<div class='row' data-eid='" + events.eid + "' data-start-time='" + events.start_time + " '>" +
             "<span class='name'>" + events.name + "</span>" +
             "<span class='host'>" + events.host + "</span>" +
             //"<span class='status'>" + events.status + "</span>" +
