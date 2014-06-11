@@ -64,11 +64,11 @@
                     <h4>Filter by Permissions</h4>
                     <ul id="removed">
                         <li>
-                            <input id="active" value="active" type="checkbox">
+                            <input id="display" value="display" type="checkbox">
                             <span >Display</span>
                         </li>
                         <li>
-                            <input id="inactive" value="inactive" type="checkbox">
+                            <input id="removed" value="removed" type="checkbox">
                             <span>Removed</span>
                         </li>
                     </ul>

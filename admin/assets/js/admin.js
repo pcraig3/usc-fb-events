@@ -13,8 +13,6 @@
 
         $event_container.on("change", function() {
 
-            ajax_get_removed_events();
-
             $(this).delegate( '[id^="fjs_"]', "click", function() {
                 click_row($(this));
             });
@@ -81,7 +79,7 @@
         var $button = $('input.button:enabled');
         var button_id = $button.attr("id");
 
-        console.log(button_id + ": " + $selected_row.find(".name").text());
+        //console.log(button_id + ": " + $selected_row.find(".name").text());
 
         var $jqxhr = $.ajax({
             type: "POST",
@@ -101,7 +99,7 @@
         $jqxhr
             .done(function( data ) {
 
-                console.log(data);
+                //console.log(data);
 
                 if(!data['success']) {
                     alert("Error performing " + button_id + " operation, bro.  Look for the problem in 'plugins/test-events/admin/assets/js/admin.js'");
@@ -124,8 +122,7 @@
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
-                console.log(data);
-                console.log(data['response']);
+                //console.log(data);
 
             })
             .always(function () {
@@ -135,68 +132,5 @@
                 disable_buttons();
             });
     }
-
-    function ajax_get_removed_events() {
-
-        //in_progress(true);
-
-        var $jqxhr = $.ajax({
-            type: "POST",
-            url: "admin-ajax.php",
-            data: {
-                action: 	"get_removed_events"
-            },
-            dataType: "json"
-        });
-
-        $jqxhr
-            .done(function( data ) {
-
-                if(! data['success']) {
-
-                    alert("Ack! Problems getting your removed events back from the database.")
-                }
-
-                var eids = [];
-                var total = data['response'].length;
-
-                for (var i = 0; i < total; i++) {
-
-                    eids.push( parseInt(data['response'][i]['eid']) );
-                }
-
-                var $rows = $('#event_list .row');
-
-                $.each( $rows, function( key, value ) {
-
-                   var eid = $(this).data("eid");
-
-                    if(eids.indexOf(eid) >= 0) {
-
-                        $(this).addClass("removed");
-                        $(this).find(".removed").text("removed");
-                    }
-                    else {
-                        $(this).find(".removed").text("display");
-                    }
-                });
-
-
-
-
-            })
-            .fail(function(data) {
-
-                alert("Loading removed events failed in admin.js::ajax_get_removed_events.  Ask Paul to look into it.");
-                //console.log(data);
-
-            });
-            /*.always(function () {
-
-                //
-            });*/
-
-    }
-
 
 }(jQuery));

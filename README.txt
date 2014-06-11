@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.3.1
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,9 @@ It almost works.
 
 
 == Changelog ==
+
+= 0.4.1 =
+* Setting up our list works good now.  Checkboxes filtering events as expected.
 
 = 0.4.0 =
 * DB stuff seems to be working. Censoring events doesn't do anything, but it COULD.

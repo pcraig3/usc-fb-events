@@ -354,7 +354,6 @@ class Test_Events_Admin {
 
     }
 
-
     /**
      * Bare-bones method that rejects non-logged-in users.  Used for all ajax methods.
      *
