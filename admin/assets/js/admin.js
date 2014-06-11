@@ -46,9 +46,7 @@
     function change_buttons() {
 
         var $selected_row = $("#event_list").find(".selected");
-        var $event_buttons = $('[id$="_event_button"]');
-
-        $event_buttons.prop("disabled", true);
+        var $event_buttons = disable_buttons();
 
         if( $selected_row.length ) {
 
@@ -67,8 +65,11 @@
     }
 
     function disable_buttons() {
+        var $event_buttons = $('[id$="_event_button"]');
 
-        $('[id$="_event_button"]').prop("disabled", true);
+        $event_buttons.prop("disabled", true);
+
+        return $event_buttons;
     }
 
     function ajax_return_to_or_remove_from_calendar() {
@@ -80,6 +81,7 @@
         var $button = $('input.button:enabled');
         var button_id = $button.attr("id");
 
+        disable_buttons();
         //console.log(button_id + ": " + $selected_row.find(".name").text());
 
         var $jqxhr = $.ajax({
@@ -122,21 +124,26 @@
                 }
 
                 update_msg += "the calendar.";
-                $("#test_notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p>");
+                $("#test_notice").addClass("error").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
                 //console.log(data);
-                $("#test_notice").addClass("error").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
+                $("#test_notice").addClass("updated").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
 
             })
             .always(function () {
 
-                //in_progress(false);
                 $selected_row.removeClass("selected");
-                disable_buttons();
+                change_buttons();
+
+
+                $( "#dismiss_notice" ).bind( "click", function( event ) {
+                    event.preventDefault();
+                    $(this).parent().removeClass("updated error").empty();
+                });
             });
     }
 
