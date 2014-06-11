@@ -76,6 +76,7 @@
         //in_progress(true);
 
         var $selected_row = $("#event_list").find(".selected");
+        var name = $selected_row.find(".name").text();
         var $button = $('input.button:enabled');
         var button_id = $button.attr("id");
 
@@ -87,9 +88,7 @@
             data: {
                 action: 	"return_to_or_remove_from_calendar",
                 eid:  		$selected_row.data("eid"),
-                name: 		$selected_row.find(".name").text(),
-                //host: 	$selected_row.find(".host").text(),
-                //start_time: $selected_row.data("start-time"),
+                name: 		name,
                 nonce: 		$button.data("nonce"),
                 button_id: 	button_id
             },
@@ -106,23 +105,31 @@
                     return;
                 }
 
+                var update_msg = "<strong>" + name + "</strong> ";
+
                 //"hide_me".lastIndexOf("hide", 0) <<this is 0
                 //this code looks for "remove" as a prefix
-
                 if ( button_id.lastIndexOf("remove", 0) === 0 ) {
+                    //in in here, event has been removed.
                    $selected_row.addClass("removed");
                    $selected_row.find(".removed").text("removed");
+                   update_msg += "has been removed from ";
                 }
                 else {
                    $selected_row.removeClass("removed");
                    $selected_row.find(".removed").text("display");
+                   update_msg += "will once again be displayed on ";
                 }
+
+                update_msg += "the calendar.";
+                $("#test_notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p>");
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
                 //console.log(data);
+                $("#test_notice").addClass("error").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
 
             })
             .always(function () {

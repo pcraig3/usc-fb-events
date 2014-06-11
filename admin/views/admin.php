@@ -86,6 +86,7 @@
         echo_test_button("Remove Event", "remove_event_button", 75);
         echo_test_button("Display Event", "display_event_button", 80);
 
+        echo "<div id='test_notice'></div>";
     ?>
 
 </div>
