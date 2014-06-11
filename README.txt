@@ -38,6 +38,9 @@ It almost works.
 
 == Changelog ==
 
+= 0.4.0 =
+* DB stuff seems to be working. Censoring events doesn't do anything, but it COULD.
+
 = 0.3.1 =
 * At the point where DB stuff might be working.
 

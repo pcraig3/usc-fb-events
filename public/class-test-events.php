@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.3.0';
+	const VERSION = '0.4.0';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -451,7 +451,9 @@ class Test_Events {
     /**
      * Store our table name in $wpdb with correct prefix
      * Prefix will vary between sites so hook onto switch_blog too
-     * @since 1.0
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      */
     public static function register_fbevents_table() {
         global $wpdb;
@@ -491,7 +493,9 @@ class Test_Events {
     /**
      * removes our table
      * Hooked onto our single_deactivate function
-     * @since 0.2.3
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      */
     private static function drop_fbevents_table(){
 
@@ -503,6 +507,13 @@ class Test_Events {
         $wpdb->query($sql);
     }
 
+    /**
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *
+     * @return array and array of columns in our new DB table.  This way we can check queries against them
+     */
     private function get_fbevents_table_columns(){
     return array(
         'eid'=> '%s',
@@ -518,6 +529,10 @@ class Test_Events {
      * Inserts a fb_event into the database
      *
      *@param $data array An array of key => value pairs to be inserted
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *
      *@return int The eid of the created fbevent. Or WP_Error or false on failure.
      */
     public static function insert_fbevent( $data=array() ){
@@ -560,6 +575,10 @@ class Test_Events {
      *
      *@param $eid  eid of the event to be updated
      *@param $data array An array of column=>value pairs to be updated
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *
      *@return bool Whether the event was successfully updated.
      */
     public static function update_fbevent( $eid, $data=array() ){
@@ -607,6 +626,11 @@ class Test_Events {
      * 'until' - timestamp. Return only activities up to this date. Default false, no restriction.
      *
      *@param array $query Query
+     *
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *
      *@return array Array of matching logs. False on error.
      */
     public static function get_fbevents( $query=array() ){
@@ -736,6 +760,11 @@ class Test_Events {
      * Deletes fbevent from 'test_fbevents'
      *
      *@param $eid string (or float) ID of the event to be deleted
+     *
+     *
+     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
+     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *
      *@return bool Whether the fbevent was successfully deleted.
      */
     public static function delete_fbevent( $eid ){

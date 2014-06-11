@@ -41,8 +41,9 @@ class Test_Events_Admin {
 	/**
 	 * Initialize the plugin by loading admin scripts & styles and adding a
 	 * settings page and menu.
+     * Also queue up all your horrible AJAX messages
 	 *
-	 * @since     0.1.0
+     * @since   0.4.0
 	 */
 	private function __construct() {
 
@@ -259,6 +260,8 @@ class Test_Events_Admin {
      * Based on tutorial here:
      * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
      *
+ 	 * @since   0.4.0
+     *
      * @return 		returns an encoded JSON string
      */
     public function return_to_or_remove_from_calendar() {
@@ -324,6 +327,11 @@ class Test_Events_Admin {
         die();
     }
 
+    /**
+     * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
+     *
+     * @since   0.4.0
+     */
     public function get_removed_events() {
 
         /*if ( !wp_verify_nonce( $_POST['nonce'], $button_id . "_nonce")) {
@@ -334,8 +342,7 @@ class Test_Events_Admin {
 
         $response = Test_Events::get_fbevents( array (
                 'fields' =>     array( 'eid' ),
-                'removed' =>    1,
-                'debug' =>      true
+                'removed' =>    1
             )
         );
 
@@ -350,6 +357,9 @@ class Test_Events_Admin {
 
     /**
      * Bare-bones method that rejects non-logged-in users.  Used for all ajax methods.
+     *
+     * @since   0.4.0
+     *
      * @return 		echoes a string telling non-logged in users to log in.
      */
     public function login_please() {

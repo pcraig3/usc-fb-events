@@ -141,20 +141,36 @@
 
         $jqxhr
             .done(function( data ) {
-                alert( "Yes" );
 
                 if(! data['success']) {
 
-                    console.log("fail");
+                    alert("Ack! Problems getting your removed events back from the database.")
                 }
 
                 console.log(data['response']);
 
+                var eids = [];
+                var total = data['response'].length;
+
+                for (var i = 0; i < total; i++) {
+
+                    eids.push( data['response'][i]['eid'] );
+                }
+
+                var $event_list = $('#event_list');
+
+                $.each( eids, function( key, value ) {
+
+                    $event_list.find('.row[data-eid="' + value + '"]').addClass('removed');
+                });
+
+
 
             })
             .fail(function(data) {
-                alert( "Fuck" );
-                console.log(data);
+
+                alert("Loading removed events failed in admin.js::ajax_get_removed_events.  Ask Paul to look into it.");
+                //console.log(data);
 
             });
             /*.always(function () {
