@@ -61,15 +61,15 @@
             </div>
             <div class="sidebar_left_find">
                 <div class="sidebar_list">
-                    <h4>Filter by Status</h4>
-                    <ul id="status">
+                    <h4>Filter by Permissions</h4>
+                    <ul id="removed">
                         <li>
                             <input id="active" value="active" type="checkbox">
-                            <span >Active</span>
+                            <span >Display</span>
                         </li>
                         <li>
                             <input id="inactive" value="inactive" type="checkbox">
-                            <span>Inactive</span>
+                            <span>Removed</span>
                         </li>
                     </ul>
                 </div>

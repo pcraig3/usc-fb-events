@@ -68,6 +68,11 @@
         }
     }
 
+    function disable_buttons() {
+
+        $('[id$="_event_button"]').prop("disabled", true);
+    }
+
     function ajax_return_to_or_remove_from_calendar() {
 
         //in_progress(true);
@@ -104,13 +109,18 @@
                 }
 
                 //"hide_me".lastIndexOf("hide", 0) <<this is 0
-                ( button_id.lastIndexOf("remove", 0) === 0 ) ?
-                    $selected_row.addClass("removed") :
-                    $selected_row.removeClass("removed");
+                //this code looks for "remove" as a prefix
+
+                if ( button_id.lastIndexOf("remove", 0) === 0 ) {
+                   $selected_row.addClass("removed");
+                   $selected_row.find(".removed").text("removed");
+                }
+                else {
+                   $selected_row.removeClass("removed");
+                   $selected_row.find(".removed").text("display");
+                }
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
-
-                //alert("Hooray! The event \"" + data['name'] + "\" will be " + button_id + " the calendar.");
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
@@ -121,8 +131,8 @@
             .always(function () {
 
                 //in_progress(false);
-                //disable_enable_remove_buttons($select);
                 $selected_row.removeClass("selected");
+                disable_buttons();
             });
     }
 
@@ -147,22 +157,30 @@
                     alert("Ack! Problems getting your removed events back from the database.")
                 }
 
-                console.log(data['response']);
-
                 var eids = [];
                 var total = data['response'].length;
 
                 for (var i = 0; i < total; i++) {
 
-                    eids.push( data['response'][i]['eid'] );
+                    eids.push( parseInt(data['response'][i]['eid']) );
                 }
 
-                var $event_list = $('#event_list');
+                var $rows = $('#event_list .row');
 
-                $.each( eids, function( key, value ) {
+                $.each( $rows, function( key, value ) {
 
-                    $event_list.find('.row[data-eid="' + value + '"]').addClass('removed');
+                   var eid = $(this).data("eid");
+
+                    if(eids.indexOf(eid) >= 0) {
+
+                        $(this).addClass("removed");
+                        $(this).find(".removed").text("removed");
+                    }
+                    else {
+                        $(this).find(".removed").text("display");
+                    }
                 });
+
 
 
 

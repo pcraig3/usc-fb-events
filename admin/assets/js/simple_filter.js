@@ -2,7 +2,7 @@ var fJS;
 
 jQuery(document).ready(function($) {
 
-  $('#status :checkbox').prop('checked', true);
+  $('#removed :checkbox').prop('checked', true);
 
   //@TODO: This sucks
   $.get( "http://testwestern.com/api/events/events/2014-04-01")
@@ -25,14 +25,14 @@ function filterInit( events ) {
         return "<div class='row' data-eid='" + events.eid + "' data-start-time='" + events.start_time + " '>" +
             "<span class='name'>" + events.name + "</span>" +
             "<span class='host'>" + events.host + "</span>" +
-            //"<span class='status'>" + events.status + "</span>" +
+            "<span class='removed'>display</span>" +
             "</div>";
   }
 
   var settings = {
     filter_criteria: {
       //amount: ['#price_filter .TYPE.range', 'amount'],
-      //status: ['#status :checkbox', 'status']
+      removed: ['#removed :checkbox', 'removed']
     },
     search: {input: '#search_box' },
     and_filter_on: true,
