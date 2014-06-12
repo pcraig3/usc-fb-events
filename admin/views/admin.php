@@ -16,6 +16,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         exit("No naughty business please");
     }
 
+    //~ROW VALUES
     $values['eid'] =        ( isset($_POST['modify_eid']) ) ? $_POST['modify_eid'] : null;
     $values['name'] =       ( isset($_POST['modify_name']) ) ? $_POST['modify_name'] : null;
     $values['removed'] =    ( isset($_POST['modify_removed']) &&
@@ -87,6 +88,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
 
     function echo_test_form( $host ) {
 
+        //~ROW VALUES
         $first_section = "Event Name";
         $second_section = "Event Host";
         $host_modified = null;

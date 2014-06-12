@@ -42,6 +42,9 @@ class DB_API {
         start_time datetime NULL,
         host varchar(127) NULL,
         location varchar(255) NULL,
+        ticket varchar(511) NULL,
+        url varchar(511) NULL,
+        modified bool NOT NULL default '0',
         removed bool NOT NULL default '0',
         PRIMARY KEY  (eid),
         KEY name (name)
@@ -82,6 +85,9 @@ class DB_API {
             'start_time'=>'%s',
             'host'=>'%s',
             'location'=>'%s',
+            'tickets'=>'%s',
+            'url'=>'%s',
+            'modified'=>'%d',
             'removed'=>'%d',
         );
     }
@@ -278,6 +284,10 @@ class DB_API {
         if( isset($removed) && is_numeric($removed) )
             $where_sql .= $wpdb->prepare(' AND removed=%d', $removed);
 
+        //because we still want to use zeros
+        if( isset($modified) && is_numeric($modified) )
+            $where_sql .= $wpdb->prepare(' AND modified=%d', $modified);
+
         if( !empty($append_to_where) )
             $where_sql .= $append_to_where;
 
@@ -383,23 +393,6 @@ class DB_API {
      }
 
     /**
-     * Grabs events who have not been removed from the calendar and whose values have been modified.
-     *
-     * @since   0.4.2
-     *
-     * @return array of objects if results. empty array if no results.
-     */
-    public static function get_modified_unremoved_events() {
-
-     return DB_API::get_fbevents( array(
-         //'fields' << not setting this generates a SELECT*
-         'removed' =>           0,
-         'append_to_where' =>   " AND ( start_time IS NOT NULL OR location IS NOT NULL OR host IS NOT NULL) ",
-     ));
-
-    }
-
-    /**
      * USED BY THE ADMIN CLASS */
 
     public static function get_event_count_by_eid( $eid ) {
@@ -415,9 +408,11 @@ class DB_API {
         return DB_API::get_fbevents( array(
             'fields' => 'count',
             'eid' =>    $eid,
-            'append_to_where' =>  " AND (start_time IS NULL OR start_time = '')"
+            'append_to_where' =>  " AND (start_time IS NULL OR start_time = '0000-00-00 00:00:00')"
                                 . " AND (location IS NULL OR location = '')"
-                                . " AND (host IS NULL OR host = '')",
+                                . " AND (host IS NULL OR host = '')"
+                                . " AND (ticket IS NULL OR ticket = '')"
+                                . " AND (url IS NULL OR url = '')",
         ));
     }
 

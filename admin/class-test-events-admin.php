@@ -276,7 +276,6 @@ class Test_Events_Admin {
         //we want the id, the name, the host, and the start time
         $eid = 		$_POST['eid'];
         $name = 		$_POST['name'];
-        //$host = 		$_POST['host'];
         //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
         $response = 	false;
 

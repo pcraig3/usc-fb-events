@@ -174,53 +174,53 @@ class Test_Events {
      */
     public function merge_fb_and_db_events( array $event_array ) {
 
-        $all_events_mysql = DB_API::get_fbevents();
+        $all_db_events_mysql = DB_API::get_fbevents();
 
-        if( ! empty($all_events_mysql) ) {
+        if( ! empty($all_db_events_mysql) ) {
 
-            $modified_events = array();
-            $modified_events['eid'] = array();
+            $all_db_events = array();
+            $all_db_events['eid'] = array();
 
-            foreach( $all_events_mysql as &$modified_event ) {
+            foreach( $all_db_events_mysql as &$db_event ) {
 
                 //hacky fun way changes an stdClass into an array
-                array_push( $modified_events, json_decode(json_encode($modified_event), true) );
+                array_push( $all_db_events, json_decode(json_encode($db_event), true) );
                 //create an indexed 'ied' array containing only eids
-                array_push( $modified_events['eid'], $modified_event->eid);
+                array_push( $all_db_events['eid'], $db_event->eid);
 
             }
-            unset( $modified_event );
-            unset( $modified_events_mysql );
+            unset( $db_event );
+            unset( $all_db_events_mysql );
 
             $total = $event_array['total'];
             for($i = 0; $i < $total; $i++) {
 
-                //array search (should) return the index of modified_events
-                $modified_event_index = array_search( $event_array['events'][$i]['eid'], $modified_events['eid'] );
+                //array search (should) return the index of db_events
+                $db_event_index = array_search( $event_array['events'][$i]['eid'], $all_db_events['eid'] );
 
-                if( $modified_event_index !== false ) {
+                if( $db_event_index !== false ) {
 
-                    $modified_event_array_keys = array_keys( $modified_events[$modified_event_index] );
+                    $all_db_event_array_keys = array_keys( $all_db_events[$db_event_index] );
 
-                    //for every key in the modified event, overwrite the value in the original event
-                    foreach( $modified_event_array_keys as &$key ) {
+                    //for every key in the db_event, overwrite the value in the original event
+                    foreach( $all_db_event_array_keys as &$key ) {
 
                         //if the modifiable fields are not EMPTY -- WE CAN'T FUCKING PUT NULL INTO UPDATE STATEMENTS
-                        if( ! empty( $modified_events[$modified_event_index][$key] ) ) {
+                        if( ! empty( $all_db_events[$db_event_index][$key] ) ) {
 
                             //if the key doesn't exist in the old value, just put it in
                             if( ! isset( $event_array['events'][$i][$key] ) )
-                                $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+                                $event_array['events'][$i][$key] = $all_db_events[$db_event_index][$key];
 
                             //if the modifiable fields are not equal to the current data
-                            else if ( $event_array['events'][$i][$key] !== $modified_events[$modified_event_index][$key] ) {
+                            else if ( $event_array['events'][$i][$key] !== $all_db_events[$db_event_index][$key] ) {
                                 $event_array['events'][$i][$key . "_old"] = $event_array['events'][$i][$key];
-                                $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+                                $event_array['events'][$i][$key] = $all_db_events[$db_event_index][$key];
                             }
                         }
                     }
 
-                    unset($modified_event_array_keys);
+                    unset($all_db_event_array_keys);
                 }
                 unset($key);
             }

@@ -171,6 +171,7 @@
 
         var $selected_row = $("#event_list").find(".selected");
 
+        //~ROW NAMES
         var values = {};
         values.eid = $selected_row.data("eid");
         values.name = $selected_row.data("name");
