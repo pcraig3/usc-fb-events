@@ -257,7 +257,8 @@ class DB_API {
         if( !empty($eid) )
             $where_sql .= $wpdb->prepare(' AND eid=%s', $eid);
 
-        if( !empty($removed) )
+        //because we still want to use zeros
+        if( isset($removed) && is_numeric($removed) )
             $where_sql .= $wpdb->prepare(' AND removed=%d', $removed);
 
         if( !empty($append_to_where) )
@@ -374,10 +375,9 @@ class DB_API {
     public static function get_modified_unremoved_events() {
 
      return DB_API::get_fbevents( array(
-         //'fields' << not setting this means SELECT*
+         //'fields' << not setting this generates a SELECT*
          'removed' =>           0,
-         'append_to_where' =>   " AND start_time IS NOT NULL AND location IS NOT NULL AND host IS NOT NULL ",
-
+         'append_to_where' =>   " AND ( start_time IS NOT NULL OR location IS NOT NULL OR host IS NOT NULL) ",
      ));
 
     }

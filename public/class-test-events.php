@@ -108,9 +108,7 @@ class Test_Events {
         $returned_array = $this->call_api();
 
         $returned_array = $this->filter_events($returned_array);
-
-
-        //$returned_array = $this->modify_events($returned_array);
+        $returned_array = $this->modify_events($returned_array);
 
         if( is_array( $returned_array ) ) {
 
@@ -141,10 +139,10 @@ class Test_Events {
      * Function takes event array (returned from Facebook) and removes events that
      * are found in the database.
      *
-     * @param $event_array  an array of events (from Facebook)
+     * @param array $event_array  an array of events (from Facebook)
      * @return array mixed  an array of events wherein those flagged for removal are absent
      */
-    private function filter_events($event_array) {
+    private function filter_events( array $event_array) {
 
         $removed_events_eids_mysql = DB_API::get_removed_events_eids();
 
@@ -162,20 +160,62 @@ class Test_Events {
             $total = $event_array['total'];
             for($i = 0; $i < $total; $i++) {
 
-                if( in_array( $event_array['events'][$i]['eid'], $removed_events_eids ) )
+                if( array_search( $event_array['events'][$i]['eid'], $removed_events_eids ) )
                     unset( $event_array['events'][$i] );
             }
 
             $event_array['events'] = array_values( $event_array['events'] );
+            $event_array['total'] = count( $event_array['events'] );
         }
 
         return $event_array;
     }
 
-    private function modify_events() {
+    private function modify_events( array $event_array ) {
 
-        //$modified_events_mysql = DB_API::get_modified_events();
+        $modified_events_mysql = DB_API::get_modified_unremoved_events();
 
+        if( ! empty($modified_events_mysql) ) {
+
+            $modified_events = array();
+            $modified_events['eid'] = array();
+
+            foreach( $modified_events_mysql as &$modified_event ) {
+
+                //hacky fun way changes an stdClass into an array
+                array_push( $modified_events, json_decode(json_encode($modified_event), true) );
+                //create an indexed 'ied' array containing only eids
+                array_push( $modified_events['eid'], $modified_event->eid);
+
+            }
+            unset( $modified_event );
+            unset( $modified_events_mysql );
+
+            $total = $event_array['total'];
+            for($i = 0; $i < $total; $i++) {
+
+                //array search (should) return the index of modified_events
+                $modified_event_index = array_search( $event_array['events'][$i]['eid'], $modified_events['eid'] );
+
+                if( $modified_event_index !== false ) {
+
+                    $modified_event_array_keys = array_keys( $modified_events[$modified_event_index] );
+
+                    //for every key in the modified event, overwrite the value in the original event
+                    foreach( $modified_event_array_keys as &$key ) {
+
+                        if( ! is_null( $modified_events[$modified_event_index][$key] ) )
+                            $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+                    }
+
+                    unset($modified_event_array_keys);
+                }
+                unset($key);
+            }
+
+        }
+
+        return $event_array;
     }
 
     /**
