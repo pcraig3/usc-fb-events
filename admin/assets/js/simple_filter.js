@@ -32,8 +32,11 @@ jQuery(function ($) {
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
             "admin-ajax.php",
-
-            { action: "get_removed_events" },
+            {
+                action: "get_removed_events",
+                attr_id: "event_list",
+                nonce: $("#event_list").data("nonce")
+            },
 
             function( data ) {
 

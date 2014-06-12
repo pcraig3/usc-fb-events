@@ -334,9 +334,11 @@ class Test_Events_Admin {
      */
     public function get_removed_events() {
 
-        /*if ( !wp_verify_nonce( $_POST['nonce'], $button_id . "_nonce")) {
+        $attr_id = $_POST['attr_id'];
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
             exit("No naughty business please");
-        }*/
+        }
 
         global $wpdb;
 

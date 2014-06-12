@@ -1,15 +1,31 @@
-.featured_events_find {
-  width: 100%;
-  height: 300px;
-  overflow: scroll;
-  overflow-x: hidden;
-  border: 1px solid #DDD;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.07) inset;
-  background-color: #FFF;
-  color: #333;
-  transition: border-color 0.05s ease-in-out 0s; }
-  .featured_events_find:focus {
-    border-color: #0074a2; }
+.featured_events__wrapper {
+  position: relative; }
+  .featured_events__wrapper .hidden {
+    display: none; }
+  .featured_events__wrapper .featured_events__loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    z-index: 10; }
+    .featured_events__wrapper .featured_events__loading .featured_events__img {
+      position: absolute;
+      left: 45%;
+      bottom: 40%; }
+  .featured_events__wrapper .featured_events__find {
+    width: 100%;
+    height: 300px;
+    overflow: scroll;
+    overflow-x: hidden;
+    position: relative;
+    border: 1px solid #DDD;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.07) inset;
+    background-color: #FFF;
+    color: #333;
+    transition: border-color 0.05s ease-in-out 0s; }
+    .featured_events__wrapper .featured_events__find:focus {
+      border-color: #0074a2; }
 
 .featured_list_find {
   width: 100%;

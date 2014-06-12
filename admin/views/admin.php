@@ -75,8 +75,14 @@
                 </div>
             </div>
         </div>
-        <div class="featured_events_find">
-            <div class="featured_list_find" id="event_list"></div>
+        <div class="featured_events__wrapper">
+            <div class="featured_events__loading">
+                <img class="featured_events__img"
+                     src="/wp-content/plugins/test-events/assets/cat.gif" alt="Loading" height="80" width="100">
+            </div>
+        <div class="featured_events__find">
+            <div class="featured_list_find" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
+        </div>
         </div>
         <div class="clearfix"></div>
     </div>
@@ -87,6 +93,7 @@
         echo_test_button("Display Event", "display_event_button", 80);
 
         echo "<div id='test_notice'></div>";
+
     ?>
 
 </div>

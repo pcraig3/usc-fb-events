@@ -1,17 +1,18 @@
 (function ( $ ) {
 	"use strict";
 
-
-
     $(document).ready(function($) {
 
         change_buttons();
+        ajax_loading(true);
 
 		// Place your administration-specific JavaScript here
         var $event_container = $('#event_list');
         var $event_rows = $('[id^="fjs_"]');
 
         $event_container.on("change", function() {
+
+            ajax_loading(false);
 
             $(this).delegate( '[id^="fjs_"]', "click", function() {
                 click_row($(this));
@@ -72,6 +73,16 @@
         return $event_buttons;
     }
 
+    function ajax_loading(loading) {
+
+        var $loading_gif = $(".featured_events__loading");
+
+        if(loading)
+            $loading_gif.removeClass("hidden");
+        else
+            $loading_gif.addClass("hidden");
+    }
+
     function ajax_return_to_or_remove_from_calendar() {
 
         //in_progress(true);
@@ -81,6 +92,7 @@
         var $button = $('input.button:enabled');
         var button_id = $button.attr("id");
 
+        ajax_loading(true);
         disable_buttons();
         //console.log(button_id + ": " + $selected_row.find(".name").text());
 
@@ -136,9 +148,9 @@
             })
             .always(function () {
 
+                ajax_loading(false);
                 $selected_row.removeClass("selected");
                 change_buttons();
-
 
                 $( "#dismiss_notice" ).bind( "click", function( event ) {
                     event.preventDefault();
