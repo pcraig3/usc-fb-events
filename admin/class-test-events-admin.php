@@ -340,8 +340,6 @@ class Test_Events_Admin {
             exit("No naughty business please");
         }
 
-        global $wpdb;
-
         $response = Test_Events::get_fbevents( array (
                 'fields' =>     array( 'eid' ),
                 'removed' =>    1

@@ -11,7 +11,7 @@ jQuery(function ($) {
         $.get( "http://testwestern.com/api/events/events/2014-04-01")
             .done(function( data ) {
 
-                var events = data.events;
+                var events = data.events.reverse();
 
                 ajax_get_removed_events(events);
             });
