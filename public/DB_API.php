@@ -351,16 +351,55 @@ class DB_API {
       * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
       *
       * @since   0.4.0
+      *
+      * @return array of objects if results. empty array if no results.
       */
      public static function get_removed_events_eids() {
 
-     $response = DB_API::get_fbevents( array (
+     return DB_API::get_fbevents( array (
         'fields' =>     array( 'eid' ),
         'removed' =>    1
         )
      );
 
-     return $response;
      }
+
+    /**
+     * Grabs events who have not been removed from the calendar and whose values have been modified.
+     *
+     * @since   0.4.2
+     *
+     * @return array of objects if results. empty array if no results.
+     */
+    public static function get_modified_unremoved_events() {
+
+     return DB_API::get_fbevents( array(
+         //'fields' << not setting this means SELECT*
+         'removed' =>           0,
+         'append_to_where' =>   " AND start_time IS NOT NULL AND location IS NOT NULL AND host IS NOT NULL ",
+
+     ));
+
+    }
+
+    /**
+     * USED BY THE ADMIN CLASS */
+
+    public static function get_event_count_by_eid( $eid ) {
+
+        return DB_API::get_fbevents( array(
+                'fields' => 'count',
+                'eid' =>    $eid
+        ));
+    }
+
+    public static function get_unmodified_event_count_by_eid( $eid ) {
+
+        return DB_API::get_fbevents( array(
+            'fields' => 'count',
+            'eid' =>    $eid,
+            'append_to_where' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
+        ));
+    }
 
 }

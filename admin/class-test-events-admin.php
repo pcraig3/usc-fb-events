@@ -282,10 +282,7 @@ class Test_Events_Admin {
         $response = 	false;
 
         if($button_id === 'remove_event_button') {
-            $fbevent_exists_in_db = DB_API::get_fbevents( array(
-                'fields' => 'count',
-                'eid' =>    $eid
-            ));
+            $fbevent_exists_in_db = DB_API::get_event_count_by_eid( $eid );
 
             //either remove an event or update it.
             $response = ( $fbevent_exists_in_db ) ?
@@ -294,11 +291,7 @@ class Test_Events_Admin {
 
         }
         if($button_id === 'display_event_button') {
-            $fbevent_exists_unmodified_in_db = DB_API::get_fbevents( array(
-                'fields' => 'count',
-                'eid' =>    $eid,
-                'append_to_where' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
-            ));
+            $fbevent_exists_unmodified_in_db = DB_API::get_unmodified_event_count_by_eid( $eid );
 
             $response = ( $fbevent_exists_unmodified_in_db ) ?
                 DB_API::delete_fbevent( $eid ) :
