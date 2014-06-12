@@ -282,27 +282,27 @@ class Test_Events_Admin {
         $response = 	false;
 
         if($button_id === 'remove_event_button') {
-            $fbevent_exists_in_db = Test_Events::get_fbevents( array(
+            $fbevent_exists_in_db = DB_API::get_fbevents( array(
                 'fields' => 'count',
                 'eid' =>    $eid
             ));
 
             //either remove an event or update it.
             $response = ( $fbevent_exists_in_db ) ?
-                Test_Events::update_fbevent( $eid, array( 'removed' => 1) ) :
-                Test_Events::insert_fbevent( array( 'eid' => $eid, 'removed' => 1, 'name' => $name) );
+                DB_API::update_fbevent( $eid, array( 'removed' => 1) ) :
+                DB_API::insert_fbevent( array( 'eid' => $eid, 'removed' => 1, 'name' => $name) );
 
         }
         if($button_id === 'display_event_button') {
-            $fbevent_exists_unmodified_in_db = Test_Events::get_fbevents( array(
+            $fbevent_exists_unmodified_in_db = DB_API::get_fbevents( array(
                 'fields' => 'count',
                 'eid' =>    $eid,
                 'append' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
             ));
 
             $response = ( $fbevent_exists_unmodified_in_db ) ?
-                Test_Events::delete_fbevent( $eid ) :
-                Test_Events::update_fbevent( $eid, array( 'removed' => 0) );
+                DB_API::delete_fbevent( $eid ) :
+                DB_API::update_fbevent( $eid, array( 'removed' => 0) );
 
         }
 
@@ -340,7 +340,7 @@ class Test_Events_Admin {
             exit("No naughty business please");
         }
 
-        $response = Test_Events::get_fbevents( array (
+        $response = DB_API::get_fbevents( array (
                 'fields' =>     array( 'eid' ),
                 'removed' =>    1
             )

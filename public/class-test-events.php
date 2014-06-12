@@ -56,6 +56,8 @@ class Test_Events {
 	 */
 	private function __construct() {
 
+        require_once("DB_API.php");
+
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
@@ -136,7 +138,7 @@ class Test_Events {
 
     private function filter_events($event_array) {
 
-        $removed_events_mysql = $this->get_removed_events();
+        $removed_events_mysql = DB_API::get_removed_events();
         $eids_of_removed_events = array();
 
         foreach( $removed_events_mysql as &$event_object ) {
@@ -364,7 +366,7 @@ class Test_Events {
 	private static function single_activate() {
 		// Define activation functionality here
 
-        Test_Events::create_fbevents_table();
+        DB_API::create_fbevents_table();
 	}
 
 	/**
@@ -375,7 +377,7 @@ class Test_Events {
 	private static function single_deactivate() {
 		// Define deactivation functionality here
 
-        Test_Events::drop_fbevents_table();
+        DB_API::drop_fbevents_table();
     }
 
 	/**
@@ -428,7 +430,7 @@ class Test_Events {
      * Creates our table
      * Hooked onto our single_activate function
      * @since 0.2.3
-     */
+     *
     private static function create_fbevents_table(){
 
         global $wpdb;
@@ -460,7 +462,7 @@ class Test_Events {
      *
      * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
-     */
+     *
     private static function drop_fbevents_table(){
 
         global $wpdb;
@@ -477,7 +479,7 @@ class Test_Events {
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      *
      * @return array and array of columns in our new DB table.  This way we can check queries against them
-     */
+     *
     private function get_fbevents_table_columns(){
     return array(
         'eid'=> '%s',
@@ -498,7 +500,7 @@ class Test_Events {
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      *
      *@return int The eid of the created fbevent. Or WP_Error or false on failure.
-     */
+     *
     public static function insert_fbevent( $data=array() ){
         global $wpdb;
 
@@ -544,7 +546,7 @@ class Test_Events {
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      *
      *@return bool Whether the event was successfully updated.
-     */
+     *
     public static function update_fbevent( $eid, $data=array() ){
         global $wpdb;
 
@@ -596,7 +598,7 @@ class Test_Events {
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      *
      *@return array Array of matching logs. False on error.
-     */
+     *
     public static function get_fbevents( $query=array() ){
         global $wpdb;
 
@@ -605,7 +607,7 @@ class Test_Events {
         $order = "desc";
         $eid = $since = $until = $debug = false;
 
-        /* Parse defaults */
+        /* Parse defaults *
         $defaults = array(
             'fields' => $fields,
             'orderby'=> $orderby,
@@ -616,7 +618,7 @@ class Test_Events {
         );
         $query = wp_parse_args($query, $defaults);
 
-        /* Form a cache key from the query */
+        /* Form a cache key from the query *
         $cache_key = 'get_fbevents:'.md5( serialize($query));
         $cache = wp_cache_get( $cache_key );
         if ( false !== $cache ) {
@@ -625,7 +627,7 @@ class Test_Events {
         }
         extract($query, EXTR_OVERWRITE);
 
-        /* SQL Select */
+        /* SQL Select *
         //Whitelist of allowed fields
         $allowed_fields = array_keys(Test_Events::get_fbevents_table_columns());
 
@@ -650,11 +652,11 @@ class Test_Events {
             $select_sql = "SELECT ".implode(',',$fields)." FROM {$wpdb->fbevents}";
         }
 
-        /*SQL Join */
+        /*SQL Join *
         //We don't need this, but we'll allow it be filtered (see 'fbevents_clauses' )
         $join_sql='';
 
-        /* SQL Where */
+        /* SQL Where *
         //Initialise WHERE
         $where_sql = 'WHERE 1=1';
         if( !empty($eid) )
@@ -674,9 +676,9 @@ class Test_Events {
 
         if( !empty($until) )
             $where_sql .= $wpdb->prepare(' AND start_date <= %s', date_i18n( 'Y-m-d H:i:s', $until,true));
-        */
+        *
 
-        /* SQL Order */
+        /* SQL Order *
         //Whitelist order
         $order = strtoupper($order);
         $order = ( 'ASC' == $order ? 'ASC' : 'DESC' );
@@ -691,16 +693,16 @@ class Test_Events {
                 break;
         }
 
-        /* SQL Limit */
+        /* SQL Limit *
         $limit_sql = '';
 
-        /* Filter SQL */
+        /* Filter SQL *
         $pieces = array( 'select_sql', 'join_sql', 'where_sql', 'order_sql', 'limit_sql' );
         $clauses = apply_filters( 'fbevents_clauses', compact( $pieces ), $query );
         foreach ( $pieces as $piece )
             $$piece = isset( $clauses[ $piece ] ) ? $clauses[ $piece ] : '';
 
-        /* Form SQL statement */
+        /* Form SQL statement *
         $sql = "$select_sql $where_sql $order_sql $limit_sql";
 
         if($debug)
@@ -710,10 +712,10 @@ class Test_Events {
             return $wpdb->get_var($sql);
         }
 
-        /* Perform query */
+        /* Perform query
         $events = $wpdb->get_results($sql);
 
-        /* Add to cache and filter */
+        /* Add to cache and filter *
         wp_cache_add( $cache_key, $events, 24*60*60 );
         $events = apply_filters('get_fbevents', $events, $query);
 
@@ -730,7 +732,7 @@ class Test_Events {
      * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      *
      *@return bool Whether the fbevent was successfully deleted.
-     */
+     *
     public static function delete_fbevent( $eid ){
         global $wpdb;
 
@@ -754,7 +756,7 @@ class Test_Events {
      * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
      *
      * @since   0.4.0
-     */
+     *
     public function get_removed_events() {
 
         $response = Test_Events::get_fbevents( array (
