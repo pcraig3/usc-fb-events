@@ -33,6 +33,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Public-Facing Functionality
  *----------------------------------------------------------------------------*/
 
+require_once( plugin_dir_path( __FILE__ ) . 'public/DB_API.php');
 require_once( plugin_dir_path( __FILE__ ) . 'public/class-test-events.php' );
 
 /*

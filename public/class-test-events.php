@@ -56,8 +56,6 @@ class Test_Events {
 	 */
 	private function __construct() {
 
-        require_once("DB_API.php");
-
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
