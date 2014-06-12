@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.5.0';
+	const VERSION = '0.5.1';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -168,7 +168,7 @@ class Test_Events {
      *
      * @param array $event_array
      *
-     * @since    0.5.0
+     * @since    0.5.1
      *
      * @return array
      */

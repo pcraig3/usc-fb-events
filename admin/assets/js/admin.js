@@ -177,6 +177,15 @@
         values.name = $selected_row.data("name");
         values.host = $selected_row.data("host");
         values.host_old = $selected_row.data("host_old");
+        values.start_time = $selected_row.data("start_time");
+        values.start_time_old = $selected_row.data("start_time_old");
+        values.location = $selected_row.data("location");
+        values.location_old = $selected_row.data("location_old");
+        values.ticket = $selected_row.data("ticket");
+        values.ticket_old = $selected_row.data("ticket_old");
+        values.url = $selected_row.data("url");
+        values.url_old = $selected_row.data("url_old");
+        values.modified = $selected_row.data("modified");
         values.removed = $selected_row.data("removed");
 
         $selected_row.removeClass("selected");
