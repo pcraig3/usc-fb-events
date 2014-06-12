@@ -20,11 +20,11 @@ class Test_Events {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   0.2.1
+	 * @since   0.1.0
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.4.1';
+	const VERSION = '0.4.2';
 
 	/*
 	 * Unique identifier for your plugin.
