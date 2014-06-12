@@ -108,6 +108,10 @@ class Test_Events {
         $returned_array = $this->call_api();
 
         $returned_array = $this->merge_fb_and_db_events($returned_array);
+
+        echo "<pre>";
+        var_dump($returned_array);
+        echo "</pre>";
         $returned_array = $this->remove_removed_events($returned_array);
 
         if( is_array( $returned_array ) ) {
@@ -192,8 +196,8 @@ class Test_Events {
                     //for every key in the modified event, overwrite the value in the original event
                     foreach( $modified_event_array_keys as &$key ) {
 
-                        //if the modifiable fields are not null
-                        if( ! is_null( $modified_events[$modified_event_index][$key] ) ) {
+                        //if the modifiable fields are not EMPTY -- WE CAN'T FUCKING PUT NULL INTO UPDATE STATEMENTS
+                        if( ! empty( $modified_events[$modified_event_index][$key] ) ) {
 
                             //if the key doesn't exist in the old value, just put it in
                             if( ! isset( $event_array['events'][$i][$key] ) )
@@ -213,6 +217,8 @@ class Test_Events {
             }
 
         }
+
+        $event_array['events'] = array_reverse( $event_array['events'] ); 
 
         return $event_array;
     }

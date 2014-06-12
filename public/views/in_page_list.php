@@ -29,7 +29,7 @@ if( $limit < 1 ) {
 }
 
 //we redefining it as the indexed 'events' array. losing $events_array['total'] for example
-$events_array = array_reverse($events_array['events']);
+$events_array = $events_array['events'];
 
 for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
 

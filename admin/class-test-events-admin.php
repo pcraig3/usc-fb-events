@@ -50,9 +50,6 @@ class Test_Events_Admin {
         add_action("wp_ajax_return_to_or_remove_from_calendar", array( $this, "return_to_or_remove_from_calendar" ) );
         add_action("wp_ajax_nopriv_return_to_or_remove_from_calendar", array( $this, "login_please") );
 
-        add_action("wp_ajax_get_removed_events", array( $this, "get_removed_events" ) );
-        add_action("wp_ajax_nopriv_get_removed_events", array( $this, "login_please") );
-
         add_action("wp_ajax_get_events", array( $this, "get_events" ) );
         add_action("wp_ajax_nopriv_get_events", array( $this, "login_please") );
 
@@ -324,30 +321,7 @@ class Test_Events_Admin {
     }
 
     /**
- * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
- *
- * @since   0.4.0
- */
-    public function get_removed_events() {
-
-        $attr_id = $_POST['attr_id'];
-
-        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
-            exit("No naughty business please");
-        }
-
-        $response = DB_API::get_removed_events_eids();
-
-        $result['response'] = $response;
-        $result['success'] = ( $response === false ) ? false : true;
-
-        echo json_encode($result);
-        die();
-
-    }
-
-    /**
-     * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
+     * Does what it says on the box.  gets all  facebook and db events (and then merges them)
      *
      * @since   0.4.0
      */

@@ -16,12 +16,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         exit("No naughty business please");
     }
 
-    $values['eid'] = ( isset($_POST['modify_eid']) ) ? $_POST['modify_eid'] : null;
-    $values['name'] = ( isset($_POST['modify_name']) ) ? $_POST['modify_name'] : null;
-    $values['removed'] = ( isset($_POST['modify_removed']) &&
-        $_POST['modify_removed'] === "display" ) ? 0 : 1;
-    $values['host_old'] = ( isset($_POST['modify_host_old']) ) ? $_POST['modify_host_old'] : null;
-    $values['host'] = ( isset($_POST['modify_host']) ) ? $_POST['modify_host'] : null;
+    $values['eid'] =        ( isset($_POST['modify_eid']) ) ? $_POST['modify_eid'] : null;
+    $values['name'] =       ( isset($_POST['modify_name']) ) ? $_POST['modify_name'] : null;
+    $values['removed'] =    ( isset($_POST['modify_removed']) &&
+                                $_POST['modify_removed'] === "display" ) ? 0 : 1;
+    $values['host_old'] =   ( isset($_POST['modify_host_old']) ) ? $_POST['modify_host_old'] : null;
+    $values['host'] =       ( isset($_POST['modify_host']) ) ? $_POST['modify_host'] : null; //add this if not there.
 
     echo "<pre>";
     var_dump($values);
@@ -33,10 +33,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
             $values['eid'],
             array(
                 'removed' =>    $values['removed'],
-                'name' =>       ( isset($values['name_modify']) ) ? $values['name_modify'] : $values['name'],
-                'host' =>       ( isset($values['host_modify']) ) ? $values['host_modify'] : $values['host'],            )
-
-        );
+                'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
+                'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
+        ));
 
    }
 
