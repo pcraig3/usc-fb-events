@@ -86,6 +86,23 @@ class DB_API {
         );
     }
 
+    public static function whitelist_array_items( array $array ) {
+
+        //Initialise column format array
+        $column_formats = DB_API::get_fbevents_table_columns();
+
+        foreach($array as &$item) {
+
+            //Force fields to lower case
+            $item = array_change_key_case ( $item, CASE_LOWER );
+
+            //White list columns
+            $item = array_intersect_key( $item, $column_formats );
+        }
+
+        return $array;
+    }
+
     /**
      * Inserts a fb_event into the database
      *

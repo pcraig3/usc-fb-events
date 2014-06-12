@@ -107,8 +107,8 @@ class Test_Events {
         //in the future, we'll have this take a parameter
         $returned_array = $this->call_api();
 
-        $returned_array = $this->filter_events($returned_array);
-        $returned_array = $this->modify_events($returned_array);
+        $returned_array = $this->merge_fb_and_db_events($returned_array);
+        $returned_array = $this->remove_removed_events($returned_array);
 
         if( is_array( $returned_array ) ) {
 
@@ -142,45 +142,33 @@ class Test_Events {
      * @param array $event_array  an array of events (from Facebook)
      * @return array mixed  an array of events wherein those flagged for removal are absent
      */
-    private function filter_events( array $event_array) {
+    private function remove_removed_events( array $event_array ) {
 
-        $removed_events_eids_mysql = DB_API::get_removed_events_eids();
+        $total = $event_array['total'];
+        $events = $event_array['events'];
 
-        if( ! empty($removed_events_eids_mysql) ) {
+        for( $i = 0; $i < $total; $i++ ) {
 
-            $removed_events_eids = array();
-
-            foreach( $removed_events_eids_mysql as &$removed_event_eid ) {
-
-                array_push( $removed_events_eids, $removed_event_eid->eid );
-            }
-            unset( $removed_event_eid );
-            unset( $removed_events_eids_mysql );
-
-            $total = $event_array['total'];
-            for($i = 0; $i < $total; $i++) {
-
-                if( array_search( $event_array['events'][$i]['eid'], $removed_events_eids ) )
-                    unset( $event_array['events'][$i] );
-            }
-
-            $event_array['events'] = array_values( $event_array['events'] );
-            $event_array['total'] = count( $event_array['events'] );
+            if( isset($events[$i]['removed']) && intval( $events[$i]['removed']) === 1 )
+                unset( $events[$i] );
         }
+
+        $event_array['events'] = array_values( $events );
+        $event_array['total'] = count( $events );
 
         return $event_array;
     }
 
-    private function modify_events( array $event_array ) {
+    public function merge_fb_and_db_events( array $event_array ) {
 
-        $modified_events_mysql = DB_API::get_modified_unremoved_events();
+        $all_events_mysql = DB_API::get_fbevents();
 
-        if( ! empty($modified_events_mysql) ) {
+        if( ! empty($all_events_mysql) ) {
 
             $modified_events = array();
             $modified_events['eid'] = array();
 
-            foreach( $modified_events_mysql as &$modified_event ) {
+            foreach( $all_events_mysql as &$modified_event ) {
 
                 //hacky fun way changes an stdClass into an array
                 array_push( $modified_events, json_decode(json_encode($modified_event), true) );
@@ -204,8 +192,19 @@ class Test_Events {
                     //for every key in the modified event, overwrite the value in the original event
                     foreach( $modified_event_array_keys as &$key ) {
 
-                        if( ! is_null( $modified_events[$modified_event_index][$key] ) )
-                            $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+                        //if the modifiable fields are not null
+                        if( ! is_null( $modified_events[$modified_event_index][$key] ) ) {
+
+                            //if the key doesn't exist in the old value, just put it in
+                            if( ! isset( $event_array['events'][$i][$key] ) )
+                                $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+
+                            //if the modifiable fields are not equal to the current data
+                            else if ( $event_array['events'][$i][$key] !== $modified_events[$modified_event_index][$key] ) {
+                                $event_array['events'][$i][$key . "_old"] = $event_array['events'][$i][$key];
+                                $event_array['events'][$i][$key] = $modified_events[$modified_event_index][$key];
+                            }
+                        }
                     }
 
                     unset($modified_event_array_keys);
