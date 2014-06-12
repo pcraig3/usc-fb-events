@@ -16,12 +16,12 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         exit("No naughty business please");
     }
 
-    $values['eid'] = ( isset($_POST['modify_eid_display']) ) ? $_POST['modify_eid_display'] : null;
-    $values['name'] = ( isset($_POST['modify_name_display']) ) ? $_POST['modify_name_display'] : null;
-    $values['removed'] = ( isset($_POST['modify_removed_display']) &&
-        $_POST['modify_removed_display'] === "display" ) ? 0 : 1;
-    $values['host'] = ( isset($_POST['modify_host_display']) ) ? $_POST['modify_host_display'] : null;
-    $values['host_modify'] = ( isset($_POST['modify_host_modified']) ) ? $_POST['modify_host_modified'] : null;
+    $values['eid'] = ( isset($_POST['modify_eid']) ) ? $_POST['modify_eid'] : null;
+    $values['name'] = ( isset($_POST['modify_name']) ) ? $_POST['modify_name'] : null;
+    $values['removed'] = ( isset($_POST['modify_removed']) &&
+        $_POST['modify_removed'] === "display" ) ? 0 : 1;
+    $values['host_old'] = ( isset($_POST['modify_host_old']) ) ? $_POST['modify_host_old'] : null;
+    $values['host'] = ( isset($_POST['modify_host']) ) ? $_POST['modify_host'] : null;
 
     echo "<pre>";
     var_dump($values);
@@ -93,8 +93,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
 
         $html_string = '<form action="" method="post" id="test_form">';
         $html_string .= '<input id="_wpnonce" name="_wpnonce" value="' . wp_create_nonce("test_form_nonce") . '" type="hidden">';
-        $html_string .= '<input id="modify_eid_display" name="modify_eid_display" value="" type="hidden">';
-        $html_string .= '<input id="modify_removed_display" name="modify_removed_display" value="" type="hidden">';
+        $html_string .= '<input id="modify_eid" name="modify_eid" value="" type="hidden">';
+        $html_string .= '<input id="modify_removed" name="modify_removed" value="" type="hidden">';
         $html_string .= '<table class="form-table">';
         $html_string .=     '<tbody>';
         $html_string .=         '<tr>';
@@ -106,7 +106,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         $html_string .=                                 $first_section;
         $html_string .=                             '</span>';
         $html_string .=                         '</legend>';
-        $html_string .=                             '<input id="modify_name_display" class="regular-text" type="text" value="' . $name . '" name="modify_name_display" readonly="readonly">';
+        $html_string .=                             '<input id="modify_name" class="regular-text" type="text" value="' . $name . '" name="modify_name" readonly="readonly">';
         $html_string .=                                 '<p class="description">';
         $html_string .=                                     'Event name';
         $html_string .=                                 '</p>';
@@ -122,16 +122,16 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         $html_string .=                                 $second_section;
         $html_string .=                             '</span>';
         $html_string .=                         '</legend>';
-        $html_string .=                             '<input id="modify_host_display" class="regular-text" type="text" value="' . $host . '" name="modify_host_display" readonly="readonly">';
+        $html_string .=                             '<input id="modify_host_old" class="regular-text" type="text" value="' . $host . '" name="modify_host_old" readonly="readonly">';
         $html_string .=                                 '<p class="description">';
         $html_string .=                                     'Original host name';
         $html_string .=                                 '</p>';
         $html_string .=                             '<br>';
 
         if($host_modified)
-            $html_string .=                             '<input id="modify_host_modified" class="regular-text" type="text" value="' . $host_modified . '" name="modify_host_modified">';
+            $html_string .=                             '<input id="modify_host" class="regular-text" type="text" value="' . $host_modified . '" name="modify_host">';
         else
-            $html_string .=                             '<input id="modify_host_modified" class="regular-text" type="text" value="" placeholder="enter a new value" name="modify_host_modified">';
+            $html_string .=                             '<input id="modify_host" class="regular-text" type="text" value="" placeholder="enter a new value" name="modify_host">';
 
         $html_string .=                                 '<p class="description">';
         $html_string .=                                     'New host name';

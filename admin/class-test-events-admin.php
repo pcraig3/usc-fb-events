@@ -53,6 +53,9 @@ class Test_Events_Admin {
         add_action("wp_ajax_get_removed_events", array( $this, "get_removed_events" ) );
         add_action("wp_ajax_nopriv_get_removed_events", array( $this, "login_please") );
 
+        add_action("wp_ajax_get_events", array( $this, "get_events" ) );
+        add_action("wp_ajax_nopriv_get_events", array( $this, "login_please") );
+
 		/*
 		 * @TODO :
 		 *
@@ -321,10 +324,10 @@ class Test_Events_Admin {
     }
 
     /**
-     * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
-     *
-     * @since   0.4.0
-     */
+ * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
+ *
+ * @since   0.4.0
+ */
     public function get_removed_events() {
 
         $attr_id = $_POST['attr_id'];
@@ -334,6 +337,34 @@ class Test_Events_Admin {
         }
 
         $response = DB_API::get_removed_events_eids();
+
+        $result['response'] = $response;
+        $result['success'] = ( $response === false ) ? false : true;
+
+        echo json_encode($result);
+        die();
+
+    }
+
+    /**
+     * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
+     *
+     * @since   0.4.0
+     */
+    public function get_events() {
+
+        $attr_id = $_POST['attr_id'];
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
+            exit("No naughty business please");
+        }
+
+        $te = Test_Events::get_instance();
+
+        $response = $te->call_api();
+
+        $response['events'] = DB_API::whitelist_array_items($response['events']);
+        $response = $te->merge_fb_and_db_events($response);
 
         $result['response'] = $response;
         $result['success'] = ( $response === false ) ? false : true;

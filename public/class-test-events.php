@@ -239,7 +239,7 @@ class Test_Events {
      *
      * @return array       at this point, return open Facebook events as an indexed array
      */
-    public static function call_api() {
+    public function call_api() {
 
         //the url where to get Facebook events
         $ch = curl_init('testwestern.com/api/events/events/2014-04-01');

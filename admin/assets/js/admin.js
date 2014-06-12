@@ -1,6 +1,15 @@
 (function ( $ ) {
 	"use strict";
 
+    /*
+     http://stackoverflow.com/questions/280634/endswith-in-javascript
+     */
+    if (typeof String.prototype.endsWith !== 'function') {
+        String.prototype.endsWith = function(suffix) {
+            return this.indexOf(suffix, this.length - suffix.length) !== -1;
+        };
+    }
+
     $(document).ready(function($) {
 
         change_buttons();
@@ -164,22 +173,35 @@
 
         var values = {};
         values.eid = $selected_row.data("eid");
-        values.name = $selected_row.find(".name").text();
-        values.host = $selected_row.find(".host").text();
-        values.removed = $selected_row.find(".removed").text();
+        values.name = $selected_row.data("name");
+        values.host = $selected_row.data("host");
+        values.host_old = $selected_row.data("host_old");
+        values.removed = $selected_row.data("removed");
 
         $selected_row.removeClass("selected");
 
-        for (var key in values) {
-            if (values.hasOwnProperty(key)) {
+        console.log(values);
 
-                //console.log('#modify_' + key + "_" + values.removed);
-                $('#modify_' + key + "_" + values.removed).val(values[key]);
+        for (var key in values) {
+
+            if (values.hasOwnProperty(key)) {
+                if(key.endsWith("_old") && values[key] === undefined) {
+
+                    //this is for situations where there is no old_host
+                    var key_without_old = key.substring(0, key.length - "_old".length);
+                    values[key] = values[key_without_old];
+                    values[key_without_old] = undefined;
+
+                    $('#modify_' + key_without_old).val(values[key_without_old]);
+                }
+
+                $('#modify_' + key).val(values[key]);
             }
         }
 
-        $('#modify_removed').val(values[key]);
 
+
+        $('#modify_removed').val(values[key]);
 
     }
 
