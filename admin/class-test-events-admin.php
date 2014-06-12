@@ -297,7 +297,7 @@ class Test_Events_Admin {
             $fbevent_exists_unmodified_in_db = DB_API::get_fbevents( array(
                 'fields' => 'count',
                 'eid' =>    $eid,
-                'append' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
+                'append_to_where' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
             ));
 
             $response = ( $fbevent_exists_unmodified_in_db ) ?
@@ -340,11 +340,7 @@ class Test_Events_Admin {
             exit("No naughty business please");
         }
 
-        $response = DB_API::get_fbevents( array (
-                'fields' =>     array( 'eid' ),
-                'removed' =>    1
-            )
-        );
+        $response = DB_API::get_removed_events_eids();
 
         $result['response'] = $response;
         $result['success'] = ( $response === false ) ? false : true;

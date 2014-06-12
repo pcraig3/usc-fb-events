@@ -75,7 +75,7 @@ class DB_API {
      *
      * @return array and array of columns in our new DB table.  This way we can check queries against them
      */
-    public function get_fbevents_table_columns(){
+    private static function get_fbevents_table_columns(){
         return array(
             'eid'=> '%s',
             'name'=> '%s',
@@ -260,8 +260,8 @@ class DB_API {
         if( !empty($removed) )
             $where_sql .= $wpdb->prepare(' AND removed=%d', $removed);
 
-        if( !empty($append) )
-            $where_sql .= $append;
+        if( !empty($append_to_where) )
+            $where_sql .= $append_to_where;
 
         /*$since = absint($since);
         $until = absint($until);
@@ -352,7 +352,7 @@ class DB_API {
       *
       * @since   0.4.0
       */
-     public static function get_removed_events() {
+     public static function get_removed_events_eids() {
 
      $response = DB_API::get_fbevents( array (
         'fields' =>     array( 'eid' ),
@@ -360,7 +360,6 @@ class DB_API {
         )
      );
 
-     //I want all of the eids
      return $response;
      }
 
