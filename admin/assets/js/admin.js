@@ -136,7 +136,7 @@
                 }
 
                 update_msg += "the calendar.";
-                $("#test_notice").addClass("error").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
+                $("#test_notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
