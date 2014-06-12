@@ -180,7 +180,7 @@
 
         $selected_row.removeClass("selected");
 
-        console.log(values);
+        //console.log(values);
 
         for (var key in values) {
 

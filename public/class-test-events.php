@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.4.2';
+	const VERSION = '0.5.0';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -85,7 +85,7 @@ class Test_Events {
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
      *
-     * @since    1.1.0
+     * @since    0.5.0
      *
      * @return string       a complimentary adjective for students
      */
@@ -108,10 +108,6 @@ class Test_Events {
         $returned_array = $this->call_api();
 
         $returned_array = $this->merge_fb_and_db_events($returned_array);
-
-        echo "<pre>";
-        var_dump($returned_array);
-        echo "</pre>";
         $returned_array = $this->remove_removed_events($returned_array);
 
         if( is_array( $returned_array ) ) {
@@ -140,11 +136,13 @@ class Test_Events {
     }
 
     /**
-     * Function takes event array (returned from Facebook) and removes events that
-     * are found in the database.
+     * Function takes merged event array and purges if of events flagged "removed"
      *
      * @param array $event_array  an array of events (from Facebook)
-     * @return array mixed  an array of events wherein those flagged for removal are absent
+     *
+     * @since    0.5.0
+     *
+     * @return array mixed  an array of events wherein those flagged for removal are removed
      */
     private function remove_removed_events( array $event_array ) {
 
@@ -163,6 +161,17 @@ class Test_Events {
         return $event_array;
     }
 
+    /**
+     * Super handy function merges our DB event data with FB events.
+     * Any conflicting values have their keys suffixed with "_old".
+     * ie, Facebook's "host" becomes "host_old" if I have a "host" of my own.
+     *
+     * @param array $event_array
+     *
+     * @since    0.5.0
+     *
+     * @return array
+     */
     public function merge_fb_and_db_events( array $event_array ) {
 
         $all_events_mysql = DB_API::get_fbevents();
@@ -218,18 +227,18 @@ class Test_Events {
 
         }
 
-        $event_array['events'] = array_reverse( $event_array['events'] ); 
+        $event_array['events'] = array_reverse( $event_array['events'] );
 
         return $event_array;
     }
 
     /**
-     * Return HTML code to list a bunch of Facebook events
+     * Points to the file that generated and returns HTML code to list a bunch of Facebook events
      *
      * @param $events_array     an array of events from Facebook
      * @param int $limit        an integer number of events to return.  defaults to the total returned objects.
      *
-     * @since    0.2.1
+     * @since    0.4.0
      *
      * @return string           a list of events from Facebook
      */

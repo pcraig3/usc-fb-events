@@ -23,9 +23,11 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
     $values['host_old'] =   ( isset($_POST['modify_host_old']) ) ? $_POST['modify_host_old'] : null;
     $values['host'] =       ( isset($_POST['modify_host']) ) ? $_POST['modify_host'] : null; //add this if not there.
 
+    /*
     echo "<pre>";
     var_dump($values);
     echo "</pre>";
+    */
 
     if( isset($values['eid']) ) {
 

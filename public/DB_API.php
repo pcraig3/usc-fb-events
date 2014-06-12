@@ -415,14 +415,22 @@ class DB_API {
         return DB_API::get_fbevents( array(
             'fields' => 'count',
             'eid' =>    $eid,
-            'append_to_where' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
+            'append_to_where' =>  " AND (start_time IS NULL OR start_time = '')"
+                                . " AND (location IS NULL OR location = '')"
+                                . " AND (host IS NULL OR host = '')",
         ));
     }
 
     public static function insert_on_duplicate_key_update($eid, array $data = array() ) {
 
-        if ( DB_API::get_event_count_by_eid( $eid ) )
-            return DB_API::update_fbevent( $eid, $data );
+        if ( DB_API::get_event_count_by_eid( $eid ) ) {
+            $updated = DB_API::update_fbevent( $eid, $data );
+
+            if( DB_API::get_unmodified_event_count_by_eid( $eid ) )
+                DB_API::delete_fbevent( $eid );
+
+            return $updated;
+        }
 
         $data['eid'] = $eid;
         return DB_API::insert_fbevent( $data );

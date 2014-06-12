@@ -43,7 +43,7 @@ class Test_Events_Admin {
 	 * settings page and menu.
      * Also queue up all your horrible AJAX messages
 	 *
-     * @since   0.4.0
+     * @since   0.5.0
 	 */
 	private function __construct() {
 
@@ -321,9 +321,9 @@ class Test_Events_Admin {
     }
 
     /**
-     * Does what it says on the box.  gets all  facebook and db events (and then merges them)
+     * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges them)
      *
-     * @since   0.4.0
+     * @since    0.5.0
      */
     public function get_events() {
 
