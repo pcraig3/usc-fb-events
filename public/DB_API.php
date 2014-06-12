@@ -101,7 +101,7 @@ class DB_API {
 
         //Set default values
         $data = wp_parse_args($data, array(
-            'removed'=> '1',
+            'removed'=> '0',
         ));
 
         if( ! is_numeric( $data['eid'] ) )
@@ -400,6 +400,15 @@ class DB_API {
             'eid' =>    $eid,
             'append_to_where' =>  " AND start_time IS NULL AND location IS NULL AND host IS NULL ",
         ));
+    }
+
+    public static function insert_on_duplicate_key_update($eid, array $data = array() ) {
+
+        if ( DB_API::get_event_count_by_eid( $eid ) )
+            return DB_API::update_fbevent( $eid, $data );
+
+        $data['eid'] = $eid;
+        return DB_API::insert_fbevent( $data );
     }
 
 }

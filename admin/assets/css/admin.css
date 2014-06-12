@@ -1,19 +1,26 @@
-.featured_events__wrapper {
+.filterjs__filter > div {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0px 15px; }
+.filterjs__filter:first-child {
+  padding-left: 0; }
+
+.filterjs__list__wrapper {
   position: relative; }
-  .featured_events__wrapper .hidden {
+  .filterjs__list__wrapper .hidden {
     display: none; }
-  .featured_events__wrapper .featured_events__loading {
+  .filterjs__list__wrapper .filterjs__loading {
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: rgba(255, 255, 255, 0.5);
     box-sizing: border-box;
     z-index: 10; }
-    .featured_events__wrapper .featured_events__loading .featured_events__img {
+    .filterjs__list__wrapper .filterjs__loading .filterjs__loading__img {
       position: absolute;
       left: 45%;
       bottom: 40%; }
-  .featured_events__wrapper .featured_events__find {
+  .filterjs__list__wrapper .filterjs__list__crop {
     width: 100%;
     height: 300px;
     overflow: scroll;
@@ -24,32 +31,32 @@
     background-color: #FFF;
     color: #333;
     transition: border-color 0.05s ease-in-out 0s; }
-    .featured_events__wrapper .featured_events__find:focus {
+    .filterjs__list__wrapper .filterjs__list__crop:focus {
       border-color: #0074a2; }
 
-.featured_list_find {
+.filterjs__list {
   width: 100%;
   display: table; }
-  .featured_list_find .row {
+  .filterjs__list .row {
     display: table-row; }
-    .featured_list_find .row:hover {
+    .filterjs__list .row:hover {
       background: #E9E9E9; }
-    .featured_list_find .row.removed {
+    .filterjs__list .row.removed {
       background-color: #dd3d36;
       background-color: rgba(221, 61, 54, 0.4); }
-      .featured_list_find .row.removed:hover {
+      .filterjs__list .row.removed:hover {
         background-color: rgba(221, 61, 54, 0.3); }
-    .featured_list_find .row.selected {
+    .filterjs__list .row.selected {
       background-color: #0074a2;
       background-color: rgba(0, 116, 162, 0.4); }
-      .featured_list_find .row.selected:hover {
+      .filterjs__list .row.selected:hover {
         background-color: rgba(0, 116, 162, 0.3); }
-    .featured_list_find .row.removed.selected {
+    .filterjs__list .row.removed.selected {
       background-color: #0074a2;
       background-color: rgba(0, 116, 162, 0.6); }
-      .featured_list_find .row.removed.selected:hover {
+      .filterjs__list .row.removed.selected:hover {
         background-color: rgba(0, 116, 162, 0.5); }
-    .featured_list_find .row span {
+    .filterjs__list .row span {
       display: table-cell;
       text-align: left;
       padding: 5px 10px;

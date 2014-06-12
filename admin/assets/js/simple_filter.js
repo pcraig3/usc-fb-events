@@ -93,11 +93,20 @@ jQuery(function ($) {
             if(events.removed === "removed")
                 html_string += " removed ";
 
-            html_string += "' data-eid='" + events.eid + "' data-start-time='" + events.start_time + " '>" +
-                "<span class='name'>" + events.name + "</span>" +
-                "<span class='host'>" + events.host + "</span>" +
-                "<span class='removed'>" + events.removed + "</span>" +
-                "</div>";
+            html_string += "' ";
+
+            for (var key in events) {
+                if (events.hasOwnProperty(key)) {
+                    if(typeof events[key] != 'undefined')
+                    html_string += "data-" + key + "='" + events[key] + "' ";
+                }
+            }
+
+            html_string += ">" +
+            "<span class='name'>" + events.name + "</span>" +
+            "<span class='host'>" + events.host + "</span>" +
+            "<span class='removed'>" + events.removed + "</span>" +
+            "</div>";
 
             return html_string;
         }

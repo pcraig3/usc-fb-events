@@ -207,7 +207,6 @@ class Test_Events_Admin {
 	 */
 	public function display_plugin_admin_page() {
         include_once( 'views/admin.php' );
-        include_once( 'ajax/ajax-test-events-admin.php' );
 	}
 
 	/**
@@ -282,12 +281,13 @@ class Test_Events_Admin {
         $response = 	false;
 
         if($button_id === 'remove_event_button') {
-            $fbevent_exists_in_db = DB_API::get_event_count_by_eid( $eid );
 
-            //either remove an event or update it.
-            $response = ( $fbevent_exists_in_db ) ?
-                DB_API::update_fbevent( $eid, array( 'removed' => 1) ) :
-                DB_API::insert_fbevent( array( 'eid' => $eid, 'removed' => 1, 'name' => $name) );
+            $response = DB_API::insert_on_duplicate_key_update(
+                $eid,
+                array(
+                    'removed' =>    1,
+                    'name' =>       $name
+            ));
 
         }
         if($button_id === 'display_event_button') {

@@ -18,7 +18,10 @@
                 click_row($(this));
             });
 
-            $('[id$="_event_button"]').on("click", ajax_return_to_or_remove_from_calendar);
+            $('#remove_event_button, #display_event_button')
+                .on("click", ajax_return_to_or_remove_from_calendar);
+
+            $('#modify_event_button').on("click", modify_event_setup);
 
             $(this).unbind( "change" );
 
@@ -51,17 +54,13 @@
 
         if( $selected_row.length ) {
 
-            var button_id = "_event_button";
-
             //if the item has a class "removed": enable button return_event
             if($selected_row.hasClass('removed'))
-            { button_id = 'display' + button_id; }
+            { $event_buttons.filter('#display_event_button').prop("disabled", false); }
             //	else: enable button remove_event
-            else
-            { button_id = 'remove' + button_id; }
-
-            $event_buttons.filter('#' + button_id).prop("disabled", false);
-
+            else {
+                $event_buttons.not('#display_event_button').prop("disabled", false);
+            }
         }
     }
 
@@ -75,7 +74,7 @@
 
     function ajax_loading(loading) {
 
-        var $loading_gif = $(".featured_events__loading");
+        var $loading_gif = $(".filterjs__loading");
 
         if(loading)
             $loading_gif.removeClass("hidden");
@@ -89,7 +88,7 @@
 
         var $selected_row = $("#event_list").find(".selected");
         var name = $selected_row.find(".name").text();
-        var $button = $('input.button:enabled');
+        var $button = $('input.button:enabled').first(); //hacky, but it works.
         var button_id = $button.attr("id");
 
         ajax_loading(true);
@@ -136,14 +135,14 @@
                 }
 
                 update_msg += "the calendar.";
-                $("#test_notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
+                $("#filterjs__notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
             .fail(function(data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
                 //console.log(data);
-                $("#test_notice").addClass("updated").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
+                $("#filterjs__notice").addClass("updated").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
 
             })
             .always(function () {
@@ -157,6 +156,31 @@
                     $(this).parent().removeClass("updated error").empty();
                 });
             });
+    }
+
+    function modify_event_setup() {
+
+        var $selected_row = $("#event_list").find(".selected");
+
+        var values = {};
+        values.eid = $selected_row.data("eid");
+        values.name = $selected_row.find(".name").text();
+        values.host = $selected_row.find(".host").text();
+        values.removed = $selected_row.find(".removed").text();
+
+        $selected_row.removeClass("selected");
+
+        for (var key in values) {
+            if (values.hasOwnProperty(key)) {
+
+                //console.log('#modify_' + key + "_" + values.removed);
+                $('#modify_' + key + "_" + values.removed).val(values[key]);
+            }
+        }
+
+        $('#modify_removed').val(values[key]);
+
+
     }
 
 }(jQuery));
