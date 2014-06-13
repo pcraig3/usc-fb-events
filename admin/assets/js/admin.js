@@ -146,6 +146,8 @@
                 update_msg += "the calendar.";
                 $("#filterjs__notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
 
+                $selected_row.data("removed", $selected_row.find(".removed").text());
+
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
             .fail(function(data) {
@@ -202,16 +204,12 @@
                     values[key] = values[key_without_old];
                     values[key_without_old] = undefined;
 
-                    $('#modify_' + key_without_old).val(values[key_without_old]);
+                    $('#modify_' + key_without_old).val( values[key_without_old] );
                 }
 
-                $('#modify_' + key).val(values[key]);
+                $('#modify_' + key).val( values[key] );
             }
         }
-
-
-
-        $('#modify_removed').val(values[key]);
 
     }
 

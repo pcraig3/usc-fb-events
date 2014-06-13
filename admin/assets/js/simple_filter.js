@@ -84,7 +84,8 @@ jQuery(function ($) {
             for (var key in events) {
                 if (events.hasOwnProperty(key)) {
                     if(typeof events[key] != 'undefined')
-                    html_string += "data-" + key + "='" + events[key] + "' ";
+                    //changed the quotation marks here because apostrophes were breaking the HTML
+                    html_string += 'data-' + key + '="' + events[key] + '" ';
                 }
             }
 

@@ -17,18 +17,29 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
     }
 
     //~ROW VALUES
-    $values['eid'] =        ( isset($_POST['modify_eid']) ) ? $_POST['modify_eid'] : null;
-    $values['name'] =       ( isset($_POST['modify_name']) ) ? $_POST['modify_name'] : null;
-    $values['removed'] =    ( isset($_POST['modify_removed']) &&
-                                $_POST['modify_removed'] === "display" ) ? 0 : 1;
-    $values['host_old'] =   ( isset($_POST['modify_host_old']) ) ? $_POST['modify_host_old'] : null;
-    $values['host'] =       ( isset($_POST['modify_host']) ) ? $_POST['modify_host'] : null; //add this if not there.
+    $values = array(
+        'eid' =>            null,
+        'name' =>           null,
+        'host_old' =>       null,
+        'host' =>           null,
+        'start_time_old' => null,
+        'start_time' =>     null,
+    );
 
-    /*
+
+    foreach( $values as $key => $value ) {
+
+        $values[$key] = ( isset($_POST['modify_' . $key]) ) ? $_POST['modify_' . $key] : null;
+    }
+
+    $values['removed'] =    ( isset($_POST['modify_removed']) &&
+        $_POST['modify_removed'] === "display" ) ? 0 : 1;
+
+/*
     echo "<pre>";
     var_dump($values);
     echo "</pre>";
-    */
+*/
 
     if( isset($values['eid']) ) {
 
@@ -38,6 +49,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
                 'removed' =>    $values['removed'],
                 'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
                 'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
+                'start_time' =>       ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
         ));
 
    }
@@ -86,63 +98,63 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
             ));
     }
 
-    function echo_test_form( $host ) {
-
-        //~ROW VALUES
-        $first_section = "Event Name";
-        $second_section = "Event Host";
-        $host_modified = null;
-        $name  = "";
+    function echo_test_form( array $hidden_fields, array $visible_fields ) {
 
         $html_string = '<form action="" method="post" id="test_form">';
         $html_string .= '<input id="_wpnonce" name="_wpnonce" value="' . wp_create_nonce("test_form_nonce") . '" type="hidden">';
-        $html_string .= '<input id="modify_eid" name="modify_eid" value="" type="hidden">';
-        $html_string .= '<input id="modify_removed" name="modify_removed" value="" type="hidden">';
+     //   $html_string .= '<input id="modify_eid" name="modify_eid" value="" type="hidden">';
+     //   $html_string .= '<input id="modify_removed" name="modify_removed" value="" type="hidden">';
+
+        //build hidden fields
+        foreach($hidden_fields as &$input) {
+
+            $html_string .= '<input';
+            foreach ($input as $attr => $value) {
+                $html_string .= ' ' . $attr . '="' . $value . '" ';
+            }
+            $html_string .= '>';
+        }
+        unset( $input );
+
         $html_string .= '<table class="form-table">';
         $html_string .=     '<tbody>';
-        $html_string .=         '<tr>';
-        $html_string .=             '<th scope="row">'. $first_section .'</th>';
-        $html_string .=                 '<td>';
-        $html_string .=                     '<fieldset>';
-        $html_string .=                         '<legend class="screen-reader-text">';
-        $html_string .=                             '<span>';
-        $html_string .=                                 $first_section;
-        $html_string .=                             '</span>';
-        $html_string .=                         '</legend>';
-        $html_string .=                             '<input id="modify_name" class="regular-text" type="text" value="' . $name . '" name="modify_name" readonly="readonly">';
-        $html_string .=                                 '<p class="description">';
-        $html_string .=                                     'Event name';
-        $html_string .=                                 '</p>';
-        $html_string .=                     '</fieldset>';
-        $html_string .=                 '</td>';
-        $html_string .=         '</tr>';
-        $html_string .=         '<tr>';
-        $html_string .=             '<th scope="row">'. $second_section .'</th>';
-        $html_string .=                 '<td>';
-        $html_string .=                     '<fieldset>';
-        $html_string .=                         '<legend class="screen-reader-text">';
-        $html_string .=                             '<span>';
-        $html_string .=                                 $second_section;
-        $html_string .=                             '</span>';
-        $html_string .=                         '</legend>';
-        $html_string .=                             '<input id="modify_host_old" class="regular-text" type="text" value="' . $host . '" name="modify_host_old" readonly="readonly">';
-        $html_string .=                                 '<p class="description">';
-        $html_string .=                                     'Original host name';
-        $html_string .=                                 '</p>';
-        $html_string .=                             '<br>';
 
-        if($host_modified)
-            $html_string .=                             '<input id="modify_host" class="regular-text" type="text" value="' . $host_modified . '" name="modify_host">';
-        else
-            $html_string .=                             '<input id="modify_host" class="regular-text" type="text" value="" placeholder="enter a new value" name="modify_host">';
+        foreach($visible_fields as $title => &$inputs) {
 
-        $html_string .=                                 '<p class="description">';
-        $html_string .=                                     'New host name';
-        $html_string .=                                 '</p>';
-        $html_string .=                             '<br>';
-        $html_string .=                     '</fieldset>';
-        $html_string .=                 '</td>';
-        $html_string .=         '</tr>';
+            $html_string .=         '<tr>';
+            $html_string .=             '<th scope="row">'. $title .'</th>';
+            $html_string .=                 '<td>';
+            $html_string .=                     '<fieldset>';
+            $html_string .=                         '<legend class="screen-reader-text">';
+            $html_string .=                             '<span>';
+            $html_string .=                                 $title;
+            $html_string .=                             '</span>';
+            $html_string .=                         '</legend>';
+
+            foreach ($inputs as &$input) {
+
+                $html_string .= '<input';
+
+                foreach($input as $attr => $value) {
+
+                    $attr_val =  ' ' . $attr . '="' . $value . '" ';
+                    $html_string .= $attr_val;
+                }
+
+                $html_string .=                                 '>'; //end the input
+                $html_string .=                                 '<p class="description">';
+                $html_string .=                                     $title;
+                $html_string .=                                 '</p>';
+                $html_string .=                             '<br>';
+            }
+            unset($input);
+
+            $html_string .=                     '</fieldset>';
+            $html_string .=                 '</td>';
+            $html_string .=         '</tr>';
+        }
+        unset( $inputs );
+
         $html_string .=     '</tbody>';
         $html_string .= '</table>';
 
@@ -208,7 +220,72 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
 
         echo_test_section_title( "Modify Event: " );
 
-        echo_test_form("");
+        $hidden_fields = array(
+            0 =>    array(
+                "type" =>       "hidden",
+                "id" =>         "modify_eid",
+                "name" =>         "modify_eid",
+                "value" =>      "",
+            ),
+            1 =>    array(
+                "type" =>       "hidden",
+                "id" =>         "modify_removed",
+                "name" =>         "modify_removed",
+                "value" =>      "",
+            )
+        );
+
+        //each one needs a name, id, and description
+        $visible_fields = array(
+            'Event Name' => array(
+                0 =>    array(
+                    "type" =>       "text",
+                    "id" =>         "modify_name",
+                    "name" =>       "modify_name",
+                    "class" =>      "regular-text",
+                    "value" =>      "",
+                    "readonly" =>   "readonly",
+                )
+            ),
+            'Event Host' =>  array(
+                    0 => array(
+                        "type" =>       "text",
+                        "id" =>         "modify_host_old",
+                        "name" =>       "modify_host_old",
+                        "class" =>      "regular-text",
+                        "value" =>      "",
+                        "readonly" =>   "readonly",
+                    ),
+                    1 => array(
+                        "type" =>       "text",
+                        "id" =>         "modify_host",
+                        "name" =>       "modify_host",
+                        "class" =>      "regular-text",
+                        "value" =>      "",
+                    )
+                ),
+            'Event Date' =>  array(
+            0 => array(
+                "type" =>       "text",
+                "id" =>         "modify_start_time_old",
+                "name" =>       "modify_start_time_old",
+                "class" =>      "regular-text",
+                "value" =>      "",
+                "readonly" =>   "readonly",
+            ),
+            1 => array(
+                "type" =>       "text",
+                "id" =>         "modify_start_time",
+                "name" =>       "modify_start_time",
+                "class" =>      "regular-text",
+                "value" =>      "",
+            )
+           )
+        );
+        //name, host, location, start_time
+
+    echo_test_form($hidden_fields, $visible_fields);
+
 
     ?>
 

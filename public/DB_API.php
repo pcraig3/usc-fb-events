@@ -133,11 +133,17 @@ class DB_API {
         //Check date validity
         if( isset($data['start_time']) ) {
             //Convert activity date from local timestamp to GMT mysql format
-            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', $data['start_time'], true );
+            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['start_time'] ), true );
         }
 
-        $data['ticket'] = DB_API::wp_esc_url_raw($data['ticket']);
-        $data['url'] = DB_API::wp_esc_url_raw($data['url']);
+        //WHATEVER
+        if( isset($data['ticket']) ) {
+            $data['ticket'] = esc_url_raw( $data['ticket'] );
+        }
+
+        if( isset($data['url']) ) {
+            $data['url'] = esc_url_raw( $data['url'] );
+        }
 
         //Initialise column format array
         $column_formats = DB_API::get_fbevents_table_columns();
@@ -175,14 +181,22 @@ class DB_API {
         if( ! is_numeric( $eid ) )
             return false;
 
+
+
         //Check date validity
         if( isset($data['start_time']) ) {
             //Convert activity date from local timestamp to GMT mysql format
-            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', $data['start_time'], true );
+            $data['start_time'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['start_time'] ), true );
         }
 
-        $data['ticket'] = DB_API::wp_esc_url_raw($data['ticket']);
-        $data['url'] = DB_API::wp_esc_url_raw($data['url']);
+        //WHATEVER
+        if( isset($data['ticket']) ) {
+            $data['ticket'] = esc_url_raw( $data['ticket'] );
+        }
+
+        if( isset($data['url']) ) {
+            $data['url'] = esc_url_raw( $data['url'] );
+        }
 
             //Initialise column format array
         $column_formats = DB_API::get_fbevents_table_columns();
@@ -203,17 +217,6 @@ class DB_API {
 
         return true;
     }
-
-    private static function wp_esc_url_raw($url) {
-        //Check url
-        if( isset($url) ) {
-            //Convert activity date from local timestamp to GMT mysql format
-            return esc_url_raw( $url );
-        }
-
-        return null;
-    }
-
 
     /**
      * Retrieves activity logs from the database matching $query.
@@ -438,8 +441,8 @@ class DB_API {
         if ( DB_API::get_event_count_by_eid( $eid ) ) {
             $updated = DB_API::update_fbevent( $eid, $data );
 
-            if( DB_API::get_unmodified_event_count_by_eid( $eid ) )
-                DB_API::delete_fbevent( $eid );
+            //if( DB_API::get_unmodified_event_count_by_eid( $eid ) )
+              //  DB_API::delete_fbevent( $eid );
 
             return $updated;
         }

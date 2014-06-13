@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.5.1';
+	const VERSION = '0.5.2';
 
 	/*
 	 * Unique identifier for your plugin.
