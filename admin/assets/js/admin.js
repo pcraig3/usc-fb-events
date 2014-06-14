@@ -30,7 +30,7 @@
             $('#remove_event_button, #display_event_button')
                 .on("click", ajax_return_to_or_remove_from_calendar);
 
-            $('#modify_event_button').on("click", modify_event_setup);
+            $('#modify_event_button').on("click dblclick", modify_event_setup);
 
             $(this).unbind( "change" );
 

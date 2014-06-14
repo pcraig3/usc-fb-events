@@ -227,9 +227,55 @@ class Test_Events {
 
         }
 
-        $event_array['events'] = array_reverse( $event_array['events'] );
+        $sort_criteria =
+            array('start_time' => array(SORT_DESC, SORT_STRING),
+            );
+
+        $event_array['events'] = $this->multisort($event_array['events'], $sort_criteria, true);
 
         return $event_array;
+    }
+
+    /**
+     * Multisort function sorts two-dimensional arrays on specific keys.
+     * Ripped off the PHP reference page from one of the comments.
+     * http://www.php.net/manual/en/function.array-multisort.php#114076
+     *
+     * @author Robert C
+     * C probably short for "Champ"
+     *
+     * @param $data                 the array to be sorted
+     * @param $sortCriteria         array of selected keys and how to sort them
+     * @param bool $caseInSensitive whether or not to sort stings by case
+     * @return bool|mixed           returns your array sorted by whatever the eff you asked for
+     */
+    function multisort($data, $sortCriteria, $caseInSensitive = true)
+    {
+        if( !is_array($data) || !is_array($sortCriteria))
+            return false;
+        $args = array();
+        $i = 0;
+        foreach($sortCriteria as $sortColumn => $sortAttributes)
+        {
+            $colList = array();
+            foreach ($data as $key => $row)
+            {
+                $convertToLower = $caseInSensitive && (in_array(SORT_STRING, $sortAttributes) || in_array(SORT_REGULAR, $sortAttributes));
+                $rowData = $convertToLower ? strtolower($row[$sortColumn]) : $row[$sortColumn];
+                $colLists[$sortColumn][$key] = $rowData;
+            }
+            $args[] = &$colLists[$sortColumn];
+
+            foreach($sortAttributes as $sortAttribute)
+            {
+                $tmp[$i] = $sortAttribute;
+                $args[] = &$tmp[$i];
+                $i++;
+            }
+        }
+        $args[] = &$data;
+        call_user_func_array('array_multisort', $args);
+        return end($args);
     }
 
     /**
