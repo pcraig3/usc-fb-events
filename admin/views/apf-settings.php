@@ -9,15 +9,11 @@
 // Extend the class
 class APF_SettingsPage extends AdminPageFramework {
 
-    private $slug = null;
-
-    public function __construct($suffix = "new_events") {
+    public function __construct() {
 
         parent::__construct();
 
-        $this->slug = $suffix;
-
-        $this->setFooterInfoLeft( '<br />Orange Text on the left hand side.', false );
+        $this->setFooterInfoLeft( '<br />Foxtrot Text on the left hand side.', false );
     }
 
         // Define the setUp() method to set how many pages, page titles and icons etc.
@@ -30,7 +26,7 @@ class APF_SettingsPage extends AdminPageFramework {
         $this->addSubMenuItems(
             array(
                 'title'    =>    'Test Events Settings',    // page and menu title
-                'page_slug'    =>    $this->slug,     // page slug
+                'page_slug'    =>    "test_events",     // page slug
             )
         );
 
@@ -105,11 +101,11 @@ class APF_SettingsPage extends AdminPageFramework {
             )
         );
 
-        $this->setFooterInfoLeft( '<br />Yellow Text on the left hand side.', false );
+        //$this->setFooterInfoLeft( '<br />Yellow Text on the left hand side.', false );
 
     }
 
-    public function do_after_test_events() {
+    /*public function do_after_test_events() {
 
         $this->setFooterInfoLeft( '<br />Red Text on the left hand side.', false );
 
@@ -120,6 +116,7 @@ class APF_SettingsPage extends AdminPageFramework {
         $this->setFooterInfoLeft( '<br />Amber Text on the left hand side.', false );
 
     }
+    */
 
     // Notice that the name of the method is 'do_' + the page slug.
     // So the slug should not contain characters which cannot be used in function names such as dots and hyphens.
