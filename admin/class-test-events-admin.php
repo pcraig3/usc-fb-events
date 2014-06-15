@@ -179,7 +179,9 @@ class Test_Events_Admin {
 
         include_once('views/manage-events.php');
         // Instantiate the class object.
-        new Manage_Events;
+        $me = new Manage_Events;
+        $me->setFooterInfoLeft( '<br />Hardly Text on the left hand side.', false );
+
 
     }
 
