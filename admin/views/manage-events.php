@@ -37,10 +37,7 @@ class Manage_Events extends AdminPageFramework {
             )
         );
         */
-
-        include_once('AdminPageFramework_FieldType_event_list.php');
-        new AdminPageFramework_FieldType_event_list( 'Manage_Events' );
-
+        
         $this->addSettingFields(
             //'first_section',
             array(
@@ -49,13 +46,6 @@ class Manage_Events extends AdminPageFramework {
                 'title'			=> 'What Checkbox Input',
                 'description'	=> __( 'The description for the apple.', 'admin-page-framework-demo' ),
                 'label'			=> __( 'This is a check box.', 'admin-page-framework-demo' ),
-            ),
-            array(
-                'field_id'		=> 'event_list',
-                'type'			=> 'event_list',
-                'title'			=> 'event_list_title',
-                'description'	=> 'event_list_description',
-                'show_title_column' => false,
             ),
             array(
                 'field_id'		=> 'select_filed',
@@ -118,7 +108,7 @@ class Manage_Events extends AdminPageFramework {
                      src="/wp-content/plugins/test-events/assets/cat.gif" alt="Loading" height="80" width="100">
             </div>
             <div class="filterjs__list__crop">
-                <div class="filterjs__list" id="events_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
+                <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
             </div>
         </div>
         <div class="clearfix cf"></div>
