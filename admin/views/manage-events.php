@@ -137,23 +137,30 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
             ),
-            array(	// Single date picker
-                'field_id'	=>	'date',
-                'section_id'	=>	'modify',
-                'title'	=>	'Date',
-                'type'	=>	'date',
-            ),
-            /*array(	// Multiple date pickers
+            array(	// Multiple date pickers
                 'field_id'	=>	'dates',
                 'title'	=>	'Dates',
-                'type'	=>	'date',
+                'type'  => 'date_time',
+                'date_format'	=>	'yy-mm-dd',
+                'time_format'	=> 'HH:mm',
                 'label'	=>	'Start Date: ',
-                'date_format'	=>	'yy-mm-dd',	// yy/mm/dd is the default format.
+                'attributes'	=>	array(
+                    //'class'     => $this->section_id . '_location_old',
+                    'value'	=>	    '',
+                    'readonly' =>   'ReadOnly',
+                    'size' =>       '30',
+                ),
                 'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
                 array(
                     'label'	=>	'End Date: ',
+                    'attributes'	=>	array(
+                        //'class'     => $this->section_id . '_location',
+                        'readonly'	=>	false,
+                        'value'     =>  '',
+                        'size' =>       '30',
+                    )
                 ),
-            ),*/
+            ),
             array(	// Multiple text fields
                 'field_id'	=>	'start_time',
                 'title'	=>	'Event Date',
@@ -257,6 +264,18 @@ class Manage_Events extends AdminPageFramework {
 
         echo $this->oDebug->getArray( get_option( 'Manage_Events' ) );
 
+    }
+
+    public function do_after_manage_events_page() {
+
+        echo "
+            <script>
+			jQuery( document ).ready( function($){
+
+				    $('.hasDatepicker').first().datepicker( 'disable' );
+			});
+			</script>
+		" . PHP_EOL;
     }
 
     /**
