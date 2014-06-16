@@ -23,14 +23,17 @@
 
             ajax_loading(false);
 
-            $(this).delegate( '[id^="fjs_"]', "click", function() {
+            $(this).find('[id^="fjs_"]')
+                .on("click", function() {
                 click_row($(this));
-            });
+            })
+                .on("dblclick", modify_event_setup
+            );
 
             $('#remove_event_button, #display_event_button')
                 .on("click", ajax_return_to_or_remove_from_calendar);
 
-            $('#modify_event_button').on("click dblclick", modify_event_setup);
+            $('#modify_event_button').on("click", modify_event_setup);
 
             $(this).unbind( "change" );
 
@@ -204,10 +207,10 @@
                     values[key] = values[key_without_old];
                     values[key_without_old] = undefined;
 
-                    $('#modify_' + key_without_old).val( values[key_without_old] );
+                    $('.modify_' + key_without_old).val( values[key_without_old] );
                 }
 
-                $('#modify_' + key).val( values[key] );
+                $('.modify_' + key).val( values[key] );
             }
         }
 

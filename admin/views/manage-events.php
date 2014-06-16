@@ -9,6 +9,8 @@
 // Extend the class
 class Manage_Events extends AdminPageFramework {
 
+    private $section_id = "modify";
+
     // Define the setUp() method to set how many pages, page titles and icons etc.
     public function setUp() {
 
@@ -26,24 +28,40 @@ class Manage_Events extends AdminPageFramework {
         $this->addSettingSections(
             'manage_events_page',
             array(
-                'section_id' => 'modify',
+                'section_id' => $this->section_id,
                 'title' => 'Modify Events',
                 'description' => 'Change events or return them to their defaults.',
             )
         );
 
         $this->addSettingFields(
-            'modify',
+            $this->section_id,
+            /*array(
+                'field_id'	=>	'eid',
+                'type'	=>	'hidden',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_eid',
+                ),
+            ),
+            array(
+                'field_id'	=>	'removed',
+                'type'	=>	'hidden',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_removed',
+                ),
+            ),*/
             array(	// Read-only
                 'field_id'	=>	'name',
                 'title'	=>	'Event Name',
                 'type'	=>	'text',
+                //'value'	=>	'old name',
+                //'description'	=>	'Original Name'
                 'attributes'	=>	array(
+                    'class'     => $this->section_id . '_name',
                     'readonly'	=>	'ReadOnly',
                     // 'disabled'	=>	'Disabled',		// disabled can be specified like so
                 ),
-                'value'	=>	'old name',
-                'description'	=>	'Original Name'
+
             ),
             array(	// Multiple text fields
                 'field_id'	=>	'host',
@@ -53,21 +71,30 @@ class Manage_Events extends AdminPageFramework {
                 //'default'	=>	'placeholder old host',
                 'label'	=>	'Original Host:',
                 'attributes'	=>	array(
-                    'value'	=>	'modify old host',
+                    'class'     => $this->section_id . '_host_old',
+                    'value'	=>	'',
                     'readonly'	=>	'ReadOnly',
                 ),
                 'delimiter'	=>	'<br />',
                 array(
-                    //'default'	=>	'placeholder new host',
                     'label'	=>	'New Host: ',
+                    //'field_id' => 'host',
                     'attributes'	=>	array(
-                        //'field_id' => 'modify_host',
+                        'class'     => $this->section_id . '_host',
                         'readonly'	=>	false,
-                        //'default'	=>	'write here',
                         'value'     =>  ''
                     )
                 ),
                 //'description'	=>	'Modify the host.'
+            ),
+            array(
+                'field_id'	=>	'modify_event_submit',
+                'type'	=>	'event_modify',
+                'title'			=>	'Modify Events',
+                'show_title_column' => false,
+                'attributes'	=> array(
+                    'class'	=>	'button button-primary modify_event_submit',
+                ),
             )
         );
 
@@ -137,7 +164,7 @@ class Manage_Events extends AdminPageFramework {
         /* $this->setFooterInfoLeft( '<br />Orange Text on the left hand side.', false );*/
 
         //this is the end of the form defined in ::addSettingFields
-        submit_button( "Modify Event", "primary", "modify_event_submit" );
+        //submit_button( "Modify Event", "primary", "modify_event_submit" );
 
         ?>
 
@@ -155,25 +182,62 @@ class Manage_Events extends AdminPageFramework {
      * @remark This is a pre-defined framework method.
      */
     public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
-        // See the log file in the wp-content directory.
-        AdminPageFramework_Debug::logArray( $aInput );
+
+        //var_dump($aInput["modify"]["host_old"][1]);
+        //echo "</pre>";
+
+        //~ROW VALUES
+        $values = array(
+            'eid' =>            null,
+            'name' =>           null,
+            'host' =>           array(
+                0   =>  null,
+                1   =>  null,
+            ),
+           // 'start_time_old' => null,
+           // 'start_time' =>     null,
+        );
 
 
-        // Now do something with the submitted data here.
-        // saveDataInYourCustomTable( $aInput );
+        foreach( $values as $key => $value ) {
+
+            if( is_array($values[$key]) ) {
+
+                //we only need the second element for this.
+                $values[$key] = ( isset($aInput[$this->section_id][$key][1]) ) ? $aInput[$this->section_id][$key][1] : null;
+
+            /*    foreach($value as $_key => $_value) {
+                    $values[$key][$_key] = ( isset($aInput[$this->section_id][$value][$_key]) ) ? $aInput[$this->section_id][$value][$_key] : null;
+                }
+            */
+            }
+            else
+                $values[$key] = ( isset($aInput[$this->section_id][$key]) ) ? $aInput[$this->section_id][$key] : null;
+        }
+
+        $values['removed'] =    ( isset($aInput[$this->section_id]['removed']) &&
+            $aInput[$this->section_id]['removed'] === "display" ) ? 0 : 1;
+
+        /*
         echo "<pre>";
         var_dump($aInput);
-        echo " // ";
-        var_dump($aInput["modify_section"]["modify_host"][1]);
+        var_dump($values);
         echo "</pre>";
-
-        DB_API::insert_on_duplicate_key_update(
-            "609751109102741",
-            array(
-                'host' =>       $aInput["modify_section"]["modify_host"][1]
-            ));
-
         die();
+        */
+
+        if( isset($values['eid']) ) {
+
+            DB_API::insert_on_duplicate_key_update(
+                $values['eid'],
+                array(
+                    'removed' =>    $values['removed'],
+                    'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
+                    'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
+                  //  'start_time' =>       ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
+                ));
+
+        }
 
         return $aInput;
     }

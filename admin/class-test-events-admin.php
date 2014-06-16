@@ -178,9 +178,13 @@ class Test_Events_Admin {
             include_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/admin-page-framework/library/admin-page-framework.min.php' );
 
         include_once('views/manage-events.php');
+        include_once("views/AdminPageFramework_FieldType_event_modify.php");
+
         // Instantiate the class object.
+        new AdminPageFramework_FieldType_event_modify( 'Manage_Events' );
         $me = new Manage_Events;
-        $me->setFooterInfoLeft( '<br />Hardly Text on the left hand side.', false );
+
+
 
 
     }

@@ -205,7 +205,7 @@ class Test_Events {
                     //for every key in the db_event, overwrite the value in the original event
                     foreach( $all_db_event_array_keys as &$key ) {
 
-                        //if the modifiable fields are not EMPTY -- WE CAN'T FUCKING PUT NULL INTO UPDATE STATEMENTS
+                        //if the modifiable fields are not EMPTY -- WE CAN'T F*CKING PUT 'NULL' INTO UPDATE STATEMENTS
                         if( ! empty( $all_db_events[$db_event_index][$key] ) ) {
 
                             //if the key doesn't exist in the old value, just put it in
