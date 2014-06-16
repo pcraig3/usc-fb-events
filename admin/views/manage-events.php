@@ -65,7 +65,7 @@ class Manage_Events extends AdminPageFramework {
             ),
             array(	// Multiple text fields
                 'field_id'	=>	'host',
-                'title'	=>	'Host Name',
+                'title'	=>	'Event Host',
                 'help'	=>	'Modify the host name.',
                 'type'	=>	'text',
                 //'default'	=>	'placeholder old host',
@@ -86,6 +86,48 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
                 //'description'	=>	'Modify the host.'
+            ),
+            array(	// Multiple text fields
+                'field_id'	=>	'location',
+                'title'	=>	'Event Location',
+                'help'	=>	'Modify the location of the event.',
+                'type'	=>	'text',
+                'label'	=>	'Original Location:',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_location_old',
+                    'value'	=>	'',
+                    'readonly'	=>	'ReadOnly',
+                ),
+                'delimiter'	=>	'<br />',
+                array(
+                    'label'	=>	'New Location: ',
+                    'attributes'	=>	array(
+                        'class'     => $this->section_id . '_location',
+                        'readonly'	=>	false,
+                        'value'     =>  ''
+                    )
+                ),
+            ),
+            array(	// Multiple text fields
+                'field_id'	=>	'start_time',
+                'title'	=>	'Event Date',
+                'help'	=>	'Modify the date of the event.',
+                'type'	=>	'text',
+                'label'	=>	'Original Date:',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_start_time_old',
+                    'value'	=>	'',
+                    'readonly'	=>	'ReadOnly',
+                ),
+                'delimiter'	=>	'<br />',
+                array(
+                    'label'	=>	'New Date: ',
+                    'attributes'	=>	array(
+                        'class'     => $this->section_id . '_start_time',
+                        'readonly'	=>	false,
+                        'value'     =>  ''
+                    )
+                ),
             ),
             array(
                 'field_id'	=>	'modify_event_submit',
@@ -181,7 +223,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @remark This is a pre-defined framework method.
      */
-    public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
+    public function validation_manage_events_page( $aInput ) {	// validation_{page slug}
 
         //var_dump($aInput["modify"]["host_old"][1]);
         //echo "</pre>";
@@ -190,33 +232,36 @@ class Manage_Events extends AdminPageFramework {
         $values = array(
             'eid' =>            null,
             'name' =>           null,
-            'host' =>           array(
-                0   =>  null,
-                1   =>  null,
-            ),
-           // 'start_time_old' => null,
-           // 'start_time' =>     null,
+            'host' =>           array(), // values with an array are modifiable
+            'location' =>       array(),
+            'start_time' =>     array(),
         );
 
+        //take the keys before 'modified' is added, as it doesn't belong in the loop
+        $keys = array_keys($values);
 
-        foreach( $values as $key => $value ) {
+        $values['modified'] = 0;
+
+        foreach( $keys as &$key) {
 
             if( is_array($values[$key]) ) {
 
                 //we only need the second element for this.
                 $values[$key] = ( isset($aInput[$this->section_id][$key][1]) ) ? $aInput[$this->section_id][$key][1] : null;
 
-            /*    foreach($value as $_key => $_value) {
-                    $values[$key][$_key] = ( isset($aInput[$this->section_id][$value][$_key]) ) ? $aInput[$this->section_id][$value][$_key] : null;
-                }
-            */
+                //if not null, then we are modifying an event of ours.
+                //if modified is already true, don't reset it.
+                $values['modified'] = ( $values['modified'] || ! is_null($values[$key] ) ) ? 1 : 0;
+
             }
             else
                 $values[$key] = ( isset($aInput[$this->section_id][$key]) ) ? $aInput[$this->section_id][$key] : null;
         }
+        unset($key);
 
-        $values['removed'] =    ( isset($aInput[$this->section_id]['removed']) &&
-            $aInput[$this->section_id]['removed'] === "display" ) ? 0 : 1;
+        $values['removed'] = ( isset($aInput[$this->section_id]['removed']) &&
+            $aInput[$this->section_id]['removed'] === "removed" ) ? 1 : 0;
+
 
         /*
         echo "<pre>";
@@ -232,9 +277,11 @@ class Manage_Events extends AdminPageFramework {
                 $values['eid'],
                 array(
                     'removed' =>    $values['removed'],
+                    'modified' =>   $values['modified'],
                     'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
                     'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
-                  //  'start_time' =>       ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
+                    'location' =>   ( isset($values['location']) ) ? $values['location'] : NULL,
+                    'start_time' => ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
                 ));
 
         }

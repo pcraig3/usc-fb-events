@@ -441,8 +441,8 @@ class DB_API {
         if ( DB_API::get_event_count_by_eid( $eid ) ) {
             $updated = DB_API::update_fbevent( $eid, $data );
 
-            //if( DB_API::get_unmodified_event_count_by_eid( $eid ) )
-              //  DB_API::delete_fbevent( $eid );
+            if( DB_API::get_unmodified_event_count_by_eid( $eid ) )
+                DB_API::delete_fbevent( $eid );
 
             return $updated;
         }
