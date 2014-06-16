@@ -26,32 +26,31 @@ class Manage_Events extends AdminPageFramework {
         $this->addSettingSections(
             'manage_events_page',
             array(
-                'section_id' => 'modify_section',
+                'section_id' => 'modify',
                 'title' => 'Modify Events',
                 'description' => 'Change events or return them to their defaults.',
             )
         );
 
         $this->addSettingFields(
-            'modify_section',
+            'modify',
             array(	// Read-only
-                'field_id'	=>	'test_event_name',
+                'field_id'	=>	'name',
                 'title'	=>	'Event Name',
                 'type'	=>	'text',
-                'default'	=>	'Placeholder text',
                 'attributes'	=>	array(
                     'readonly'	=>	'ReadOnly',
                     // 'disabled'	=>	'Disabled',		// disabled can be specified like so
                 ),
-                'value'	=>	'Placeholder text',
+                'value'	=>	'old name',
                 'description'	=>	'Original Name'
             ),
             array(	// Multiple text fields
-                'field_id'	=>	'modify_host',
+                'field_id'	=>	'host',
                 'title'	=>	'Host Name',
                 'help'	=>	'Modify the host name.',
                 'type'	=>	'text',
-                'default'	=>	'Placeholder text',
+                //'default'	=>	'placeholder old host',
                 'label'	=>	'Original Host:',
                 'attributes'	=>	array(
                     'value'	=>	'modify old host',
@@ -59,19 +58,16 @@ class Manage_Events extends AdminPageFramework {
                 ),
                 'delimiter'	=>	'<br />',
                 array(
-                    'default'	=>	'Placeholder new host',
+                    //'default'	=>	'placeholder new host',
                     'label'	=>	'New Host: ',
                     'attributes'	=>	array(
-                        'field_id' => 'modify_host',
+                        //'field_id' => 'modify_host',
                         'readonly'	=>	false,
+                        //'default'	=>	'write here',
+                        'value'     =>  ''
                     )
                 ),
                 //'description'	=>	'Modify the host.'
-            ),
-            array( // Submit button
-                'field_id' => 'submit_button_b',
-                'type' => 'submit',
-                'show_title_column' => false,
             )
         );
 
@@ -140,14 +136,46 @@ class Manage_Events extends AdminPageFramework {
 
         /* $this->setFooterInfoLeft( '<br />Orange Text on the left hand side.', false );*/
 
+        //this is the end of the form defined in ::addSettingFields
+        submit_button( "Modify Event", "primary", "modify_event_submit" );
+
         ?>
 
         <h3 class="title">This is an H3 tag</h3>
-        <p>And this is what are you doing with your life</p>
-
 
     <?php
 
+        echo $this->oDebug->getArray( get_option( 'Manage_Events' ) );
+
+    }
+
+    /**
+     * The pre-defined validation callback method.
+     *
+     * @remark This is a pre-defined framework method.
+     */
+    public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
+        // See the log file in the wp-content directory.
+        AdminPageFramework_Debug::logArray( $aInput );
+
+
+        // Now do something with the submitted data here.
+        // saveDataInYourCustomTable( $aInput );
+        echo "<pre>";
+        var_dump($aInput);
+        echo " // ";
+        var_dump($aInput["modify_section"]["modify_host"][1]);
+        echo "</pre>";
+
+        DB_API::insert_on_duplicate_key_update(
+            "609751109102741",
+            array(
+                'host' =>       $aInput["modify_section"]["modify_host"][1]
+            ));
+
+        die();
+
+        return $aInput;
     }
 
     private function echo_button( $button_text, $id, $tab_index ) {
