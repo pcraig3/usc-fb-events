@@ -1,21 +1,6 @@
 <?php
-/**
- * Admin Page Framework
- *
- * http://en.michaeluno.jp/admin-page-framework/
- * Copyright (c) 2013-2014 Michael Uno; Licensed MIT
- *
- */
-if ( ! class_exists( 'AdminPageFramework_FieldType_event_modify' ) ) :
-    /**
-     * Defines the import field type.
-     *
-     * @package			AdminPageFramework
-     * @subpackage		FieldType
-     * @since			2.1.5
-     * @internal
-     */
-    class AdminPageFramework_FieldType_event_modify extends AdminPageFramework_FieldType_submit {
+if ( ! class_exists( 'EventModifyCustomFieldType' ) ) :
+    class EventModifyCustomFieldType extends AdminPageFramework_FieldType_submit {
 
         /**
          * Defines the field type slugs used for this field type.

@@ -178,14 +178,9 @@ class Test_Events_Admin {
             include_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/admin-page-framework/library/admin-page-framework.min.php' );
 
         include_once('views/manage-events.php');
-        include_once("views/AdminPageFramework_FieldType_event_modify.php");
 
         // Instantiate the class object.
-        new AdminPageFramework_FieldType_event_modify( 'Manage_Events' );
-        $me = new Manage_Events;
-
-
-
+        new Manage_Events;
 
     }
 
@@ -231,6 +226,7 @@ class Test_Events_Admin {
             wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), Test_Events::VERSION );
             wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), Test_Events::VERSION );
             wp_enqueue_script( 'simple_filterjs', plugins_url( 'assets/js/simple_filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( 'jquery-ui-datepicker' );
         }
     }
 

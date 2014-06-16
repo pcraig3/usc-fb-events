@@ -11,6 +11,35 @@ class Manage_Events extends AdminPageFramework {
 
     private $section_id = "modify";
 
+    public function start_Manage_Events() { // start_{extended class name} - this method gets automatically triggered at the end of the class constructor.
+
+        //include_once("views/EventModifyCustomFieldType.php");
+        //new AdminPageFramework_FieldType_event_modify( 'Manage_Events' );
+
+        /*
+         * ( Optional ) Register custom field types.
+         */
+
+        /* 1. Include the file that defines the custom field type. */
+        $aFiles = array(
+
+            dirname( __FILE__ ) . '/custom-fields/event-modify-custom-field-type/EventModifyCustomFieldType.php',
+            dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/TimeCustomFieldType.php',
+            dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/TimeCustomFieldType.php',
+            dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/DateTimeCustomFieldType.php',
+        );
+
+        foreach( $aFiles as $sFilePath )
+            if ( file_exists( $sFilePath ) ) include_once( $sFilePath );
+
+        /* 2. Instantiate the classes  */
+        $sClassName = get_class( $this );
+        new EventModifyCustomFieldType( $sClassName );
+        new DateCustomFieldType( $sClassName );
+        new TimeCustomFieldType( $sClassName );
+        new DateTimeCustomFieldType( $sClassName );
+    }
+
     // Define the setUp() method to set how many pages, page titles and icons etc.
     public function setUp() {
 
@@ -54,7 +83,7 @@ class Manage_Events extends AdminPageFramework {
                 'field_id'	=>	'name',
                 'title'	=>	'Event Name',
                 'type'	=>	'text',
-                //'value'	=>	'old name',
+                'value'	=>	'',
                 //'description'	=>	'Original Name'
                 'attributes'	=>	array(
                     'class'     => $this->section_id . '_name',
@@ -108,6 +137,23 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
             ),
+            array(	// Single date picker
+                'field_id'	=>	'date',
+                'section_id'	=>	'modify',
+                'title'	=>	'Date',
+                'type'	=>	'date',
+            ),
+            /*array(	// Multiple date pickers
+                'field_id'	=>	'dates',
+                'title'	=>	'Dates',
+                'type'	=>	'date',
+                'label'	=>	'Start Date: ',
+                'date_format'	=>	'yy-mm-dd',	// yy/mm/dd is the default format.
+                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
+                array(
+                    'label'	=>	'End Date: ',
+                ),
+            ),*/
             array(	// Multiple text fields
                 'field_id'	=>	'start_time',
                 'title'	=>	'Event Date',
@@ -141,11 +187,6 @@ class Manage_Events extends AdminPageFramework {
         );
 
     }
-
-    /*public function start_Manage_Events() {
-
-        $this->setFooterInfoLeft( '<br />Smelter Text on the left hand side.', false );
-    }*/
 
     public function content_foot_manage_events_page( $sContent ) {
 
