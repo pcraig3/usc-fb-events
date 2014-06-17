@@ -13,11 +13,8 @@ class Manage_Events extends AdminPageFramework {
 
     public function start_Manage_Events() { // start_{extended class name} - this method gets automatically triggered at the end of the class constructor.
 
-        //include_once("views/EventModifyCustomFieldType.php");
-        //new AdminPageFramework_FieldType_event_modify( 'Manage_Events' );
-
         /*
-         * ( Optional ) Register custom field types.
+         * Register custom field types.
          */
 
         /* 1. Include the file that defines the custom field type. */
@@ -117,7 +114,7 @@ class Manage_Events extends AdminPageFramework {
                 //'default'	=>	'placeholder old host',
                 'label'	=>	'Original Host:',
                 'attributes'	=>	array(
-                    'class'     => $this->section_id . '_host_old',
+                    'class'     => $this->section_id . '_host_fb',
                     'value'	=>	'',
                     'readonly'	=>	'ReadOnly',
                 ),
@@ -140,7 +137,7 @@ class Manage_Events extends AdminPageFramework {
                 'type'	=>	'text',
                 'label'	=>	'Original Location:',
                 'attributes'	=>	array(
-                    'class'     => $this->section_id . '_location_old',
+                    'class'     => $this->section_id . '_location_fb',
                     'value'	=>	'',
                     'readonly'	=>	'ReadOnly',
                 ),
@@ -163,7 +160,7 @@ class Manage_Events extends AdminPageFramework {
                 'time_format'	=> 'HH:mm',
                 'label'	=>	'Original Date: ',
                 'attributes'	=>	array(
-                    'class'     => $this->section_id . '_start_time_old',
+                    'class'     => $this->section_id . '_start_time_fb',
                     'value'	=>	    '',
                     'readonly' =>   'ReadOnly',
                     'size' =>       '30',
@@ -177,6 +174,27 @@ class Manage_Events extends AdminPageFramework {
                         'readonly'	=>	false,
                         'value'     =>  '',
                         'size' =>       '30',
+                    )
+                ),
+            ),
+            array(	// Multiple text fields
+                'field_id'	=>	'ticket_uri',
+                'title'	=>	'Event Ticket URI',
+                'help'	=>	'Add or update the ticket uri for an event.',
+                'type'	=>	'text',
+                'label'	=>	'Original Ticket URI: ',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_ticket_uri_fb',
+                    'value'	=>	'',
+                    'readonly'	=>	'ReadOnly',
+                ),
+                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
+                array(
+                    'label'	=>	'New Ticket URI: ',
+                    'attributes'	=>	array(
+                        'class'     => $this->section_id . '_ticket_uri',
+                        'readonly'	=>	false,
+                        'value'     =>  ''
                     )
                 ),
             ),
@@ -222,7 +240,7 @@ class Manage_Events extends AdminPageFramework {
                 <input type="text" id="search_box" class="searchbox" placeholder="Type here...."/>
             </div>
             <div class="filterjs__filter__checkbox__wrapper">
-                <h4>Filter by Permissions</h4>
+                <h4>Filter by Status</h4>
                 <ul id="removed">
                     <li>
                         <input id="display" value="display" type="checkbox">
@@ -381,8 +399,8 @@ class Manage_Events extends AdminPageFramework {
                     'host' =>       ( ! empty($values['host']) ) ? $values['host'] : "",
                     'location' =>   ( ! empty($values['location']) ) ? $values['location'] : "",
                     'start_time' => ( ! empty($values['start_time']) ) ? $values['start_time'] : "0000-00-00 00:00:00",
+                    'ticket_uri' => ( ! empty($values['ticket_uri']) ) ? $values['ticket_uri'] : "",
                 ));
-
         }
 
         $this->setSettingNotice( "</strong><p>Yes! The event <strong>" . $values['name'] . "</strong> has been updated.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );

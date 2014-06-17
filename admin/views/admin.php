@@ -20,9 +20,9 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
     $values = array(
         'eid' =>            null,
         'name' =>           null,
-        'host_old' =>       null,
+        'host_fb' =>       null,
         'host' =>           null,
-        'start_time_old' => null,
+        'start_time_fb' => null,
         'start_time' =>     null,
     );
 
@@ -250,8 +250,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
             'Event Host' =>  array(
                     0 => array(
                         "type" =>       "text",
-                        "id" =>         "modify_host_old",
-                        "name" =>       "modify_host_old",
+                        "id" =>         "modify_host_fb",
+                        "name" =>       "modify_host_fb",
                         "class" =>      "regular-text",
                         "value" =>      "",
                         "readonly" =>   "readonly",
@@ -267,8 +267,8 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
             'Event Date' =>  array(
             0 => array(
                 "type" =>       "text",
-                "id" =>         "modify_start_time_old",
-                "name" =>       "modify_start_time_old",
+                "id" =>         "modify_start_time_fb",
+                "name" =>       "modify_start_time_fb",
                 "class" =>      "regular-text",
                 "value" =>      "",
                 "readonly" =>   "readonly",

@@ -160,8 +160,8 @@ class Test_Events {
 
     /**
      * Super handy function merges our DB event data with FB events.
-     * Any conflicting values have their keys suffixed with "_old".
-     * ie, Facebook's "host" becomes "host_old" if I have a "host" of my own.
+     * Any conflicting values have their keys suffixed with "_fb".
+     * ie, Facebook's "host" becomes "host_fb" if I have a "host" of my own.
      *
      * @param array $event_array
      *
@@ -211,7 +211,7 @@ class Test_Events {
 
                             //if the modifiable fields are not equal to the current data
                             else if ( $event_array['events'][$i][$key] !== $all_db_events[$db_event_index][$key] ) {
-                                $event_array['events'][$i][$key . "_old"] = $event_array['events'][$i][$key];
+                                $event_array['events'][$i][$key . "_fb"] = $event_array['events'][$i][$key];
                                 $event_array['events'][$i][$key] = $all_db_events[$db_event_index][$key];
                             }
                         }

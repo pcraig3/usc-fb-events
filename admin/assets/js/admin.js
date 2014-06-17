@@ -187,15 +187,15 @@
         values.eid = $selected_row.data("eid");
         values.name = $selected_row.data("name");
         values.host = $selected_row.data("host");
-        values.host_old = $selected_row.data("host_old");
+        values.host_fb = $selected_row.data("host_fb");
         values.start_time = $selected_row.data("start_time");
-        values.start_time_old = $selected_row.data("start_time_old");
+        values.start_time_fb = $selected_row.data("start_time_fb");
         values.location = $selected_row.data("location");
-        values.location_old = $selected_row.data("location_old");
+        values.location_fb = $selected_row.data("location_fb");
         values.ticket_uri = $selected_row.data("ticket_uri");
-        values.ticket_uri_old = $selected_row.data("ticket_uri_old");
+        values.ticket_uri_fb = $selected_row.data("ticket_uri_fb");
         values.url = $selected_row.data("url");
-        values.url_old = $selected_row.data("url_old");
+        values.url_fb = $selected_row.data("url_fb");
         values.modified = $selected_row.data("modified");
         values.removed = $selected_row.data("removed");
 
@@ -206,14 +206,14 @@
         for (var key in values) {
 
             if (values.hasOwnProperty(key)) {
-                if(key.endsWith("_old") && values[key] === undefined) {
+                if(key.endsWith("_fb") && values[key] === undefined) {
 
-                    //this is for situations where there is no old_host
-                    var key_without_old = key.substring(0, key.length - "_old".length);
-                    values[key] = values[key_without_old];
-                    values[key_without_old] = undefined;
+                    //this is for situations where there is no host_fb
+                    var key_without_fb = key.substring(0, key.length - "_fb".length);
+                    values[key] = values[key_without_fb];
+                    values[key_without_fb] = undefined;
 
-                    $('.modify_' + key_without_old).val( values[key_without_old] );
+                    $('.modify_' + key_without_fb).val( values[key_without_fb] );
                 }
 
                 $('.modify_' + key).val( values[key] );
