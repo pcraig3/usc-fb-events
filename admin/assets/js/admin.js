@@ -192,8 +192,8 @@
         values.start_time_old = $selected_row.data("start_time_old");
         values.location = $selected_row.data("location");
         values.location_old = $selected_row.data("location_old");
-        values.tickets = $selected_row.data("tickets");
-        values.tickets_old = $selected_row.data("tickets_old");
+        values.ticket_uri = $selected_row.data("ticket_uri");
+        values.ticket_uri_old = $selected_row.data("ticket_uri_old");
         values.url = $selected_row.data("url");
         values.url_old = $selected_row.data("url_old");
         values.modified = $selected_row.data("modified");

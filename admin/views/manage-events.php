@@ -332,6 +332,7 @@ class Manage_Events extends AdminPageFramework {
             'host' =>           array(), // values with an array are modifiable
             'location' =>       array(),
             'start_time' =>     array(),
+            'ticket_uri' =>     array(),
         );
 
         //take the keys before 'modified' is added, as it doesn't belong in the loop
