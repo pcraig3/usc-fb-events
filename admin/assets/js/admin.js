@@ -211,6 +211,7 @@
                 }
 
                 $('.modify_' + key).val( values[key] );
+                $('.modify_' + key).trigger( 'update' );  //can hook into this if necessary
             }
         }
 

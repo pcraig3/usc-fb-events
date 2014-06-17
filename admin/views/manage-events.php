@@ -65,7 +65,7 @@ class Manage_Events extends AdminPageFramework {
 
         $this->addSettingFields(
             $this->section_id,
-            /*array(
+            array(
                 'field_id'	=>	'eid',
                 'type'	=>	'hidden',
                 'attributes'	=>	array(
@@ -78,7 +78,14 @@ class Manage_Events extends AdminPageFramework {
                 'attributes'	=>	array(
                     'class'     => $this->section_id . '_removed',
                 ),
-            ),*/
+            ),
+            array(
+                'field_id'	=>	'modified',
+                'type'	=>	'hidden',
+                'attributes'	=>	array(
+                    'class'     => $this->section_id . '_modified',
+                ),
+            ),
             array(	// Read-only
                 'field_id'	=>	'name',
                 'title'	=>	'Event Name',
@@ -138,30 +145,32 @@ class Manage_Events extends AdminPageFramework {
                 ),
             ),
             array(	// Multiple date pickers
-                'field_id'	=>	'dates',
-                'title'	=>	'Dates',
+                'field_id'	=>	'start_time',
+                'title'	=>	'Event Date',
+                'help'	=>	'Modify the date of the event.',
                 'type'  => 'date_time',
                 'date_format'	=>	'yy-mm-dd',
                 'time_format'	=> 'HH:mm',
-                'label'	=>	'Start Date: ',
+                'label'	=>	'Original Date: ',
                 'attributes'	=>	array(
-                    //'class'     => $this->section_id . '_location_old',
+                    'class'     => $this->section_id . '_start_time_old',
                     'value'	=>	    '',
                     'readonly' =>   'ReadOnly',
                     'size' =>       '30',
                 ),
-                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
+                //'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
+                'delimiter'	=>	'<br />',
                 array(
-                    'label'	=>	'End Date: ',
+                    'label'	=>	'New Date: ',
                     'attributes'	=>	array(
-                        //'class'     => $this->section_id . '_location',
+                        'class'     => $this->section_id . '_start_time',
                         'readonly'	=>	false,
                         'value'     =>  '',
                         'size' =>       '30',
                     )
                 ),
-            ),
-            array(	// Multiple text fields
+            )
+            /*array(	// Multiple text fields
                 'field_id'	=>	'start_time',
                 'title'	=>	'Event Date',
                 'help'	=>	'Modify the date of the event.',
@@ -181,8 +190,8 @@ class Manage_Events extends AdminPageFramework {
                         'value'     =>  ''
                     )
                 ),
-            ),
-            array(
+            ),*/
+            /*array(
                 'field_id'	=>	'modify_event_submit',
                 'type'	=>	'event_modify',
                 'title'			=>	'Modify Events',
@@ -190,7 +199,7 @@ class Manage_Events extends AdminPageFramework {
                 'attributes'	=> array(
                     'class'	=>	'button button-primary modify_event_submit',
                 ),
-            )
+            )*/
         );
 
     }
@@ -254,7 +263,7 @@ class Manage_Events extends AdminPageFramework {
         /* $this->setFooterInfoLeft( '<br />Orange Text on the left hand side.', false );*/
 
         //this is the end of the form defined in ::addSettingFields
-        //submit_button( "Modify Event", "primary", "modify_event_submit" );
+        submit_button( "Modify Event", "primary", "modify_event_submit" );
 
         ?>
 
@@ -272,7 +281,19 @@ class Manage_Events extends AdminPageFramework {
             <script>
 			jQuery( document ).ready( function($){
 
-				    $('.hasDatepicker').first().datepicker( 'disable' );
+				    $('.hasDatepicker').datepicker( 'disable' );
+
+				    $('.hasDatepicker').on( 'update', function () {
+
+                       $(this).datepicker( 'disable');
+			           $(this).datepicker( 'setDate', new Date( $(this).val() ) );
+			           $('.hasDatepicker').last().datepicker( 'enable' );
+
+				    } );
+
+				    $('#modify_event_submit').on('click', function() {
+				        $('.hasDatepicker').datepicker( 'enable' );
+				    });
 			});
 			</script>
 		" . PHP_EOL;
@@ -326,6 +347,7 @@ class Manage_Events extends AdminPageFramework {
         /*
         echo "<pre>";
         var_dump($aInput);
+        echo "///////////////////////";
         var_dump($values);
         echo "</pre>";
         die();
@@ -338,10 +360,10 @@ class Manage_Events extends AdminPageFramework {
                 array(
                     'removed' =>    $values['removed'],
                     'modified' =>   $values['modified'],
-                    'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
-                    'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
-                    'location' =>   ( isset($values['location']) ) ? $values['location'] : NULL,
-                    'start_time' => ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
+                    'name' =>       ( ! empty($values['name']) ) ? $values['name'] : "",
+                    'host' =>       ( ! empty($values['host']) ) ? $values['host'] : "",
+                    'location' =>   ( ! empty($values['location']) ) ? $values['location'] : "",
+                    'start_time' => ( ! empty($values['start_time']) ) ? $values['start_time'] : "0000-00-00 00:00:00",
                 ));
 
         }

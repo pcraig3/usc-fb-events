@@ -131,7 +131,7 @@ class DB_API {
             return false;
 
         //Check date validity
-        if( isset($data['start_time']) ) {
+        if( isset($data['start_time'] ) && $data['start_time'] !== "0000-00-00 00:00:00" ) {
             //Convert activity date from local timestamp to GMT mysql format
             $data['start_time'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['start_time'] ), true );
         }
@@ -181,13 +181,12 @@ class DB_API {
         if( ! is_numeric( $eid ) )
             return false;
 
-
-
         //Check date validity
-        if( isset($data['start_time']) ) {
+        if( isset($data['start_time'] ) && $data['start_time'] !== "0000-00-00 00:00:00" ) {
             //Convert activity date from local timestamp to GMT mysql format
             $data['start_time'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['start_time'] ), true );
         }
+
 
         //WHATEVER
         if( isset($data['ticket']) ) {

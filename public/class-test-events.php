@@ -206,7 +206,7 @@ class Test_Events {
                     foreach( $all_db_event_array_keys as &$key ) {
 
                         //if the modifiable fields are not EMPTY -- WE CAN'T F*CKING PUT 'NULL' INTO UPDATE STATEMENTS
-                        if( ! empty( $all_db_events[$db_event_index][$key] ) ) {
+                        if( ! empty( $all_db_events[$db_event_index][$key] ) && $all_db_events[$db_event_index][$key] !== "0000-00-00 00:00:00" ) {
 
                             //if the key doesn't exist in the old value, just put it in
                             if( ! isset( $event_array['events'][$i][$key] ) )
