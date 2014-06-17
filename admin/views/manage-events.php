@@ -70,13 +70,20 @@ class Manage_Events extends AdminPageFramework {
                 'type'	=>	'hidden',
                 'attributes'	=>	array(
                     'class'     => $this->section_id . '_eid',
+                    'fieldrow'	=>	array(
+                        'style'	=>	'display: none; clear: none;',
+                    ),
                 ),
+                //'show_title_column' => false,
             ),
             array(
                 'field_id'	=>	'removed',
                 'type'	=>	'hidden',
                 'attributes'	=>	array(
                     'class'     => $this->section_id . '_removed',
+                    'fieldrow'	=>	array(
+                        'style'	=>	'display: none; clear: none;',
+                    ),
                 ),
             ),
             array(
@@ -84,6 +91,9 @@ class Manage_Events extends AdminPageFramework {
                 'type'	=>	'hidden',
                 'attributes'	=>	array(
                     'class'     => $this->section_id . '_modified',
+                    'fieldrow'	=>	array(
+                        'style'	=>	'display: none; clear: none;',
+                    ),
                 ),
             ),
             array(	// Read-only
@@ -169,7 +179,7 @@ class Manage_Events extends AdminPageFramework {
                         'size' =>       '30',
                     )
                 ),
-            )
+            ),
             /*array(	// Multiple text fields
                 'field_id'	=>	'start_time',
                 'title'	=>	'Event Date',
@@ -191,15 +201,31 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
             ),*/
-            /*array(
-                'field_id'	=>	'modify_event_submit',
-                'type'	=>	'event_modify',
-                'title'			=>	'Modify Events',
-                'show_title_column' => false,
-                'attributes'	=> array(
-                    'class'	=>	'button button-primary modify_event_submit',
+            array(
+                'field_id'	=>	'modify_events_submit',
+                'section_id' => 'modify',
+                'type'	    =>	'submit',
+                'title'		=>	'Modify Events',
+                'label'     =>  'Modify Events',
+                'attributes'	=>	array(
+                    'class'	=>	'button button-primary',
+                    'title'	=>	'Modify Events',
+                    //'style'	=>	'background-color: #C1DCFA;',
+                    /*'field'	=>	array(
+                        'style'	=>	'display: inline; clear: none;',
+                    ),*/
                 ),
-            )*/
+                array(
+                    'title'	=>	'Reset to Defaults',
+                    'label'	=>	'Reset to Defaults',
+                    'attributes'	=>	array(
+                        'class'	=>	'button button-secondary',
+                        'title'	=>	'Reset to Defaults',
+                        //'style'	=>	'background-color: #C8AEFF;',
+                    ),
+                ),
+                'show_title_column' => false,
+            )
         );
 
     }
@@ -209,9 +235,9 @@ class Manage_Events extends AdminPageFramework {
         echo $sContent;  //this is the title of the page set in the ::addSubMenuItems method above.
         ?>
 
-        <h3 class="title">List of Facebook Events</h3>
-
         <div id='filterjs__notice'></div>
+
+        <h3 class="title">List of Facebook Events</h3>
 
         <div class="filterjs">
         <div class="filterjs__filter">
@@ -267,7 +293,9 @@ class Manage_Events extends AdminPageFramework {
         /* $this->setFooterInfoLeft( '<br />Orange Text on the left hand side.', false );*/
 
         //this is the end of the form defined in ::addSettingFields
-        submit_button( "Modify Event", "primary", "modify_event_submit" );
+        //submit_button( "Modify Event", "primary", "modify_event_submit" );
+        //$this->echo_button("Modify Event", "modify_event_submit", 50, "button-primary");
+        //$this->echo_button("Reset to Defaults", "modify_event_default", 55);
 
         ?>
 
@@ -310,8 +338,17 @@ class Manage_Events extends AdminPageFramework {
      */
     public function validation_manage_events_page( $aInput ) {	// validation_{page slug}
 
-        //var_dump($aInput["modify"]["host_old"][1]);
-        //echo "</pre>";
+        $modify_events_submit_array = $aInput[$this->section_id]['modify_events_submit'];
+        if( is_array( $modify_events_submit_array ) && isset( $modify_events_submit_array[1] )
+            && isset( $aInput[$this->section_id]['eid'] ) && $modify_events_submit_array[1] === "Reset to Defaults" ) {
+
+            DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
+
+            $this->setSettingNotice( "Modifications made to  '" . $aInput[$this->section_id]['name'] . "'</strong> has been reset.", 'updated' );
+
+            return $aInput;
+            
+        }
 
         //~ROW VALUES
         $values = array(
@@ -372,10 +409,12 @@ class Manage_Events extends AdminPageFramework {
 
         }
 
+        $this->setSettingNotice( "Yes! The event '" . $values['name'] . "' has been updated.", 'updated' );
+
         return $aInput;
     }
 
-    private function echo_button( $button_text, $id, $tab_index ) {
+    private function echo_button( $button_text, $id, $tab_index, $classes = "" ) {
 
         $button_text = esc_html( $button_text );
         $id = esc_attr( $id );
@@ -385,7 +424,7 @@ class Manage_Events extends AdminPageFramework {
             array(
                 'tabindex' 		=> $tab_index,
                 'data-nonce' 	=> wp_create_nonce($id . "_nonce"),
-                'class'			 => 'button',
+                'class'			 => 'button ' . $classes,
         ));
     }
 

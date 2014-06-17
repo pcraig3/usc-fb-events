@@ -403,11 +403,11 @@ class DB_API {
       */
      public static function get_removed_events_eids() {
 
-     return DB_API::get_fbevents( array (
-        'fields' =>     array( 'eid' ),
-        'removed' =>    1
-        )
-     );
+         return DB_API::get_fbevents( array (
+            'fields' =>     array( 'eid' ),
+            'removed' =>    1
+            )
+         );
 
      }
 
