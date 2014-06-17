@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.6.2
+Stable tag: 0.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,9 @@ It almost works.
 
 
 == Changelog ==
+
+= 0.6.3 =
+* 'Reset to defaults', modified tag, and admin notices fixed up
 
 = 0.6.2 =
 * Pretty sure I got all the bugs out of the datepicker.  Almost killed me.

@@ -121,7 +121,7 @@ class Manage_Events extends AdminPageFramework {
                     'value'	=>	'',
                     'readonly'	=>	'ReadOnly',
                 ),
-                'delimiter'	=>	'<br />',
+                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
                 array(
                     'label'	=>	'New Host: ',
                     //'field_id' => 'host',
@@ -144,7 +144,7 @@ class Manage_Events extends AdminPageFramework {
                     'value'	=>	'',
                     'readonly'	=>	'ReadOnly',
                 ),
-                'delimiter'	=>	'<br />',
+                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
                 array(
                     'label'	=>	'New Location: ',
                     'attributes'	=>	array(
@@ -168,8 +168,8 @@ class Manage_Events extends AdminPageFramework {
                     'readonly' =>   'ReadOnly',
                     'size' =>       '30',
                 ),
-                //'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
-                'delimiter'	=>	'<br />',
+                'delimiter'	=>	'&nbsp;&nbsp;&nbsp;&nbsp;',
+                //'delimiter'	=>	'<br />',
                 array(
                     'label'	=>	'New Date: ',
                     'attributes'	=>	array(
@@ -180,47 +180,23 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
             ),
-            /*array(	// Multiple text fields
-                'field_id'	=>	'start_time',
-                'title'	=>	'Event Date',
-                'help'	=>	'Modify the date of the event.',
-                'type'	=>	'text',
-                'label'	=>	'Original Date:',
-                'attributes'	=>	array(
-                    'class'     => $this->section_id . '_start_time_old',
-                    'value'	=>	'',
-                    'readonly'	=>	'ReadOnly',
-                ),
-                'delimiter'	=>	'<br />',
-                array(
-                    'label'	=>	'New Date: ',
-                    'attributes'	=>	array(
-                        'class'     => $this->section_id . '_start_time',
-                        'readonly'	=>	false,
-                        'value'     =>  ''
-                    )
-                ),
-            ),*/
             array(
                 'field_id'	=>	'modify_events_submit',
                 'section_id' => 'modify',
                 'type'	    =>	'submit',
-                'title'		=>	'Modify Events',
-                'label'     =>  'Modify Events',
+                'title'		=>	'Modify Event',
+                'label'     =>  'Modify Event',
                 'attributes'	=>	array(
                     'class'	=>	'button button-primary',
-                    'title'	=>	'Modify Events',
+                    'title'	=>	'Modify Event',
                     //'style'	=>	'background-color: #C1DCFA;',
-                    /*'field'	=>	array(
-                        'style'	=>	'display: inline; clear: none;',
-                    ),*/
                 ),
                 array(
-                    'title'	=>	'Reset to Defaults',
-                    'label'	=>	'Reset to Defaults',
+                    'title'	=>	'Reset Modifications',
+                    'label'	=>	'Reset Modifications',
                     'attributes'	=>	array(
                         'class'	=>	'button button-secondary',
-                        'title'	=>	'Reset to Defaults',
+                        'title'	=>	'Reset Modifications',
                         //'style'	=>	'background-color: #C8AEFF;',
                     ),
                 ),
@@ -340,14 +316,13 @@ class Manage_Events extends AdminPageFramework {
 
         $modify_events_submit_array = $aInput[$this->section_id]['modify_events_submit'];
         if( is_array( $modify_events_submit_array ) && isset( $modify_events_submit_array[1] )
-            && isset( $aInput[$this->section_id]['eid'] ) && $modify_events_submit_array[1] === "Reset to Defaults" ) {
+            && isset( $aInput[$this->section_id]['eid'] ) ) {
 
             DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
 
-            $this->setSettingNotice( "Modifications made to  '" . $aInput[$this->section_id]['name'] . "'</strong> has been reset.", 'updated' );
+            $this->setSettingNotice( "</strong><p>Modifications made to <strong>" . $aInput[$this->section_id]['name'] . "'</strong> has been reset.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
             return $aInput;
-            
         }
 
         //~ROW VALUES
@@ -409,7 +384,7 @@ class Manage_Events extends AdminPageFramework {
 
         }
 
-        $this->setSettingNotice( "Yes! The event '" . $values['name'] . "' has been updated.", 'updated' );
+        $this->setSettingNotice( "</strong><p>Yes! The event <strong>" . $values['name'] . "</strong> has been updated.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
         return $aInput;
     }

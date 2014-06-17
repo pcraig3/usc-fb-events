@@ -15,6 +15,12 @@
         change_buttons();
         ajax_loading(true);
 
+
+        $( ".dismiss_notice" ).bind( "click", function( event ) {
+            event.preventDefault();
+            $(this).parent().removeClass("updated error").empty();
+        });
+
 		// Place your administration-specific JavaScript here
         var $event_container = $('#event_list');
         var $event_rows = $('[id^="fjs_"]');
@@ -147,7 +153,7 @@
                 }
 
                 update_msg += "the calendar.";
-                $("#filterjs__notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a id='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
+                $("#filterjs__notice").addClass("updated").empty().prepend("<p>" + update_msg + "</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>");
 
                 $selected_row.data("removed", $selected_row.find(".removed").text());
 
@@ -165,7 +171,7 @@
                 $selected_row.removeClass("selected");
                 change_buttons();
 
-                $( "#dismiss_notice" ).bind( "click", function( event ) {
+                $( ".dismiss_notice" ).bind( "click", function( event ) {
                     event.preventDefault();
                     $(this).parent().removeClass("updated error").empty();
                 });
