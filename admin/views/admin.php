@@ -32,7 +32,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
         $values[$key] = ( isset($_POST['modify_' . $key]) ) ? $_POST['modify_' . $key] : null;
     }
 
-    $values['removed'] =    ( isset($_POST['modify_removed']) &&
+    $values['removed'] = ( isset($_POST['modify_removed']) &&
         $_POST['modify_removed'] === "display" ) ? 0 : 1;
 
 /*
@@ -49,7 +49,7 @@ if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST' &&
                 'removed' =>    $values['removed'],
                 'name' =>       ( isset($values['name']) ) ? $values['name'] : NULL,
                 'host' =>       ( isset($values['host']) ) ? $values['host'] : NULL,
-                'start_time' =>       ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
+                'start_time' => ( isset($values['start_time']) ) ? $values['start_time'] : NULL,
         ));
 
    }

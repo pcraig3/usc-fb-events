@@ -44,9 +44,12 @@ jQuery(function ($) {
                     if( parseInt(event.removed) === 1 ) {
                         event.removed = "removed";
                     }
-                    else {
-                        event.removed = "display";
+                    else
+                        if ( parseInt(event.modified) === 1 ){
+                        event.removed = "modified";
                     }
+                    else
+                        event.removed = "display";
                 });
 
                 fJS = filterInit( events );
@@ -78,6 +81,8 @@ jQuery(function ($) {
             var html_string = "<div class='row ";
             if(events.removed === "removed")
                 html_string += " removed ";
+            if( events.removed === "modified" )
+                html_string += " modified ";
 
             html_string += "' ";
 

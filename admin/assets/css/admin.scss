@@ -85,28 +85,48 @@
       }
     }
 
-    &.selected {
-      background-color: rgb(0, 116, 162);
-      background-color: rgba(0, 116, 162, 0.40);
+    &.modified {
+
+    background-color: rgb(255, 193, 138);
+      background-color: rgba(255, 193, 138, 0.25);
 
       &:hover {
 
-        background-color: rgba(0, 116, 162, 0.30);
+        background-color: rgba(255, 193, 138, 0.15);
       }
     }
+
+    &.selected {
+        background-color: rgb(0, 116, 162);
+        background-color: rgba(0, 116, 162, 0.40);
+
+        &:hover {
+
+          background-color: rgba(0, 116, 162, 0.30);
+        }
+      }
 
     &.removed.selected {
       background-color: rgb(0, 116, 162);
-      background-color: rgba(0, 116, 162, 0.60);
+      background-color: rgba(0, 116, 162, 0.55);
 
       &:hover {
 
-        background-color: rgba(0, 116, 162, 0.50);
+        background-color: rgba(0, 116, 162, 0.45);
       }
     }
 
+    &.modified.selected {
+      background-color: rgb(0, 116, 162);
+      background-color: rgba(0, 116, 162, 0.45);
 
-    span {
+      &:hover {
+
+        background-color: rgba(0, 116, 162, 0.35);
+      }
+    }
+
+span {
 
       display:    table-cell;
       text-align: left;

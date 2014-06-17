@@ -46,6 +46,11 @@
       background-color: rgba(221, 61, 54, 0.4); }
       .filterjs__list .row.removed:hover {
         background-color: rgba(221, 61, 54, 0.3); }
+    .filterjs__list .row.modified {
+      background-color: #ffc18a;
+      background-color: rgba(255, 193, 138, 0.25); }
+      .filterjs__list .row.modified:hover {
+        background-color: rgba(255, 193, 138, 0.15); }
     .filterjs__list .row.selected {
       background-color: #0074a2;
       background-color: rgba(0, 116, 162, 0.4); }
@@ -53,9 +58,14 @@
         background-color: rgba(0, 116, 162, 0.3); }
     .filterjs__list .row.removed.selected {
       background-color: #0074a2;
-      background-color: rgba(0, 116, 162, 0.6); }
+      background-color: rgba(0, 116, 162, 0.55); }
       .filterjs__list .row.removed.selected:hover {
-        background-color: rgba(0, 116, 162, 0.5); }
+        background-color: rgba(0, 116, 162, 0.45); }
+    .filterjs__list .row.modified.selected {
+      background-color: #0074a2;
+      background-color: rgba(0, 116, 162, 0.45); }
+      .filterjs__list .row.modified.selected:hover {
+        background-color: rgba(0, 116, 162, 0.35); }
     .filterjs__list .row span {
       display: table-cell;
       text-align: left;

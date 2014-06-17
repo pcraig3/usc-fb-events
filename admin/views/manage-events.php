@@ -224,7 +224,11 @@ class Manage_Events extends AdminPageFramework {
                 <ul id="removed">
                     <li>
                         <input id="display" value="display" type="checkbox">
-                        <span >Display</span>
+                        <span>Display</span>
+                    </li>
+                    <li>
+                        <input id="modified" value="modified" type="checkbox">
+                        <span>Modified</span>
                     </li>
                     <li>
                         <input id="removed" value="removed" type="checkbox">
