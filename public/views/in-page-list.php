@@ -62,7 +62,14 @@ for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
 
     $html_string .= '</div><!--end of .flag__body-->';
     $html_string .= '</div><!--end of .flag-->';
-    $html_string .= '<div class="event__button" style="background:palevioletred;color:white;">Tickets</div>';
+
+    if($current_event['ticket_uri']) {
+        $html_string .= '<a href="' . esc_url( $current_event['ticket_uri'] ) . '" target="_blank">';
+        $html_string .= '<div class="event__button" style="background:palevioletred;color:white;">Get Tickets</div>';
+        $html_string .= '</a>';
+    }
+
+
     $html_string .= '<a href="' . esc_url( $current_event['url'] ) . '" target="_blank">';
     $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
     $html_string .= '</a>';

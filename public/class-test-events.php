@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.6.3';
+	const VERSION = '0.9.0';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -85,7 +85,7 @@ class Test_Events {
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
      *
-     * @since    0.5.0
+     * @since    0.9.0
      *
      * @return string       a complimentary adjective for students
      */
@@ -143,6 +143,16 @@ class Test_Events {
         return "false";
     }
 
+    /**
+     * Function generates a facebook URL based on a facebook eid.
+     * Events in the array are given a new key ('url'): their Facebook page
+     *
+     * @param array $event_array  an array of events (from Facebook)
+     *
+     * @since    0.9.0
+     *
+     * @return array mixed  an array of events with Facebook urls added
+     */
     private function facebook_urls( array $event_array ) {
 
         $total = $event_array['total'];

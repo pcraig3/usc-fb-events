@@ -201,12 +201,17 @@
 
         $selected_row.removeClass("selected");
 
+        var preserve_empty_values = [
+            "ticket_uri_fb",
+        ]
+
         //console.log(values);
 
         for (var key in values) {
 
             if (values.hasOwnProperty(key)) {
-                if(key.endsWith("_fb") && values[key] === undefined) {
+                //if the key ends with _fb and it is undefined and it is NOT in the preserve_empty_values array.
+                if(key.endsWith("_fb") && values[key] === undefined && ($.inArray( key, preserve_empty_values ) < 0 ) ) {
 
                     //this is for situations where there is no host_fb
                     var key_without_fb = key.substring(0, key.length - "_fb".length);
