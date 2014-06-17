@@ -107,7 +107,15 @@ class Test_Events {
         //in the future, we'll have this take a parameter
         $returned_array = $this->call_api();
 
+        $returned_array = $this->facebook_urls($returned_array);
         $returned_array = $this->merge_fb_and_db_events($returned_array);
+
+        /*
+        echo "<pre>";
+        var_dump($returned_array);
+        echo "</pre>";
+        */
+
         $returned_array = $this->remove_removed_events($returned_array);
 
         if( is_array( $returned_array ) ) {
@@ -135,28 +143,17 @@ class Test_Events {
         return "false";
     }
 
-    /**
-     * Function takes merged event array and purges if of events flagged "removed"
-     *
-     * @param array $event_array  an array of events (from Facebook)
-     *
-     * @since    0.5.0
-     *
-     * @return array mixed  an array of events wherein those flagged for removal are removed
-     */
-    private function remove_removed_events( array $event_array ) {
+    private function facebook_urls( array $event_array ) {
 
         $total = $event_array['total'];
         $events = $event_array['events'];
 
         for( $i = 0; $i < $total; $i++ ) {
 
-            if( isset($events[$i]['removed']) && intval( $events[$i]['removed']) === 1 )
-                unset( $events[$i] );
+            $events[$i]['url'] = 'http://facebook.com/' . $events[$i]['eid'] . "/";
         }
 
-        $event_array['events'] = array_values( $events );
-        $event_array['total'] = count( $events );
+        $event_array['events'] = $events;
 
         return $event_array;
     }
@@ -237,6 +234,32 @@ class Test_Events {
     }
 
     /**
+     * Function takes merged event array and purges if of events flagged "removed"
+     *
+     * @param array $event_array  an array of events (from Facebook)
+     *
+     * @since    0.5.0
+     *
+     * @return array mixed  an array of events wherein those flagged for removal are removed
+     */
+    private function remove_removed_events( array $event_array ) {
+
+        $total = $event_array['total'];
+        $events = $event_array['events'];
+
+        for( $i = 0; $i < $total; $i++ ) {
+
+            if( isset($events[$i]['removed']) && intval( $events[$i]['removed']) === 1 )
+                unset( $events[$i] );
+        }
+
+        $event_array['events'] = array_values( $events );
+        $event_array['total'] = count( $events );
+
+        return $event_array;
+    }
+
+    /**
      * Multisort function sorts two-dimensional arrays on specific keys.
      * Ripped off the PHP reference page from one of the comments.
      * http://www.php.net/manual/en/function.array-multisort.php#114076
@@ -290,7 +313,7 @@ class Test_Events {
      */
     private function events_list( $events_array, $limit = 0 ) {
 
-        return require_once('views/in_page_list.php');
+        return require_once('views/in-page-list.php');
     }
 
     /**

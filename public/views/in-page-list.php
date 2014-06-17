@@ -38,9 +38,8 @@ for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
     if( isset( $current_event['pic_big'] ) )
         $img_url = esc_url( $current_event['pic_big'] );
 
-
-    $html_string .= '<a href="' . esc_url( 'http://facebook.com/' . $current_event['eid'] . "/" ) . '" target="_blank">';
-    $html_string .= '<div class="events__box flag clearfix">';
+    $html_string .= '<div class="events__box clearfix">';
+    $html_string .= '<div class="flag">';
 
     $html_string.= '<div class="flag__image">';
 
@@ -62,8 +61,13 @@ for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
         . '</p>';
 
     $html_string .= '</div><!--end of .flag__body-->';
+    $html_string .= '</div><!--end of .flag-->';
+    $html_string .= '<div class="event__button" style="background:palevioletred;color:white;">Tickets</div>';
+    $html_string .= '<a href="' . esc_url( $current_event['url'] ) . '" target="_blank">';
     $html_string .= '<span class="events__box__count">' . (intval( $i ) + 1) . '</span>';
-    $html_string .= '</div><!--end of events__box--></a>';
+    $html_string .= '</a>';
+
+    $html_string .= '</div><!--end of events__box-->';
 
 }
 

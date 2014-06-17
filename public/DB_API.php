@@ -42,7 +42,7 @@ class DB_API {
         start_time datetime NULL,
         host varchar(127) NULL,
         location varchar(255) NULL,
-        ticket varchar(511) NULL,
+        tickets varchar(511) NULL,
         url varchar(511) NULL,
         modified bool NOT NULL default '0',
         removed bool NOT NULL default '0',
@@ -137,8 +137,8 @@ class DB_API {
         }
 
         //WHATEVER
-        if( isset($data['ticket']) ) {
-            $data['ticket'] = esc_url_raw( $data['ticket'] );
+        if( isset($data['tickets']) ) {
+            $data['tickets'] = esc_url_raw( $data['tickets'] );
         }
 
         if( isset($data['url']) ) {
@@ -189,8 +189,8 @@ class DB_API {
 
 
         //WHATEVER
-        if( isset($data['ticket']) ) {
-            $data['ticket'] = esc_url_raw( $data['ticket'] );
+        if( isset($data['tickets']) ) {
+            $data['tickets'] = esc_url_raw( $data['tickets'] );
         }
 
         if( isset($data['url']) ) {
@@ -430,7 +430,7 @@ class DB_API {
             'append_to_where' =>  " AND (start_time IS NULL OR start_time = '0000-00-00 00:00:00')"
                                 . " AND (location IS NULL OR location = '')"
                                 . " AND (host IS NULL OR host = '')"
-                                . " AND (ticket IS NULL OR ticket = '')"
+                                . " AND (tickets IS NULL OR tickets = '')"
                                 . " AND (url IS NULL OR url = '')",
         ));
     }
