@@ -25,10 +25,12 @@ jQuery(function ($) {
         var jqxhr = $.post(
             "admin-ajax.php",
             {
-                action: "get_events",
-                attr_id: "event_list",
-                nonce: $("#event_list").data("nonce"),
-                whitelist: 1
+                action:         "get_events",
+                attr_id:        "event_list",
+                nonce:          $("#event_list").data("nonce"),
+                remove_events:  0,
+                whitelist:      1
+
             },
 
             function( data ) {

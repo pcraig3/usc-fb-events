@@ -20,23 +20,24 @@ jQuery(function ($) {
      */
     function ajax_get_events() {
 
-        console.log("data");
+        //console.log(ajax);
 
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
-            ajaxurl,
+            ajax.url,
             {
-                action: "get_events",
-                attr_id: "event_list",
-                nonce: $("#event_list").data("nonce")
+                action:         "get_events",
+                attr_id:        "event_list",
+                nonce:          $("#event_list").data("nonce"),
+                remove_events:  1
                 //we don't need this column because it defaults to false.
                 //whitelist: 0
             },
 
             function( data ) {
 
-                console.log(data);
+                //console.log(data);
 
                 if(! data['success']) {
                     alert("Ack! Problems getting your removed events back from the database.")
@@ -130,11 +131,11 @@ jQuery(function ($) {
         }
 
         var settings = {
-            filter_criteria: {
+            /*filter_criteria: {
                 removed: ['#removed :checkbox', 'removed']
-            },
+            },*/
             search: {input: '#search_box' },
-            and_filter_on: true,
+            //and_filter_on: true,
             id_field: 'id' //Default is id. This is only for usecase
         };
 

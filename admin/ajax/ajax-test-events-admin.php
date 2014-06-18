@@ -35,6 +35,7 @@ function return_to_or_remove_from_calendar() {
     //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
     $response = 	false;
 
+    //@TODO: this should probably be re-directed
     if($button_id === 'remove_event_button')
         $response = remove_from_calendar_query($wpdb, $eid);
     if($button_id === 'display_event_button')

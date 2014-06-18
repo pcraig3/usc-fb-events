@@ -227,7 +227,7 @@ class Test_Events_Admin {
      * Register the administration menu for this plugin into the WordPress Dashboard menu.
      *
      * @since    0.1.0
-     */
+     *
     public function add_plugin_admin_menu() {
 
         /*
@@ -237,10 +237,6 @@ class Test_Events_Admin {
          *
          *        Administration Menus: http://codex.wordpress.org/Administration_Menus
          *
-         * @TODO:
-         *
-         * - Change 'manage_options' to the capability you see fit
-         *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
          *
         $this->plugin_screen_hook_suffix = add_options_page(
             __( 'Test Events Settings', "manage_events_page" ),
@@ -249,7 +245,6 @@ class Test_Events_Admin {
             "manage_events_page",
             array( $this, 'display_plugin_admin_page' )
         );
-        */
     }
 
     /**
@@ -265,6 +260,8 @@ class Test_Events_Admin {
      * Add settings action link to the plugins page.
      *
      * @since    0.1.0
+     *
+     * @TODO: Obviously, this has to be addressed eventually
      */
     public function add_action_links( $links ) {
 

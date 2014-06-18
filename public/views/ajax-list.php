@@ -17,7 +17,7 @@
                 <h4>Search with filter.js</h4>
                 <input type="text" id="search_box" class="searchbox" placeholder="Type here...."/>
             </div>
-            <div class="filterjs__filter__checkbox__wrapper">
+            <!--div class="filterjs__filter__checkbox__wrapper">
                 <h4>Filter by Status</h4>
                 <ul id="removed">
                     <li>
@@ -33,8 +33,9 @@
                         <span>Removed</span>
                     </li>
                 </ul>
-            </div>
+            </div-->
         </div>
+        <br>
         <div class="filterjs__list__wrapper">
             <!--div class="filterjs__loading">
                 <img class="filterjs__loading__img"
