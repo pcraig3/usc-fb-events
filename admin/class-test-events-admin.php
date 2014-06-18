@@ -46,7 +46,7 @@ class Test_Events_Admin {
      * Initialize the plugin by loading admin scripts & styles and adding a
      * settings page and menu.
      *
-     * @since   0.9.1
+     * @since   0.9.2
      */
     private function __construct() {
 
@@ -218,8 +218,11 @@ class Test_Events_Admin {
             wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'simple_filterjs' ), Test_Events::VERSION );
             wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), Test_Events::VERSION );
             wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), Test_Events::VERSION );
-            wp_enqueue_script( 'simple_filterjs', plugins_url( 'assets/js/simple_filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( 'simple_filterjs', plugins_url( 'assets/js/simple-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
             wp_enqueue_script( 'jquery-ui-datepicker' );
+
+            // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
+            wp_localize_script( 'simple_filterjs', "ajax", array( 'url' => network_admin_url( 'admin-ajax.php' ) ) );
         }
     }
 

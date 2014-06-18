@@ -107,7 +107,9 @@ jQuery(function ($) {
                                     + event.host + ": " + event.name + '">'
                                     + event.name + '</h3>';
 
-            html_string +=          '<p class="lede">' + event.start_time + ' | '
+            var date = new Date(event.start_time);
+
+            html_string +=          '<p class="lede">' + date.toLocaleDateString() + ' | '
                                     + event.host + '</p>';
 
             html_string +=      '</div><!--end of .flag__body-->';

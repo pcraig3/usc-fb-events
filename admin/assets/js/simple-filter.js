@@ -23,7 +23,7 @@ jQuery(function ($) {
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
-            "admin-ajax.php",
+            ajax.url,
             {
                 action:         "get_events",
                 attr_id:        "event_list",
