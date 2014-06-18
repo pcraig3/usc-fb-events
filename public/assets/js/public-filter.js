@@ -20,8 +20,6 @@ jQuery(function ($) {
      */
     function ajax_get_events() {
 
-        //console.log(ajax);
-
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
@@ -107,7 +105,7 @@ jQuery(function ($) {
                                     + event.host + ": " + event.name + '">'
                                     + event.name + '</h3>';
 
-            var date = new Date(event.start_time);
+            var date = new Date( parseInt(event.start_time) * 1000);
 
             html_string +=          '<p class="lede">' + date.toLocaleDateString() + ' | '
                                     + event.host + '</p>';

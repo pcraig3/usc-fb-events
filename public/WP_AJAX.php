@@ -140,20 +140,24 @@ class WP_AJAX {
         }
 
         $whitelist = ( isset($_POST['whitelist']) ) ? $_POST['whitelist'] : false;
-        $remove_events = true; //( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
+        $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
 
         $te = Test_Events::get_instance();
 
         $response = $te->call_api();
 
         $response = $te->facebook_urls($response);
+
+        if($whitelist)
+            $response['events'] = DB_API::whitelist_array_items($response['events']);
+
         $response = $te->merge_fb_and_db_events($response);
 
         if($remove_events)
             $response = $te->remove_removed_events($response);
 
-        if($whitelist)
-            $response['events'] = DB_API::whitelist_array_items($response['events']);
+        //javascript CANNOT understand dates
+        $response = $te->date_strings_to_timestamps($response);
 
         $result['response'] = $response;
         $result['success'] = ( $response === false ) ? false : true;

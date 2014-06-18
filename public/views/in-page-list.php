@@ -54,7 +54,7 @@ for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
         '">' . esc_html( $current_event['name'] ) . '</h3>';
 
     $html_string .= '<p class="lede">'
-        . esc_html( date("M j", strtotime($current_event['start_time'] ) ) )
+        . esc_html( date("M j", $current_event['start_time'] ) )
         . " | "
         . esc_html( $current_event['host'] )
         . '</p>';

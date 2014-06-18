@@ -166,6 +166,44 @@ class Test_Events {
     }
 
     /**
+     * @param array $event_array  an array of events (from Facebook)
+     *
+     * @since    0.9.0
+     *
+     * @return array mixed  an array of events with Facebook urls added
+     */
+    public function date_strings_to_timestamps( array $event_array ) {
+
+        $total = $event_array['total'];
+        $events = $event_array['events'];
+
+        for( $i = 0; $i < $total; $i++ ) {
+
+            foreach($events[$i] as $key => $value) {
+
+                //if it starts with
+                if( strpos($key, "start_time") === 0 ) {
+                    $events[$i][$key] = strtotime($events[$i][$key]);
+                    //$events[$i][$key] = ($events[$i][$key]*1000);
+                }
+            }
+
+        }
+
+        $event_array['events'] = $events;
+
+        /*
+        echo "<pre>";
+        var_dump($event_array['events'] );
+        echo "</pre>";
+
+        die();
+        */
+
+        return $event_array;
+    }
+
+    /**
      * Super handy function merges our DB event data with FB events.
      * Any conflicting values have their keys suffixed with "_fb".
      * ie, Facebook's "host" becomes "host_fb" if I have a "host" of my own.
@@ -329,13 +367,8 @@ class Test_Events {
         $events_array = $this->facebook_urls($events_array);
         $events_array = $this->merge_fb_and_db_events($events_array);
 
-        /*
-        echo "<pre>";
-        var_dump($events_array);
-        echo "</pre>";
-        */
-
         $events_array = $this->remove_removed_events($events_array);
+        $events_array = $this->date_strings_to_timestamps($events_array);
 
         return require_once('views/in-page-list.php');
     }
@@ -366,7 +399,7 @@ class Test_Events {
      * http://code.tutsplus.com/tutorials/a-primer-on-ajax-in-the-wordpress-frontend-actually-doing-it--wp-27073
      *
      * Kind of hack-y method, it looks like to me, but -- hey -- found it online.
-     */
+     *
     public function add_ajax_library() {
 
         $html = '<script type="text/javascript">';

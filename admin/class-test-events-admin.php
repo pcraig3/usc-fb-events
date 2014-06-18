@@ -157,7 +157,7 @@ class Test_Events_Admin {
 
         $screen = get_current_screen();
         if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'simple_filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), Test_Events::VERSION );
         }
 
     }
@@ -215,14 +215,14 @@ class Test_Events_Admin {
 
         if ( $on_page ) {
 
-            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'simple_filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), Test_Events::VERSION );
             wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), Test_Events::VERSION );
             wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), Test_Events::VERSION );
-            wp_enqueue_script( 'simple_filterjs', plugins_url( 'assets/js/simple-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
             wp_enqueue_script( 'jquery-ui-datepicker' );
 
             // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-            wp_localize_script( 'simple_filterjs', "ajax", array( 'url' => network_admin_url( 'admin-ajax.php' ) ) );
+            wp_localize_script( 'admin_filterjs', "ajax", array( 'url' => network_admin_url( 'admin-ajax.php' ) ) );
         }
     }
 

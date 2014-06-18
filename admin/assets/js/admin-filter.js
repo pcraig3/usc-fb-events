@@ -30,7 +30,6 @@ jQuery(function ($) {
                 nonce:          $("#event_list").data("nonce"),
                 remove_events:  0,
                 whitelist:      1
-
             },
 
             function( data ) {
@@ -88,6 +87,8 @@ jQuery(function ($) {
                 html_string += " modified ";
 
             html_string += "' ";
+
+            //console.log(event);
 
             for (var key in event) {
                 if (event.hasOwnProperty(key)) {

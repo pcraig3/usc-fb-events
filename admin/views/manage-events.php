@@ -350,7 +350,7 @@ class Manage_Events extends AdminPageFramework {
 				    $('.hasDatepicker').on( 'update', function () {
 
                        $(this).datepicker( 'disable');
-			           $(this).datepicker( 'setDate', new Date( $(this).val() ) );
+			           $(this).datepicker( 'setDate', new Date( parseInt( $(this).val() ) * 1000 ) );
 			           $('.hasDatepicker').last().datepicker( 'enable' );
 
 				    } );
