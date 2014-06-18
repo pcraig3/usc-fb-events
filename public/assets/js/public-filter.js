@@ -8,7 +8,7 @@ jQuery(function ($) {
         $('#removed :checkbox').prop('checked', true);
 
         ajax_get_events();
-});
+    });
 
     /**
      * Function sets up our list in the backend.
@@ -20,18 +20,23 @@ jQuery(function ($) {
      */
     function ajax_get_events() {
 
+        console.log("data");
+
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
-            "admin-ajax.php",
+            ajaxurl,
             {
                 action: "get_events",
                 attr_id: "event_list",
-                nonce: $("#event_list").data("nonce"),
-                whitelist: 1
+                nonce: $("#event_list").data("nonce")
+                //we don't need this column because it defaults to false.
+                //whitelist: 0
             },
 
             function( data ) {
+
+                console.log(data);
 
                 if(! data['success']) {
                     alert("Ack! Problems getting your removed events back from the database.")
@@ -46,7 +51,7 @@ jQuery(function ($) {
                         event.removed = "removed";
                     }
                     else
-                        if ( parseInt(event.modified) === 1 ){
+                    if ( parseInt(event.modified) === 1 ){
                         event.removed = "modified";
                     }
                     else
@@ -79,27 +84,47 @@ jQuery(function ($) {
     function filterInit( events ) {
 
         var view = function( event ){
-            var html_string = "<div class='row ";
-            if(event.removed === "removed")
-                html_string += " removed ";
-            if( event.removed === "modified" )
-                html_string += " modified ";
 
-            html_string += "' ";
+            //at this point we have ONE EVENT.  This sets up the loop.
+            var html_string = "";
 
-            for (var key in event) {
-                if (event.hasOwnProperty(key)) {
-                    if(typeof event[key] != 'undefined')
-                    //changed the quotation marks here because apostrophes were breaking the HTML
-                    html_string += 'data-' + key + '="' + event[key] + '" ';
-                }
+            var img_url = ( event.pic_big ) ? event.pic_big : "";
+            var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
+
+            html_string += '<div class="events__box clearfix">';
+            html_string +=  '<div class="flag">';
+            html_string +=      '<div class="flag__image">';
+
+            if(img_url) {
+                html_string +=      '<img src="' + img_url + '">';
             }
 
-            html_string += ">" +
-            "<span class='name'>" + event.name + "</span>" +
-            "<span class='host'>" + event.host + "</span>" +
-            "<span class='removed'>" + event.removed + "</span>" +
-            "</div>";
+            html_string +=      '</div><!--end of .flag__image-->';
+
+            html_string +=      '<div class="flag__body">';
+            html_string +=          '<h3 class="alpha" title="'
+                                    + event.host + ": " + event.name + '">'
+                                    + event.name + '</h3>';
+
+            html_string +=          '<p class="lede">' + event.start_time + ' | '
+                                    + event.host + '</p>';
+
+            html_string +=      '</div><!--end of .flag__body-->';
+
+            html_string += '</div><!--end of .flag-->';
+
+            if( ticket_uri ) {
+
+                html_string += '<a href="' + ticket_uri + '" target="_blank">';
+                html_string +=      '<div class="event__button" style="background:palevioletred;color:white;">Get Tickets</div>';
+                html_string += '</a>';
+            }
+
+            html_string +=      '<a href="' + event.url + '" target="_blank">';
+            html_string +=          '<span class="events__box__count">' + event.id + '</span>';
+            html_string +=      '</a>';
+
+            html_string += '</div><!--end of events__box-->';
 
             return html_string;
         }

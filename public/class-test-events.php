@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.0';
+	const VERSION = '0.9.1';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -51,10 +51,18 @@ class Test_Events {
 	/**
 	 * Initialize the plugin by setting localization and loading public scripts
 	 * and styles.
+     * ALSO queue up our horrible AJAX methods.
 	 *
-	 * @since     0.2.0
+	 * @since     0.9.1
 	 */
 	private function __construct() {
+
+
+        add_action("wp_ajax_return_to_or_remove_from_calendar", array( $this, "return_to_or_remove_from_calendar" ) );
+        add_action("wp_ajax_nopriv_return_to_or_remove_from_calendar", array( $this, "login_please") );
+
+        add_action("wp_ajax_get_events", array( $this, "get_events" ) );
+        add_action("wp_ajax_nopriv_get_events", array( $this, "get_events") );
 
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
@@ -280,6 +288,9 @@ class Test_Events {
      * @param $data                 the array to be sorted
      * @param $sortCriteria         array of selected keys and how to sort them
      * @param bool $caseInSensitive whether or not to sort stings by case
+     *
+     * @since    0.5.0
+     *
      * @return bool|mixed           returns your array sorted by whatever the eff you asked for
      */
     function multisort($data, $sortCriteria, $caseInSensitive = true)
@@ -312,19 +323,52 @@ class Test_Events {
     }
 
     /**
-     * Points to the file that generated and returns HTML code to list a bunch of Facebook events
-     *
-     * @param $events_array     an array of events from Facebook
-     * @param int $limit        an integer number of events to return.  defaults to the total returned objects.
+     * Points to the file that generates and returns HTML code to list a bunch of Facebook events
      *
      * @since    0.4.0
      *
+     * @param array $events_array   an array of events from Facebook
+     * @param int $limit            an integer number of events to return.  defaults to the total returned objects.     *
+     *
      * @return string           a list of events from Facebook
      */
-    private function events_list( $events_array, $limit = 0 ) {
+    private function events_list( array $events_array, $limit = 0 ) {
 
         return require_once('views/in-page-list.php');
     }
+
+    /**
+     * Build the Event list brought in by Ajax with filter.js applied to them
+     * Queues up the relevant .js files to get it going.
+     *
+     * @since    0.9.1
+     */
+    private function events_ajax() {
+
+        //@TODO: UGH the worst.  Need a static AJAX object
+        add_action( 'wp_head', array( $this, 'add_ajax_library' ) );
+        wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+        wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
+        wp_enqueue_script( 'public_filterjs', plugins_url( '/assets/js/public-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
+
+        return require_once('views/ajax-list.php');
+    }
+
+    /**
+     * Adds the WordPress Ajax Library to the frontend.
+     * http://code.tutsplus.com/tutorials/a-primer-on-ajax-in-the-wordpress-frontend-actually-doing-it--wp-27073
+     *
+     * Don't get too comfortable over here.
+     */
+    public function add_ajax_library() {
+
+        $html = '<script type="text/javascript">';
+        $html .= 'var ajaxurl = "' . admin_url( 'admin-ajax.php' ) . '"';
+        $html .= '</script>';
+
+        echo $html;
+
+    } // end add_ajax_library
 
     /**
      * Calls some page which calls our Facebook events api
@@ -559,9 +603,11 @@ class Test_Events {
 	 * Register and enqueues public-facing JavaScript files.
 	 *
 	 * @since    0.1.0
+     *
+     * @TODO: make this better
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+        wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
 
 
@@ -602,5 +648,115 @@ class Test_Events {
 	public function filter_method_name() {
 		// Define your filter hook callback here
 	}
+
+    /**
+     * This function right here is executed when, in the "manage events" menu, someone
+     * clicks the "Remove From/Return To Calendar" buttons.
+     * The event is then either removed from or returned to 'test_fbevents'
+     * Based on tutorial here:
+     * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
+     *
+     * @since   0.4.0
+     *
+     * @return 		returns an encoded JSON string
+     */
+    public function return_to_or_remove_from_calendar() {
+
+        $button_id = $_POST['button_id'];
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $button_id . "_nonce")) {
+            exit("No naughty business please");
+        }
+
+        global $wpdb;
+
+        //we want the id, the name, the host, and the start time
+        $eid = 		$_POST['eid'];
+        $name = 		$_POST['name'];
+        //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
+        $response = 	false;
+
+        if($button_id === 'remove_event_button') {
+
+            $response = DB_API::insert_on_duplicate_key_update(
+                $eid,
+                array(
+                    'removed' =>    1,
+                    'name' =>       $name
+                ));
+
+        }
+        if($button_id === 'display_event_button') {
+            $fbevent_exists_unmodified_in_db = DB_API::get_unmodified_event_count_by_eid( $eid );
+
+            $response = ( $fbevent_exists_unmodified_in_db ) ?
+                DB_API::delete_fbevent( $eid ) :
+                DB_API::update_fbevent( $eid, array( 'removed' => 0) );
+
+        }
+
+        if($response === false) {
+            $result['success'] = false;
+            $result['response'] = $response;
+        }
+        else {
+            $result['success'] = true;
+            $result['name'] = $name;
+            $result['response'] = $response;
+        }
+
+        //this is meant to decide what to do whether the call was made from a browser, or if JS is enabled.
+        if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($result);
+        }
+        else {
+            header("Location: ".$_SERVER["HTTP_REFERER"]);
+        }
+
+        die();
+    }
+
+    /**
+     * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges them)
+     *
+     * @since    0.5.0
+     */
+    public function get_events() {
+
+        $attr_id = $_POST['attr_id'];
+        $whitelist = ( isset($_POST['whitelist']) ) ? $_POST['whitelist'] : false;
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
+            exit("No naughty business please");
+        }
+
+        $te = Test_Events::get_instance();
+
+        $response = $te->call_api();
+
+        if($whitelist)
+            $response['events'] = DB_API::whitelist_array_items($response['events']);
+
+        $response = $te->merge_fb_and_db_events($response);
+
+        $result['response'] = $response;
+        $result['success'] = ( $response === false ) ? false : true;
+
+        echo json_encode($result);
+        die();
+
+    }
+
+    /**
+     * Bare-bones method that rejects non-logged-in users.  Used for all ajax methods.
+     *
+     * @since   0.4.0
+     *
+     * @return 		echoes a string telling non-logged in users to log in.
+     */
+    public function login_please() {
+        echo "Log in before you do that, you cheeky monkey.";
+        die();
+    }
 
 }

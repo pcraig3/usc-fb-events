@@ -51,7 +51,6 @@ for($i = 0; $i < $total && $limit >= 1; $i++, $limit--) {
     $html_string .= '<div class="flag__body">';
     $html_string .= '<h3 class="alpha" title="' .
         esc_attr( $current_event['host'] . ": " . $current_event['name'] ) .
-        esc_attr( $current_event['host'] . ": " . $current_event['name'] ) .
         '">' . esc_html( $current_event['name'] ) . '</h3>';
 
     $html_string .= '<p class="lede">'
