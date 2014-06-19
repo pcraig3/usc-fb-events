@@ -388,7 +388,7 @@ class Manage_Events extends AdminPageFramework {
 
             DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
 
-            $this->setSettingNotice( "</strong><p>Modifications made to <strong>" . $aInput[$this->section_id]['name'] . "'</strong> has been reset.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
+            $this->setSettingNotice( "</strong><p>Modifications made to <strong>" . $aInput[$this->section_id]['name'] . "</strong> have been reset.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
             return $aInput;
         }
