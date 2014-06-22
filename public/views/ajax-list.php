@@ -37,10 +37,15 @@
         </div>
         <br>
         <div class="filterjs__list__wrapper">
-            <!--div class="filterjs__loading">
-                <img class="filterjs__loading__img"
+            <div class="filterjs__loading filterjs__loading--ajax">
+                <img class="filterjs__loading__img" title="meow meow"
                      src="/wp-content/plugins/test-events/assets/cat.gif" alt="Loading" height="80" width="100">
-            </div-->
+                <p class="filterjs__loading__status">
+                    * Loading *
+                </p>
+                <a class="filterjs__loading__nojs" href="events-from-facebook-no-js/">Loading too slowly? Click here!</a>
+            </div>
+
             <!--div class="filterjs__list__crop"-->
             <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
             <!--/div-->

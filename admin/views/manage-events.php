@@ -287,8 +287,8 @@ class Manage_Events extends AdminPageFramework {
             </div>
         </div>
         <div class="filterjs__list__wrapper">
-            <div class="filterjs__loading">
-                <img class="filterjs__loading__img"
+            <div class="filterjs__loading filterjs__loading--list">
+                <img class="filterjs__loading__img" title="meow!"
                      src="/wp-content/plugins/test-events/assets/cat.gif" alt="Loading" height="80" width="100">
             </div>
             <div class="filterjs__list__crop">

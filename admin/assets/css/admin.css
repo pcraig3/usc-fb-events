@@ -6,20 +6,27 @@
   padding-left: 0; }
 
 .filterjs__list__wrapper {
-  position: relative; }
+  position: relative;
+  /*
+  .filterjs__loading {
+
+    position:         absolute;
+    width:            100%;
+    height:           100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-sizing:       border-box;
+    z-index:          10;
+
+    .filterjs__loading__img {
+
+      position: absolute;
+      left:     45%;
+      bottom:   40%;
+    }
+  }
+  */ }
   .filterjs__list__wrapper .hidden {
     display: none; }
-  .filterjs__list__wrapper .filterjs__loading {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    box-sizing: border-box;
-    z-index: 10; }
-    .filterjs__list__wrapper .filterjs__loading .filterjs__loading__img {
-      position: absolute;
-      left: 45%;
-      bottom: 40%; }
   .filterjs__list__wrapper .filterjs__list__crop {
     width: 100%;
     height: 300px;

@@ -57,6 +57,9 @@ jQuery(function ($) {
                         event.removed = "display";
                 });
 
+
+                $('.filterjs__loading').addClass('hidden');
+
                 fJS = filterInit( events );
 
                 $('#event_list').trigger( "change" );

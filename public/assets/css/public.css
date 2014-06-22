@@ -1,1 +1,40 @@
-/* This stylesheet is used to style the public-facing components of the plugin. */
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both; }
+
+.filterjs__loading {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: wait; }
+
+.filterjs__loading--list {
+  position: absolute;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 10; }
+  .filterjs__loading--list .filterjs__loading__img {
+    position: absolute;
+    left: 45%;
+    bottom: 40%; }
+
+.filterjs__loading--ajax {
+  position: relative;
+  height: 180px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: rgba(0, 0, 0, 0.1) dashed 1px; }
+  .filterjs__loading--ajax .filterjs__loading__status,
+  .filterjs__loading--ajax .filterjs__loading__img {
+    display: table;
+    margin: 0 auto;
+    padding-top: 20px; }
+  .filterjs__loading--ajax .filterjs__loading__status {
+    color: #4C4C4C; }
+  .filterjs__loading--ajax .filterjs__loading__nojs {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.7em; }
+
+.hidden {
+  display: none; }
