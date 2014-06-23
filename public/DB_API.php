@@ -36,6 +36,7 @@ class DB_API {
         //Call this manually as we may have missed the init hook
         DB_API::register_fbevents_table();
 
+        //@TODO: change stupid table name
         $sql_create_table = "CREATE TABLE {$wpdb->fbevents} (
         eid bigint(20) NOT NULL,
         name varchar(255) NULL,

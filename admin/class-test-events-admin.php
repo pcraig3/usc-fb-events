@@ -177,6 +177,13 @@ class Test_Events_Admin {
 
     }
 
+    /**
+     * Register and enqueue specific CSS files only if this page is one we created.
+     *
+     * @since     0.9.3
+     *
+     * @return    null    Return early if no custom pages are registered.
+     */
     public function add_manage_events_styles() {
 
         if ( ! isset( $this->plugin_pages ) ) {
@@ -194,11 +201,19 @@ class Test_Events_Admin {
 
         if ( $on_page ) {
 
+            wp_enqueue_style( $this->plugin_slug . '-public-styles', plugins_url( '/' . $this->plugin_slug . '/public/assets/css/public.css' ), array(), Test_Events::VERSION );
             wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Test_Events::VERSION );
         }
     }
 
-    public function add_manage_events_scripts($screen_id) {
+    /**
+     * Register and enqueue specific JavaScript files only if this page is one we created.
+     *
+     * @since     0.9.3
+     *
+     * @return    null    Return early if no custom pages are registered.
+     */
+    public function add_manage_events_scripts() {
 
         if ( ! isset( $this->plugin_pages ) ) {
             return;
@@ -222,7 +237,7 @@ class Test_Events_Admin {
             wp_enqueue_script( 'jquery-ui-datepicker' );
 
             // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-            wp_localize_script( 'admin_filterjs', "ajax", array( 'url' => network_admin_url( 'admin-ajax.php' ) ) );
+            wp_localize_script( 'admin_filterjs', "ajax", array( 'url' => admin_url( 'admin-ajax.php' ) ) );
         }
     }
 

@@ -20,6 +20,8 @@ jQuery(function ($) {
      */
     function ajax_get_events() {
 
+        //console.log( ajax );
+
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(

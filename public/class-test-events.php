@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.2';
+	const VERSION = '0.9.3';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -168,7 +168,7 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.1
+     * @since    0.9.3
      */
     private function events_ajax() {
 
@@ -180,7 +180,7 @@ class Test_Events {
         wp_enqueue_script( 'public_filterjs', plugins_url( '/assets/js/public-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
 
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-        wp_localize_script( 'public_filterjs', "ajax", array( 'url' => network_admin_url( 'admin-ajax.php' ) ) );
+        wp_localize_script( 'public_filterjs', "ajax", array( 'url' => admin_url( 'admin-ajax.php' ) ) );
 
         return require_once('views/ajax-list.php');
     }
@@ -349,6 +349,7 @@ class Test_Events {
 	private static function single_deactivate() {
 		// Define deactivation functionality here
 
+        //@TODO: stop removing table on deactivate.
         DB_API::drop_fbevents_table();
     }
 
