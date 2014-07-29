@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.3';
+	const VERSION = '0.9.4';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -190,11 +190,13 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.3
+     * @since    0.9.4
      */
     private function events_widget() {
 
-        wp_enqueue_script( 'public_widgetjs', plugins_url( '/assets/js/public-widget.js', __FILE__ ), array( 'jquery', 'jquery-ui-core' ), self::VERSION );
+        wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+        wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
+        wp_enqueue_script( 'public_widgetjs', plugins_url( '/assets/js/public-widget.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
 
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
         wp_localize_script( 'public_widgetjs', "ajax", array( 'url' => admin_url( 'admin-ajax.php' ) ) );

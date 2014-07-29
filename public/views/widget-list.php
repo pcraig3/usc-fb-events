@@ -9,7 +9,6 @@
 ob_start();
 
 ?>
-    <h3 class="title">List of Facebook Events</h3>
 
     <div class="filterjs">
 

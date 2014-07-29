@@ -142,7 +142,7 @@ class WP_AJAX {
         $whitelist = ( isset($_POST['whitelist']) ) ? $_POST['whitelist'] : false;
         $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
 
-        $response = $this->call_api();
+        $response = ( isset($_POST['api_url']) ) ? $this->call_api($_POST['api_url']) : $this->call_api();
 
         $response = $this->facebook_urls($response);
 
@@ -391,12 +391,14 @@ class WP_AJAX {
      *
      * @since    0.2.0
      *
-     * @return array       at this point, return open Facebook events as an indexed array
+     * @param string $api_url   perhaps unsurprisingly, this is the url we call the events from
+     *
+     * @return array            at this point, return open Facebook events as an indexed array
      */
-    public function call_api() {
+    public function call_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
 
         //the url where to get Facebook events
-        $ch = curl_init('testwestern.com/api/events/events/2014-04-01');
+        $ch = curl_init($api_url);
 
         curl_setopt( $ch, CURLOPT_HEADER, false ); //TRUE to include the header in the output.
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); //TRUE to return transfer as a string instead of outputting it out directly.

@@ -5,6 +5,8 @@
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
+    var fJS;
+
     $(document).ready(function($) {
 
         ajax_get_events();
@@ -28,6 +30,7 @@ jQuery(function ($) {
             ajax.url,
             {
                 action:         "get_events",
+                api_url:        "testwestern.com/api/events/events/2014-01-01",  //@TODO: this date is sort of arbitrary
                 attr_id:        "event_list",
                 nonce:          $("#event_list").data("nonce"),
                 remove_events:  1
@@ -59,12 +62,13 @@ jQuery(function ($) {
                         event.removed = "display";
                 });
 
-
                 $('.filterjs__loading').addClass('hidden');
 
-                return_widget_html( events );
+                var usc_events = remove_non_usc_events( events );
 
-                //$('#event_list').trigger( "change" );
+                fJS = filterInit( usc_events );
+
+                $('#event_list').trigger( "change" );
 
             }, "json");
         /*.fail(function() {
@@ -75,60 +79,90 @@ jQuery(function ($) {
          });*/
     }
 
-    function return_widget_html( events ) {
-
-        console.log( "success" );
+    function remove_non_usc_events( events ) {
 
         /*
+         name: "University Students' Council of Western"
+         page_id: "153227864727516"
+
+         name: "The Wave & Spoke"
+         page_id: "206752339379800"
+         */
+        var university_students_council_of_western = "153227864727516";
+        var the_wave_and_spoke = "206752339379800";
+        var usc_events = [];
+
+        $.each( events, function( key, value ) {
+
+            //if(key < 3) {
+
+            var event_creator = value.creator.toString();
+
+            if(event_creator === university_students_council_of_western
+                || event_creator === the_wave_and_spoke)
+                usc_events.push(value);
+            //}
+
+        });
+
+        return usc_events.slice(0, 3);
+    }
+
+
+    function filterInit( events ) {
 
         var view = function( event ){
 
-        //at this point we have ONE EVENT.  This sets up the loop.
-        var html_string = "";
+            var html_string = "";
 
-        var img_url = ( event.pic_big ) ? event.pic_big : "";
-        var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
+                //at this point we have ONE EVENT.  This sets up the loop.
 
-        html_string += '<div class="events__box clearfix">';
-        html_string +=  '<div class="flag">';
-        html_string +=      '<div class="flag__image">';
+                var img_url = ( event.pic_big ) ? event.pic_big : "http://placehold.it/400x200";
+                var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
+                var location = ( event.location ) ? event.location : "";
 
-        if(img_url) {
-            html_string +=      '<img src="' + img_url + '">';
+                html_string += ' <div class="eventItem">';
+
+                //if(img_url) {
+                html_string += '<img class="hidden-xs" src="' + img_url + '" alt="" />';
+                //}
+
+                html_string += '<div class="eventTitle">';
+                html_string += '<h2>' + event.name + '</h2>';
+
+                var date = new Date( parseInt(event.start_time) * 1000);
+
+                html_string +=  '<h3>' + date.toLocaleDateString() + '</h3>';
+                html_string +=  date.toLocaleTimeString();
+                html_string +=  ' ';
+
+                if(location) {
+                    html_string +=  '| @ ' + location;
+                }
+
+                html_string +=  '</div>';
+
+                html_string +=  '<div class="eventLinks">';
+                html_string +=  '<a href="#">Buy Tickets</a>';
+                html_string +=  '<a href="' + event.url + '">View Event</a>';
+                html_string +=  '</div>';
+
+                html_string +=  '</div><!--end of eventItem-->';
+
+            return html_string;
+
         }
 
-        html_string +=      '</div><!--end of .flag__image-->';
+        var settings = {
+            /*filter_criteria: {
+             removed: ['#removed :checkbox', 'removed']
+             },*/
+            //search: {input: '#search_box' },
+            //and_filter_on: true,
+            id_field: 'id' //Default is id. This is only for usecase
+        };
 
-        html_string +=      '<div class="flag__body">';
-        html_string +=          '<h3 class="alpha" title="'
-            + event.host + ": " + event.name + '">'
-            + event.name + '</h3>';
-
-        var date = new Date( parseInt(event.start_time) * 1000);
-
-        html_string +=          '<p class="lede">' + date.toLocaleDateString() + ' | '
-            + event.host + '</p>';
-
-        html_string +=      '</div><!--end of .flag__body-->';
-
-        html_string += '</div><!--end of .flag-->';
-
-        if( ticket_uri ) {
-
-            html_string += '<a href="' + ticket_uri + '" target="_blank">';
-            html_string +=      '<div class="event__button" style="background:palevioletred;color:white;">Get Tickets</div>';
-            html_string += '</a>';
-        }
-
-        html_string +=      '<a href="' + event.url + '" target="_blank">';
-        html_string +=          '<span class="events__box__count">' + event.id + '</span>';
-        html_string +=      '</a>';
-
-        html_string += '</div><!--end of events__box-->';
-
-        return html_string;
-        }
-        */
+        return FilterJS(events, "#event_list", view, settings);
     }
 
 });
