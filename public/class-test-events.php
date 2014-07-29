@@ -187,6 +187,22 @@ class Test_Events {
     }
 
     /**
+     * Build the Event list brought in by Ajax with filter.js applied to them
+     * Queues up the relevant .js files to get it going.
+     *
+     * @since    0.9.3
+     */
+    private function events_widget() {
+
+        wp_enqueue_script( 'public_widgetjs', plugins_url( '/assets/js/public-widget.js', __FILE__ ), array( 'jquery', 'jquery-ui-core' ), self::VERSION );
+
+        // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
+        wp_localize_script( 'public_widgetjs', "ajax", array( 'url' => admin_url( 'admin-ajax.php' ) ) );
+
+        return require_once('views/widget-list.php');
+    }
+
+    /**
 	 * Return the plugin slug.
 	 *
 	 * @since    0.1.0
