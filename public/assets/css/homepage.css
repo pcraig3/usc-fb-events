@@ -1,0 +1,71 @@
+/*------------Events Plugin Styling ---------------------*/
+
+#events {
+    background:#efefef;
+    border-bottom:1px solid #ccc;
+    overflow:hidden;
+}
+
+/*---Header area----*/
+#events h1{
+    font-size: 36px;
+    display:inline-block;
+    padding:30px 30px 20px 30px;
+}
+.viewEvent{
+    display:inline-block;
+    float:right;
+    margin:50px 30px 10px 30px;
+}
+
+.eventItem{
+    border-top:1px solid #ccc;
+    clear:both;
+    padding:20px 20px 5px 20px;
+    overflow:hidden;
+}
+.eventItem:hover{
+    background:#f8f8f8;
+}
+
+.eventItem img{ padding-right:15px; float:left; height:100px; width:200px;}
+
+.eventTitle{ padding-top:10px; display:inline-block; float:left; width:40%;}
+
+.eventItem h3{
+    text-transform:uppercase;
+    color:#777;
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:.05em;
+    padding-bottom:5px;
+}
+
+
+.eventItem a{
+    padding:10px 10px 10px 45px;
+    margin:0px 0px 15px 0px;
+    background:#695f8c;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color:white;
+    display:block;
+}
+
+.eventLinks{float:right;}
+
+/*----Mobile Queries for Events go Here!!----*/
+@media only screen and ( max-width: 767px ) {
+    .viewEvent{float:none; margin:0 30px 10px 30px;}
+    .eventTitle{width:100%; float:none;}
+    .eventLinks{float:none;}
+    .eventItem a{
+        display:inline-block;
+        font-size:12px;
+        margin-top:10px;
+        margin-left:1px;
+        padding:8px 8px 8px 45px
+    }
+
+}

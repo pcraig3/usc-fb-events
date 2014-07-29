@@ -127,6 +127,7 @@ class Test_Events {
 
             ob_start();
 
+            /* @TODO: Explain yourself. */
             echo call_user_func_array( array( $this, $testevents_function ), $parameters );
 
             $result = ob_get_clean();
