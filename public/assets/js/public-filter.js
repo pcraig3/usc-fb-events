@@ -7,7 +7,7 @@ jQuery(function ($) {
 
         $('#removed :checkbox').prop('checked', true);
 
-        ajax_get_events();
+        ajax_get_events( options );
     });
 
     /**
@@ -16,18 +16,20 @@ jQuery(function ($) {
      *
      * @param events    a JSON list of Facebook Events
      *
-     * @since   0.4.0
+     * @since   0.9.5
      */
-    function ajax_get_events() {
+    function ajax_get_events( options ) {
 
-        //console.log( ajax );
+        var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
+        var limit = options.limit || 0;
 
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
-            ajax.url,
+            options.ajax_url,
             {
                 action:         "get_events",
+                api_url:        api_url,
                 attr_id:        "event_list",
                 nonce:          $("#event_list").data("nonce"),
                 remove_events:  1

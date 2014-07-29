@@ -15,11 +15,11 @@ ob_start();
         <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--ajax">
                 <img class="filterjs__loading__img" title="meow meow"
-                     src="<?php echo plugins_url( '/' . $this->plugin_slug . '/assets/cat.gif') ?>" alt="Loading" height="80" width="100">
-                <p class="filterjs__loading__status">
+                     src="<?php echo plugins_url( '/' . $this->plugin_slug . '/assets/horse.gif') ?>" alt="Loading" height="91" width="160">
+                <!--p class="filterjs__loading__status">
                     * Loading *
-                </p>
-                <a class="filterjs__loading__nojs" href="events-from-facebook-no-js/">Loading too slowly? Click here!</a>
+                </p-->
+                <!--a class="filterjs__loading__nojs" href="events-from-facebook-no-js/">Loading too slowly? Click here!</a-->
             </div>
 
             <!--div class="filterjs__list__crop"-->

@@ -9,7 +9,7 @@ jQuery(function ($) {
 
     $(document).ready(function($) {
 
-        ajax_get_events();
+        ajax_get_events( options );
     });
 
     /**
@@ -18,19 +18,20 @@ jQuery(function ($) {
      *
      * @param events    a JSON list of Facebook Events
      *
-     * @since   0.4.0
+     * @since   0.9.5
      */
-    function ajax_get_events() {
+    function ajax_get_events( options ) {
 
-        //console.log( ajax );
+        var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
+        var limit = options.limit || 0;
 
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
-            ajax.url,
+            options.ajax_url,
             {
                 action:         "get_events",
-                api_url:        "testwestern.com/api/events/events/2014-01-01",  //@TODO: this date is sort of arbitrary
+                api_url:        api_url,
                 attr_id:        "event_list",
                 nonce:          $("#event_list").data("nonce"),
                 remove_events:  1
@@ -62,13 +63,7 @@ jQuery(function ($) {
                         event.removed = "display";
                 });
 
-                $('.filterjs__loading').addClass('hidden');
-
-                var usc_events = remove_non_usc_events( events );
-
-                fJS = filterInit( usc_events );
-
-                $('#event_list').trigger( "change" );
+                ajax_events_gotten( events, limit );
 
             }, "json");
         /*.fail(function() {
@@ -79,7 +74,19 @@ jQuery(function ($) {
          });*/
     }
 
-    function remove_non_usc_events( events ) {
+
+   function ajax_events_gotten( events, limit ) {
+
+        $('.filterjs__loading').addClass('hidden');
+
+        var usc_events = remove_non_usc_events( events, limit );
+
+        fJS = filterInit( usc_events );
+
+        $('#event_list').trigger( "change" );
+    }
+
+    function remove_non_usc_events( events, limit ) {
 
         /*
          name: "University Students' Council of Western"
@@ -94,18 +101,18 @@ jQuery(function ($) {
 
         $.each( events, function( key, value ) {
 
-            //if(key < 3) {
-
             var event_creator = value.creator.toString();
 
             if(event_creator === university_students_council_of_western
                 || event_creator === the_wave_and_spoke)
                 usc_events.push(value);
-            //}
 
         });
 
-        return usc_events.slice(0, 3);
+        if( limit < usc_events.length )
+            usc_events = usc_events.slice(0, limit);
+
+        return usc_events;
     }
 
 
@@ -113,41 +120,47 @@ jQuery(function ($) {
 
         var view = function( event ){
 
+            var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
             var html_string = "";
 
-                //at this point we have ONE EVENT.  This sets up the loop.
+            //at this point we have ONE EVENT.  This sets up the loop.
 
-                var img_url = ( event.pic_big ) ? event.pic_big : "http://placehold.it/400x200";
-                var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
-                var location = ( event.location ) ? event.location : "";
+            var img_url = ( event.pic_big ) ? event.pic_big : "http://placehold.it/400x200";
+            var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
+            var location = ( event.location ) ? event.location : "";
 
-                html_string += ' <div class="eventItem">';
+            html_string += ' <div class="eventItem">';
 
-                //if(img_url) {
-                html_string += '<img class="hidden-xs" src="' + img_url + '" alt="" />';
-                //}
+            //if(img_url) {
+            html_string += '<img class="hidden-xs" src="' + img_url + '" alt="" />';
+            //}
 
-                html_string += '<div class="eventTitle">';
-                html_string += '<h2>' + event.name + '</h2>';
+            html_string += '<div class="eventTitle">';
+            html_string += '<h2>' + event.name + '</h2>';
 
-                var date = new Date( parseInt(event.start_time) * 1000);
+            var date = new Date( parseInt(event.start_time) * 1000);
 
-                html_string +=  '<h3>' + date.toLocaleDateString() + '</h3>';
-                html_string +=  date.toLocaleTimeString();
-                html_string +=  ' ';
+            html_string +=  '<h3>' + days[ date.getDay() ] + ', ' + months[ date.getMonth() ] + date.getDate() + '</h3>';
 
-                if(location) {
-                    html_string +=  '| @ ' + location;
-                }
+            //Slice: positive #s are relative to the beginning, negative numbers are relative to the end.
+            var localeTime = date.toLocaleTimeString();
+            html_string +=  localeTime.slice(0, 4) + " " + localeTime.slice(-2);
+            html_string +=  ' ';
 
-                html_string +=  '</div>';
+            if(location) {
+                html_string +=  '| @ ' + location;
+            }
 
-                html_string +=  '<div class="eventLinks">';
-                html_string +=  '<a href="#">Buy Tickets</a>';
-                html_string +=  '<a href="' + event.url + '">View Event</a>';
-                html_string +=  '</div>';
+            html_string +=  '</div>';
 
-                html_string +=  '</div><!--end of eventItem-->';
+            html_string +=  '<div class="eventLinks">';
+            html_string +=  '<a target="_blank" href="#">Buy Tickets</a>';
+            html_string +=  '<a target="_blank" href="' + event.url + '">View Event</a>';
+            html_string +=  '</div>';
+
+            html_string +=  '</div><!--end of eventItem-->';
 
             return html_string;
 

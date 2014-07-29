@@ -289,7 +289,7 @@ class Manage_Events extends AdminPageFramework {
         <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--list">
                 <img class="filterjs__loading__img" title="meow!"
-                     src="/wp-content/plugins/test-events/assets/cat.gif" alt="Loading" height="80" width="100">
+                    src="/wp-content/plugins/test-events/assets/horse.gif" alt="Loading" height="91" width="160">
             </div>
             <div class="filterjs__list__crop">
                 <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>

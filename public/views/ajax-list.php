@@ -39,7 +39,7 @@
         <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--ajax">
                 <img class="filterjs__loading__img" title="meow meow"
-                     src="<?php echo plugins_url( '/' . $this->plugin_slug . '/assets/cat.gif') ?>" alt="Loading" height="80" width="100">
+                     src="<?php echo plugins_url( '/' . $this->plugin_slug . '/assets/horse.gif') ?>" alt="Loading" height="91" width="160">
                 <p class="filterjs__loading__status">
                     * Loading *
                 </p>
