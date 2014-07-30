@@ -8,6 +8,9 @@
 
 ob_start();
 
+$default_timezone = date_default_timezone_get();
+date_default_timezone_set("America/Toronto");
+
 ?>
 
     <div class="filterjs">
@@ -30,6 +33,8 @@ ob_start();
     </div>
 
 <?php
+
+date_default_timezone_set($default_timezone);
 
 return ob_get_clean();
 

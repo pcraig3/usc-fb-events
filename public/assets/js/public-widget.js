@@ -18,7 +18,7 @@ jQuery(function ($) {
      *
      * @param events    a JSON list of Facebook Events
      *
-     * @since   0.9.5
+     * @since   0.9.6
      */
     function ajax_get_events( options ) {
 
@@ -79,14 +79,29 @@ jQuery(function ($) {
 
         $('.filterjs__loading').addClass('hidden');
 
-        var usc_events = remove_non_usc_events( events, limit );
+       var usc_events = remove_non_usc_events( events );
 
-        fJS = filterInit( usc_events );
+       //ideally, you cut down on the event array before processing it, but the API is making that harder.
+       usc_events = limit_events( usc_events, limit );
+
+       fJS = filterInit( usc_events );
 
         $('#event_list').trigger( "change" );
     }
 
-    function remove_non_usc_events( events, limit ) {
+    /* @TODO: Duplicating this is pretty obvious bad practice */
+    function limit_events( events, limit ) {
+
+        if(limit < 1)
+            return events;
+
+       if( limit < events.length )
+           events = events.slice(0, limit);
+
+        return events;
+    }
+
+    function remove_non_usc_events( events ) {
 
         /*
          name: "University Students' Council of Western"
@@ -109,9 +124,6 @@ jQuery(function ($) {
 
         });
 
-        if( limit < usc_events.length )
-            usc_events = usc_events.slice(0, limit);
-
         return usc_events;
     }
 
@@ -131,7 +143,14 @@ jQuery(function ($) {
             var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
             var location = ( event.location ) ? event.location : "";
 
-            html_string += ' <div class="eventItem">';
+            /* @TODO: This is also duplicated */
+            /* Figure out if the event has passed or not. */
+            var current_timestamp = Math.floor((new Date()).getTime() );
+            var event_timestamp = parseInt(event.start_time) * 1000;
+
+            var past_or_upcoming_event = ( event_timestamp > current_timestamp ) ? "upcoming" : "past";
+
+            html_string += ' <div class="eventItem ' + past_or_upcoming_event + '">';
 
             //if(img_url) {
             html_string += '<img class="hidden-xs" src="' + img_url + '" alt="" />';
@@ -142,7 +161,8 @@ jQuery(function ($) {
 
             var date = new Date( parseInt(event.start_time) * 1000);
 
-            html_string +=  '<h3>' + days[ date.getDay() ] + ', ' + months[ date.getMonth() ] + date.getDate() + '</h3>';
+            html_string +=  '<h3>' + days[ date.getDay() ] + ', ' + months[ date.getMonth() ]
+                + " " + date.getDate() + '</h3>';
 
             //Slice: positive #s are relative to the beginning, negative numbers are relative to the end.
             var localeTime = date.toLocaleTimeString();

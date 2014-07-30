@@ -16,7 +16,7 @@ jQuery(function ($) {
      *
      * @param events    a JSON list of Facebook Events
      *
-     * @since   0.9.5
+     * @since   0.9.6
      */
     function ajax_get_events( options ) {
 
@@ -61,12 +61,7 @@ jQuery(function ($) {
                         event.removed = "display";
                 });
 
-
-                $('.filterjs__loading').addClass('hidden');
-
-                fJS = filterInit( events );
-
-                $('#event_list').trigger( "change" );
+                ajax_events_gotten( events, limit );
 
             }, "json");
         /*.fail(function() {
@@ -75,6 +70,30 @@ jQuery(function ($) {
          .always(function() {
          alert( "finished" );
          });*/
+    }
+
+    function ajax_events_gotten( events, limit ) {
+
+        $('.filterjs__loading').addClass('hidden');
+
+        //ideally, you cut down on the event array before processing it, but the API is making that harder.
+        events = limit_events( events, limit );
+
+        fJS = filterInit( events );
+
+        $('#event_list').trigger( "change" );
+    }
+
+    /* @TODO: Duplicating this is pretty obvious bad practice */
+    function limit_events( events, limit ) {
+
+        if(limit < 1)
+            return events;
+
+        if( limit < events.length )
+            events = events.slice(0, limit);
+
+        return events;
     }
 
     /**
@@ -97,7 +116,14 @@ jQuery(function ($) {
             var img_url = ( event.pic_big ) ? event.pic_big : "";
             var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
 
-            html_string += '<div class="events__box clearfix">';
+            /* @TODO: This is also duplicated */
+            /* Figure out if the event has passed or not. */
+            var current_timestamp = Math.floor((new Date()).getTime() );
+            var event_timestamp = parseInt(event.start_time) * 1000;
+
+            var past_or_upcoming_event = ( event_timestamp > current_timestamp ) ? "upcoming" : "past";
+
+            html_string += '<div class="events__box clearfix ' + past_or_upcoming_event + '">';
             html_string +=  '<div class="flag">';
             html_string +=      '<div class="flag__image">';
 
@@ -114,7 +140,7 @@ jQuery(function ($) {
 
             var date = new Date( parseInt(event.start_time) * 1000);
 
-            html_string +=          '<p class="lede">' + date.toLocaleDateString() + ' | '
+            html_string +=          '<p class="lede" data-start_time="' + event.start_time + '">' + date.toLocaleDateString() + ' | '
                                     + event.host + '</p>';
 
             html_string +=      '</div><!--end of .flag__body-->';

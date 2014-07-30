@@ -12,7 +12,7 @@
  * Plugin Name:       Test Events
  * Plugin URI:        http://testwestern.com/events-from-facebook
  * Description:       gets events and shows events and modifies events
- * Version:           0.9.5
+ * Version:           0.9.6
  * Author:            Paul Craig
  * Author URI:        https://profiles.wordpress.org/pcraig3/
  * Text Domain:       test-events
