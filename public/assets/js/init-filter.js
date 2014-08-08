@@ -6,8 +6,8 @@
 
         ajax_get_events: function( options ) {
 
-            var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
-            var limit = options.limit || 0;
+            options.api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
+            options.limit = options.limit || 0;
 
             // Assign handlers immediately after making the request,
             // and remember the jqxhr object for this request
@@ -15,13 +15,12 @@
                 options.ajax_url,
                 {
                     action:         "get_events",
-                    api_url:        api_url,
+                    api_url:        options.api_url,
                     //this exists for the wp_nonce check
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
                     remove_events:  1,
                     transient_name: options.transient_name
-
                     //we don't need this column because it defaults to false.
                     //whitelist: 0
                 },
@@ -50,7 +49,7 @@
                             event.removed = "display";
                     });
 
-                    AjaxEvents.ajax_events_gotten( events, limit );
+                    AjaxEvents.ajax_events_gotten( events, options.limit );
 
                     if( data['if_cached'] ) {
 
@@ -59,8 +58,8 @@
                     else {
 
                         console.log('data not cached');
+                        AjaxEvents.ajax_update_wordpress_transient_cache( options );
                     }
-                    AjaxEvents.ajax_update_wordpress_transient_cache( options );
 
 
                 }, "json");
@@ -75,10 +74,6 @@
 
         ajax_update_wordpress_transient_cache: function( options ) {
 
-            //we can assume we have both of these values, because this method is only ever called after ajax_get_events
-            var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01";
-            var limit = options.limit;// || 0;
-
             console.log(options);
 
             // Assign handlers immediately after making the request,
@@ -87,13 +82,10 @@
                 options.ajax_url,
                 {
                     action:         "update_wordpress_transient_cache",
-                    api_url:        api_url,
+                    api_url:        options.api_url,
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
-                    remove_events:  1,
                     transient_name: options.transient_name
-                    //we don't need this column because it defaults to false.
-                    //whitelist: 0
                 },
 
                 function( data ) {

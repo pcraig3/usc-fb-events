@@ -77,9 +77,8 @@ class WP_AJAX {
 
         $button_id = $_POST['button_id'];
 
-        if ( !wp_verify_nonce( $_POST['nonce'], $button_id . "_nonce")) {
-            exit("No naughty business please");
-        }
+        $this->make_sure_the_nonce_checks_out( $button_id, $_POST['nonce'] );
+
 
         global $wpdb;
 
@@ -130,14 +129,14 @@ class WP_AJAX {
     }
 
     /**
-     * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges them)
+     * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
+     * and then returns everything to the javascript function waiting for it.
      *
      * @since    0.5.0
      */
     public function get_events() {
 
-        if ( ! $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] ) )
-            exit("No naughty business please");
+        $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 
         $whitelist = ( isset($_POST['whitelist'] ) ) ? $_POST['whitelist'] : false;
@@ -170,7 +169,6 @@ class WP_AJAX {
         $response = $this->date_strings_to_timestamps($response);
 
         $result['if_cached'] = $events_stored_in_cache;
-        $result['transient_name'] = $transient_name;
         $result['response'] = $response;
         $result['success'] = ( false !== $response ) ? true : false;
 
@@ -179,20 +177,26 @@ class WP_AJAX {
 
     }
 
-    public function update_wordpress_transient_cache() { //$transient_name, $api_url = 'testwestern.com/api/events/events/2014-04-01', $expiration = HOUR_IN_SECONDS ) {
+    /**
+     * This method implements our WordPress caching system.  Basically, instead of calling (@see) call_api all the time,
+     * we can store its value to the cache (removing the old value first).  So that the next time it's called, we might just
+     * get it from the WP_database instead of going all the way to Facebook for the data.
+     *
+     * The assumption here is that we've run (@see) get_events first, and then, if a non-cached value is returned to the front-end
+     * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
+     * cached value.
+     *
+     */
+    public function update_wordpress_transient_cache() {
 
-        $attr_id = $_POST['attr_id'];
+        $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
-        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
-            exit("No naughty business please");
-        }
 
         $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_api_generic';
+        $expiration = ( isset($_POST['expiration'] ) ) ? $_POST['expiration'] : 300;
         $json_decoded_events_array = ( isset($_POST['api_url']) ) ? $this->call_api( $_POST['api_url'] ) : $this->call_api();
 
         delete_site_transient( $transient_name );
-
-        $expiration = 300;
 
         $if_transient_set = set_site_transient( $transient_name, json_encode($json_decoded_events_array), $expiration );
 
@@ -202,13 +206,18 @@ class WP_AJAX {
         die();
     }
 
-    private function make_sure_the_nonce_checks_out( $attr_id, $nonce ) {
+    /**
+     * Method that abstracts the nonce-checking.  It's not actually that interesting.
+     * If any of the values aren't set (or are wrong), execution halts.
+     *
+     * @param string $attr_id   all of my nonce names end with "_nonce" and so we need the prefix
+     * @param string $nonce     the nonce itself
+     */
+    private function make_sure_the_nonce_checks_out( $attr_id = "", $nonce = "") {
 
-        if ( wp_verify_nonce( $nonce, $attr_id . "_nonce") ) {
-            return true;
-        }
+        if ( ! wp_verify_nonce( $nonce, $attr_id . "_nonce") )
+            exit("No naughty business please");
 
-        return false;
     }
 
     /**
