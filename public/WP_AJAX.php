@@ -69,7 +69,7 @@ class WP_AJAX {
      * Based on tutorial here:
      * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
      *
-     * @since   0.4.0
+     * @since   0.9.6
      *
      * @return 		returns an encoded JSON string
      */
@@ -132,7 +132,7 @@ class WP_AJAX {
      * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
      * and then returns everything to the javascript function waiting for it.
      *
-     * @since    0.5.0
+     * @since    0.9.6
      */
     public function get_events() {
 
@@ -141,14 +141,14 @@ class WP_AJAX {
 
         $whitelist = ( isset($_POST['whitelist'] ) ) ? $_POST['whitelist'] : false;
         $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
-        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_api_generic';
+        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_events_api_generic';
 
-        delete_site_transient('call_api_public_filterjs');
+        delete_site_transient('call_events_api_public_filterjs');
         $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
         if( false === $events_stored_in_cache ) {
 
-            $response = ( isset($_POST['api_url']) ) ? $this->call_api( $_POST['api_url'] ) : $this->call_api();
+            $response = ( isset($_POST['api_url']) ) ? $this->call_events_api( $_POST['api_url'] ) : $this->call_events_api();
         } else {
 
             $response = $events_stored_in_cache;
@@ -178,7 +178,7 @@ class WP_AJAX {
     }
 
     /**
-     * This method implements our WordPress caching system.  Basically, instead of calling (@see) call_api all the time,
+     * This method implements our WordPress caching system.  Basically, instead of calling (@see) call_events_api all the time,
      * we can store its value to the cache (removing the old value first).  So that the next time it's called, we might just
      * get it from the WP_database instead of going all the way to Facebook for the data.
      *
@@ -186,15 +186,17 @@ class WP_AJAX {
      * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
      * cached value.
      *
+     * @since    0.9.6
+     *
      */
     public function update_wordpress_transient_cache() {
 
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 
-        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_api_generic';
+        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_events_api_generic';
         $expiration = ( isset($_POST['expiration'] ) ) ? $_POST['expiration'] : 300;
-        $json_decoded_events_array = ( isset($_POST['api_url']) ) ? $this->call_api( $_POST['api_url'] ) : $this->call_api();
+        $json_decoded_events_array = ( isset($_POST['api_url']) ) ? $this->call_events_api( $_POST['api_url'] ) : $this->call_events_api();
 
         delete_site_transient( $transient_name );
 
@@ -204,20 +206,6 @@ class WP_AJAX {
 
         echo json_encode( $result );
         die();
-    }
-
-    /**
-     * Method that abstracts the nonce-checking.  It's not actually that interesting.
-     * If any of the values aren't set (or are wrong), execution halts.
-     *
-     * @param string $attr_id   all of my nonce names end with "_nonce" and so we need the prefix
-     * @param string $nonce     the nonce itself
-     */
-    private function make_sure_the_nonce_checks_out( $attr_id = "", $nonce = "") {
-
-        if ( ! wp_verify_nonce( $nonce, $attr_id . "_nonce") )
-            exit("No naughty business please");
-
     }
 
     /**
@@ -233,6 +221,23 @@ class WP_AJAX {
     }
 
     /** NON AJAX STUFF  **/
+
+    /**
+     * Method that abstracts the nonce-checking.  It's not actually that interesting.
+     * If any of the values aren't set (or are wrong), execution halts.
+     *
+     * @since   0.9.6
+     *
+     * @param string $attr_id   all of my nonce names end with "_nonce" and so we need the prefix
+     * @param string $nonce     the nonce itself
+     */
+    private function make_sure_the_nonce_checks_out( $attr_id = "", $nonce = "") {
+
+        if ( ! wp_verify_nonce( $nonce, $attr_id . "_nonce") )
+            exit("No naughty business please");
+
+    }
+
 
     /**
      * Function generates a facebook URL based on a facebook eid.
@@ -449,45 +454,44 @@ class WP_AJAX {
     }
 
     /**
-     * Calls some page which calls our Facebook events api
-     * @TODO: One day use the WordPress HTTP API
+     * Uses the WordPress HTTP API to call our AmAzE-O Facebook events api
      *
-     * @since    0.2.0
+     * @since    0.9.6
      *
-     * @param string $api_url           perhaps unsurprisingly, this is the url we call the events from
+     * @param string $api_url   perhaps unsurprisingly, this is the url we call the events from
      *
      * @return array            at this point, return open Facebook events as an indexed array
      */
-    public function call_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
+    public function call_events_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
 
-        //the url where to get Facebook events
-        $ch = curl_init($api_url);
+        $returned_string = wp_remote_retrieve_body( wp_remote_get( $this->add_http_if_not_exists($api_url) ) );
 
-        curl_setopt( $ch, CURLOPT_HEADER, false ); //TRUE to include the header in the output.
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); //TRUE to return transfer as a string instead of outputting it out directly.
-        //curl_setopt($ch, CURLOPT_FRESH_CONNECT, true); //TRUE to force the use of a new connection instead of a cached one.
+        if( empty( $returned_string ) ) {
 
-        $returnedString = curl_exec( $ch );
-        curl_close( $ch );
-
-        // Define the errors.
-        /* $constants = get_defined_constants(true);
-
-        /*$json_errors = array();
-        foreach ($constants["json"] as $name => $value) {
-            if (!strncmp($name, "JSON_ERROR_", 11)) {
-                $json_errors[$value] = $name;
-            }
+            return new WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "test-events" ) );
         }
 
-        echo '<h1>';
-        echo 'Last error: ', $json_errors[json_last_error()], PHP_EOL, PHP_EOL;
-        echo '</h1>';
-        die;
-        */
-
-        return json_decode( $returnedString, true );
+        return json_decode( $returned_string, true );
     }
 
+    /**
+     * Simple utility function. Add an "http://" to URLs without it.
+     * Recognizes ftp://, ftps://, http:// and https:// in a case insensitive way.
+     *
+     * http://stackoverflow.com/questions/2762061/how-to-add-http-if-its-not-exists-in-the-url
+     * @author Alix Axel
+     *
+     * @since    0.9.6
+     *
+     * @param $url      a url with or without an http:// prefix
+     * @return string   a url with the http:// prefix, or whatever it had originally
+     */
+    private function add_http_if_not_exists($url) {
+
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $url = "http://" . $url;
+        }
+        return $url;
+    }
 
 }
