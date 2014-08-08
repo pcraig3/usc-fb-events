@@ -2,67 +2,102 @@
     var fJS;
 
     var AjaxEvents = {
-        /**
-         * Function sets up our list in the backend.
-         * Gets the eids of removed events and merges them with the data from Facebook.
-         *
-         * @param events    a JSON list of Facebook Events
-         *
-         * @since   0.9.6
-         */
+
+
         ajax_get_events: function( options ) {
 
-                var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
-                var limit = options.limit || 0;
+            var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
+            var limit = options.limit || 0;
 
-                // Assign handlers immediately after making the request,
-                // and remember the jqxhr object for this request
-                var jqxhr = jQuery.post(
-                    options.ajax_url,
-                    {
-                        action:         "get_events",
-                        api_url:        api_url,
-                        attr_id:        "event_list",
-                        nonce:          jQuery("#event_list").data("nonce"),
-                        remove_events:  1
-                        //we don't need this column because it defaults to false.
-                        //whitelist: 0
-                    },
+            // Assign handlers immediately after making the request,
+            // and remember the jqxhr object for this request
+            var jqxhr = jQuery.post(
+                options.ajax_url,
+                {
+                    action:         "get_events",
+                    api_url:        api_url,
+                    //this exists for the wp_nonce check
+                    attr_id:        "event_list",
+                    nonce:          jQuery("#event_list").data("nonce"),
+                    remove_events:  1
+                    //we don't need this column because it defaults to false.
+                    //whitelist: 0
+                },
 
-                    function( data ) {
+                function( data ) {
 
-                        //console.log(data);
+                    //console.log(data);
 
-                        if(! data['success']) {
-                            alert("Ack! Problems getting your removed events back from the database.")
+                    if(! data['success']) {
+                        alert("Ack! Problems getting your removed events back from the database.")
+                    }
+
+                    var events = data['response']['events'];
+
+                    jQuery.each(events, function(i, event){
+                        event.id = i+1;
+
+                        if( parseInt(event.removed) === 1 ) {
+                            event.removed = "removed";
                         }
+                        else
+                        if ( parseInt(event.modified) === 1 ){
+                            event.removed = "modified";
+                        }
+                        else
+                            event.removed = "display";
+                    });
 
-                        var events = data['response']['events'];
+                    AjaxEvents.ajax_events_gotten( events, limit );
 
-                        jQuery.each(events, function(i, event){
-                            event.id = i+1;
+                }, "json");
+            /*.fail(function() {
+             alert( "error" );
+             })
+             .always(function() {
+             alert( "finished" );
+             });*/
+        },
 
-                            if( parseInt(event.removed) === 1 ) {
-                                event.removed = "removed";
-                            }
-                            else
-                            if ( parseInt(event.modified) === 1 ){
-                                event.removed = "modified";
-                            }
-                            else
-                                event.removed = "display";
-                        });
 
-                        AjaxEvents.ajax_events_gotten( events, limit );
+        ajax_update_wordpress_transient_cache: function( options ) {
 
-                    }, "json");
-                /*.fail(function() {
-                 alert( "error" );
-                 })
-                 .always(function() {
-                 alert( "finished" );
-                 });*/
-            },
+            //we can assume we have both of these values, because this method is only ever called after ajax_get_events
+            var api_url = options.api_url;// || "testwestern.com/api/events/events/2014-04-01";
+            var limit = options.limit;// || 0;
+
+            // Assign handlers immediately after making the request,
+            // and remember the jqxhr object for this request
+            var jqxhr = jQuery.post(
+                options.ajax_url,
+                {
+                    action:         "update_wordpress_transient_cache",
+                    api_url:        api_url,
+                    attr_id:        "event_list",
+                    nonce:          jQuery("#event_list").data("nonce"),
+                    remove_events:  1
+                    //we don't need this column because it defaults to false.
+                    //whitelist: 0
+                },
+
+                function( data ) {
+
+                    //console.log(data);
+
+                    if(! data['success']) {
+                        console.log('WordPress transient DB has NOT been updated.');
+                    }
+
+                    console.log('Yay! WordPress transient DB has been updated.');
+
+                }, "json");
+            /*.fail(function() {
+             alert( "error" );
+             })
+             .always(function() {
+             alert( "finished" );
+             });*/
+        },
 
         limit_events: function( events, limit ) {
 

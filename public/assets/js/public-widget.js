@@ -7,11 +7,12 @@ jQuery(function ($) {
 
     AjaxEvents.ajax_events_gotten = function( events, limit ) {
 
-        $('.filterjs__loading').addClass('hidden');
+        //$('.filterjs__loading').addClass('hidden');
 
+       /* @TODO: This is bad infrastructure */
        var usc_events = AjaxEvents.remove_non_usc_events( events );
 
-       //ideally, you cut down on the event array before processing it, but the API is making that harder.
+        /* @TODO: ideally, you cut down on the event array before processing it, but the API is making that harder. */
        usc_events = AjaxEvents.limit_events( usc_events, limit );
 
        fJS = filterInit( usc_events );

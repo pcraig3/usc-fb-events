@@ -142,7 +142,7 @@ class WP_AJAX {
         $whitelist = ( isset($_POST['whitelist']) ) ? $_POST['whitelist'] : false;
         $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
 
-        $response = ( isset($_POST['api_url']) ) ? $this->call_api($_POST['api_url']) : $this->call_api();
+        $response = ( isset($_POST['api_url']) ) ? $this->call_api( 'ajax_get_events', $_POST['api_url']) : $this->call_api( 'ajax_get_events' );
 
         $response = $this->facebook_urls($response);
 
@@ -392,16 +392,20 @@ class WP_AJAX {
      *
      * @since    0.2.0
      *
-     * @param string $api_url   perhaps unsurprisingly, this is the url we call the events from
+     * @param string $transient_name    so that we can cache different results from different places, a transient name should be specified
+     * @param string $api_url           perhaps unsurprisingly, this is the url we call the events from
      *
      * @return array            at this point, return open Facebook events as an indexed array
      */
-    public function call_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
+    public function call_api( $transient_name = 'call_api_response', $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
 
-        //delete_site_transient('call_api_response');
 
-        if( false !== ( $cached_response = get_site_transient( 'call_api_response' ) ) )
+        //delete_site_transient($transient_name);
+
+        if( false !== ( $cached_response = get_site_transient( $transient_name ) ) ) {
+            //$this->call_api( $transient_name );
             return json_decode( $cached_response, true);
+        }
 
         //the url where to get Facebook events
         $ch = curl_init($api_url);
@@ -429,7 +433,7 @@ class WP_AJAX {
         die;
         */
 
-        set_site_transient( 'call_api_response', $returnedString, HOUR_IN_SECONDS );
+        set_site_transient( $transient_name, $returnedString, HOUR_IN_SECONDS );
 
         return json_decode( $returnedString, true );
     }
