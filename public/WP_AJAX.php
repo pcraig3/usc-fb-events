@@ -388,6 +388,7 @@ class WP_AJAX {
 
     /**
      * Calls some page which calls our Facebook events api
+     * @TODO: One day use the WordPress HTTP API
      *
      * @since    0.2.0
      *
@@ -396,6 +397,11 @@ class WP_AJAX {
      * @return array            at this point, return open Facebook events as an indexed array
      */
     public function call_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
+
+        //delete_site_transient('call_api_response');
+
+        if( false !== ( $cached_response = get_site_transient( 'call_api_response' ) ) )
+            return json_decode( $cached_response, true);
 
         //the url where to get Facebook events
         $ch = curl_init($api_url);
@@ -422,6 +428,8 @@ class WP_AJAX {
         echo '</h1>';
         die;
         */
+
+        set_site_transient( 'call_api_response', $returnedString, HOUR_IN_SECONDS );
 
         return json_decode( $returnedString, true );
     }

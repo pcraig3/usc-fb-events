@@ -154,6 +154,7 @@ class Test_Events {
 
         //function returns Facebook events as a json array.
         //in the future, we'll have this take a parameter
+
         $events_array = $this->wp_ajax->call_api();
 
         $events_array = $this->wp_ajax->facebook_urls($events_array);

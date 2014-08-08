@@ -64,7 +64,6 @@
                  });*/
             },
 
-        /* @TODO: Duplicating this is pretty obvious bad practice */
         limit_events: function( events, limit ) {
 
                 if(limit < 1)
