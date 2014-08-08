@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.9.6
+Stable tag: 0.9.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,10 @@ It almost works.
 
 
 == Changelog ==
+
+= 0.9.7 =
+* Using the HTTP API now instead of cURL
+* Implemented some (back-loaded) caching so that we don't have that mustang on the home page getting too tired
 
 = 0.9.6 =
 * Every event view now respects limits, and upcoming/past events are distinguished with CSS classes.

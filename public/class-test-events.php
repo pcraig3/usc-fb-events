@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.6';
+	const VERSION = '0.9.7';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -170,7 +170,7 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.6
+     * @since    0.9.7
      */
     private function events_ajax( $limit = 0 ) {
 
@@ -197,7 +197,7 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.5
+     * @since    0.9.7
      */
     private function events_widget( $limit = 0 ) {
 

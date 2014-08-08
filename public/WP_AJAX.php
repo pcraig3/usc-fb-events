@@ -69,7 +69,7 @@ class WP_AJAX {
      * Based on tutorial here:
      * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
      *
-     * @since   0.9.6
+     * @since    0.9.7
      *
      * @return 		returns an encoded JSON string
      */
@@ -132,7 +132,7 @@ class WP_AJAX {
      * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
      * and then returns everything to the javascript function waiting for it.
      *
-     * @since    0.9.6
+     * @since    0.9.7
      */
     public function get_events() {
 
@@ -186,7 +186,7 @@ class WP_AJAX {
      * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
      * cached value.
      *
-     * @since    0.9.6
+     * @since    0.9.7
      *
      */
     public function update_wordpress_transient_cache() {
@@ -226,7 +226,7 @@ class WP_AJAX {
      * Method that abstracts the nonce-checking.  It's not actually that interesting.
      * If any of the values aren't set (or are wrong), execution halts.
      *
-     * @since   0.9.6
+     * @since    0.9.7
      *
      * @param string $attr_id   all of my nonce names end with "_nonce" and so we need the prefix
      * @param string $nonce     the nonce itself
@@ -456,7 +456,7 @@ class WP_AJAX {
     /**
      * Uses the WordPress HTTP API to call our AmAzE-O Facebook events api
      *
-     * @since    0.9.6
+     * @since    0.9.7
      *
      * @param string $api_url   perhaps unsurprisingly, this is the url we call the events from
      *
@@ -481,7 +481,7 @@ class WP_AJAX {
      * http://stackoverflow.com/questions/2762061/how-to-add-http-if-its-not-exists-in-the-url
      * @author Alix Axel
      *
-     * @since    0.9.6
+     * @since    0.9.7
      *
      * @param $url      a url with or without an http:// prefix
      * @return string   a url with the http:// prefix, or whatever it had originally
