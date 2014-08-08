@@ -7,7 +7,7 @@ jQuery(function ($) {
 
     AjaxEvents.ajax_events_gotten = function( events, limit ) {
 
-        //$('.filterjs__loading').addClass('hidden');
+        $('.filterjs__loading').addClass('hidden');
 
        /* @TODO: This is bad infrastructure */
        var usc_events = AjaxEvents.remove_non_usc_events( events );

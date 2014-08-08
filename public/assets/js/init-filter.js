@@ -19,14 +19,16 @@
                     //this exists for the wp_nonce check
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
-                    remove_events:  1
+                    remove_events:  1,
+                    transient_name: options.transient_name
+
                     //we don't need this column because it defaults to false.
                     //whitelist: 0
                 },
 
                 function( data ) {
 
-                    //console.log(data);
+                    console.log(data);
 
                     if(! data['success']) {
                         alert("Ack! Problems getting your removed events back from the database.")
@@ -50,6 +52,17 @@
 
                     AjaxEvents.ajax_events_gotten( events, limit );
 
+                    if( data['if_cached'] ) {
+
+                        console.log('data was gotten from cache');
+                    }
+                    else {
+
+                        console.log('data not cached');
+                    }
+                    AjaxEvents.ajax_update_wordpress_transient_cache( options );
+
+
                 }, "json");
             /*.fail(function() {
              alert( "error" );
@@ -63,8 +76,10 @@
         ajax_update_wordpress_transient_cache: function( options ) {
 
             //we can assume we have both of these values, because this method is only ever called after ajax_get_events
-            var api_url = options.api_url;// || "testwestern.com/api/events/events/2014-04-01";
+            var api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01";
             var limit = options.limit;// || 0;
+
+            console.log(options);
 
             // Assign handlers immediately after making the request,
             // and remember the jqxhr object for this request
@@ -75,20 +90,23 @@
                     api_url:        api_url,
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
-                    remove_events:  1
+                    remove_events:  1,
+                    transient_name: options.transient_name
                     //we don't need this column because it defaults to false.
                     //whitelist: 0
                 },
 
                 function( data ) {
 
-                    //console.log(data);
+                    console.log('<pre>');
+                    console.log(data);
+                    console.log('</pre>');
 
                     if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
-
-                    console.log('Yay! WordPress transient DB has been updated.');
+                    else
+                        console.log('Yay! WordPress transient DB has been updated.');
 
                 }, "json");
             /*.fail(function() {

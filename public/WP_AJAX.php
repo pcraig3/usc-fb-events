@@ -24,6 +24,9 @@ class WP_AJAX {
 
         add_action("wp_ajax_get_events", array( $this, "get_events" ) );
         add_action("wp_ajax_nopriv_get_events", array( $this, "get_events") );
+
+        add_action("wp_ajax_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache" ) );
+        add_action("wp_ajax_nopriv_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache") );
     }
 
     /**
@@ -133,16 +136,25 @@ class WP_AJAX {
      */
     public function get_events() {
 
-        $attr_id = $_POST['attr_id'];
-
-        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
+        if ( ! $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] ) )
             exit("No naughty business please");
-        }
 
-        $whitelist = ( isset($_POST['whitelist']) ) ? $_POST['whitelist'] : false;
+
+        $whitelist = ( isset($_POST['whitelist'] ) ) ? $_POST['whitelist'] : false;
         $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
+        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_api_generic';
 
-        $response = ( isset($_POST['api_url']) ) ? $this->call_api( 'ajax_get_events', $_POST['api_url']) : $this->call_api( 'ajax_get_events' );
+        delete_site_transient('call_api_public_filterjs');
+        $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
+
+        if( false === $events_stored_in_cache ) {
+
+            $response = ( isset($_POST['api_url']) ) ? $this->call_api( $_POST['api_url'] ) : $this->call_api();
+        } else {
+
+            $response = $events_stored_in_cache;
+            $events_stored_in_cache = true;
+        }
 
         $response = $this->facebook_urls($response);
 
@@ -157,12 +169,46 @@ class WP_AJAX {
         //javascript CANNOT understand dates
         $response = $this->date_strings_to_timestamps($response);
 
+        $result['if_cached'] = $events_stored_in_cache;
+        $result['transient_name'] = $transient_name;
         $result['response'] = $response;
-        $result['success'] = ( $response === false ) ? false : true;
+        $result['success'] = ( false !== $response ) ? true : false;
 
         echo json_encode($result);
         die();
 
+    }
+
+    public function update_wordpress_transient_cache() { //$transient_name, $api_url = 'testwestern.com/api/events/events/2014-04-01', $expiration = HOUR_IN_SECONDS ) {
+
+        $attr_id = $_POST['attr_id'];
+
+        if ( !wp_verify_nonce( $_POST['nonce'], $attr_id . "_nonce")) {
+            exit("No naughty business please");
+        }
+
+        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_api_generic';
+        $json_decoded_events_array = ( isset($_POST['api_url']) ) ? $this->call_api( $_POST['api_url'] ) : $this->call_api();
+
+        delete_site_transient( $transient_name );
+
+        $expiration = 300;
+
+        $if_transient_set = set_site_transient( $transient_name, json_encode($json_decoded_events_array), $expiration );
+
+        $result['success'] = $if_transient_set;
+
+        echo json_encode( $result );
+        die();
+    }
+
+    private function make_sure_the_nonce_checks_out( $attr_id, $nonce ) {
+
+        if ( wp_verify_nonce( $nonce, $attr_id . "_nonce") ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -386,26 +432,24 @@ class WP_AJAX {
         return end($args);
     }
 
+    public function if_stored_in_wordpress_transient_cache( $transient_name ) {
+
+        $events_or_false = get_site_transient( $transient_name );
+
+        return ( false === $events_or_false ) ? false : json_decode( $events_or_false, true );
+    }
+
     /**
      * Calls some page which calls our Facebook events api
      * @TODO: One day use the WordPress HTTP API
      *
      * @since    0.2.0
      *
-     * @param string $transient_name    so that we can cache different results from different places, a transient name should be specified
      * @param string $api_url           perhaps unsurprisingly, this is the url we call the events from
      *
      * @return array            at this point, return open Facebook events as an indexed array
      */
-    public function call_api( $transient_name = 'call_api_response', $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
-
-
-        //delete_site_transient($transient_name);
-
-        if( false !== ( $cached_response = get_site_transient( $transient_name ) ) ) {
-            //$this->call_api( $transient_name );
-            return json_decode( $cached_response, true);
-        }
+    public function call_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
 
         //the url where to get Facebook events
         $ch = curl_init($api_url);
@@ -432,8 +476,6 @@ class WP_AJAX {
         echo '</h1>';
         die;
         */
-
-        set_site_transient( $transient_name, $returnedString, HOUR_IN_SECONDS );
 
         return json_decode( $returnedString, true );
     }

@@ -155,7 +155,7 @@ class Test_Events {
         //function returns Facebook events as a json array.
         //in the future, we'll have this take a parameter
 
-        $events_array = $this->wp_ajax->call_api( 'call_api_events_list' );
+        $events_array = $this->wp_ajax->call_api();
 
         $events_array = $this->wp_ajax->facebook_urls($events_array);
         $events_array = $this->wp_ajax->merge_fb_and_db_events($events_array);
@@ -179,13 +179,15 @@ class Test_Events {
 
         wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
         wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
-        wp_enqueue_script( 'bothjs', plugins_url( '/assets/js/both.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
-        wp_enqueue_script( 'public_filterjs', plugins_url( '/assets/js/public-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs', 'bothjs' ), self::VERSION );
+        wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
+        wp_enqueue_script( 'public_filterjs', plugins_url( '/assets/js/public-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs', 'init_filterjs' ), self::VERSION );
 
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
         wp_localize_script( 'public_filterjs', "options", array(
-            'ajax_url'  => admin_url( 'admin-ajax.php' ),
-            'limit'     => $limit,
+            'ajax_url'          => admin_url( 'admin-ajax.php' ),
+            'limit'             => $limit,
+            'transient_name'    => "call_api_public_filterjs",
+
         ) );
 
         return require_once('views/ajax-list.php');
@@ -201,16 +203,17 @@ class Test_Events {
 
         wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
         wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
-        wp_enqueue_script( 'bothjs', plugins_url( '/assets/js/both.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
-        wp_enqueue_script( 'public_widgetjs', plugins_url( '/assets/js/public-widget.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs', 'bothjs' ), self::VERSION );
+        wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
+        wp_enqueue_script( 'public_widgetjs', plugins_url( '/assets/js/public-widget.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs', 'init_filterjs' ), self::VERSION );
 
 
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
         wp_localize_script( 'public_widgetjs', "options", array(
-            'ajax_url'  => admin_url( 'admin-ajax.php' ),
-            'limit'     => $limit,
-            'api_url'   => "testwestern.com/api/events/events/2014-02-01",
-        ) );
+            'ajax_url'          => admin_url( 'admin-ajax.php' ),
+            'limit'             => $limit,
+            'api_url'           => "testwestern.com/api/events/events/2014-02-01",
+            'transient_name'    => "call_api_widget_filterjs",
+    ) );
 
         //enqueue the css file for the homepage widget
         wp_enqueue_style( 'public_widgetcss', plugins_url( 'assets/css/public-widget.css', __FILE__ ), array(), self::VERSION );
