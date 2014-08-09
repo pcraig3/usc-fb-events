@@ -164,14 +164,12 @@ class WP_AJAX {
 
         $whitelist      = ( isset($_POST['whitelist'] ) )       ? $_POST['whitelist']       : false;
         $remove_events  = ( isset($_POST['remove_events']) )    ? $_POST['remove_events']   : false;
-        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : 'call_events_api_generic';
         $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
         $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
-        //@TODO: sort this out right quick
-        delete_site_transient('call_events_api_public_filterjs');
+        $transient_name = $this->generate_transient_name( $start, $end, $calendars, $limit );
         $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
         if( false === $events_stored_in_cache ) {
@@ -503,44 +501,65 @@ class WP_AJAX {
          * transient names can be a maximum of 40 characters, so I'm limiting every field to 6 characters
          * so there it is.  pick (up to) six characters from every value
          */
+        $char_limit = 6;
 
-        $start_string   = number_format( $start , 0 , '', '' );
-        $end_string     = number_format( $end , 0 , '', '' );
+        $start   = number_format( $start , 0 , '', '' );
+        $start_string   = ( strlen( $start ) >= $char_limit ) ? substr( $start, -$char_limit ) : $start;
+
+        $end     = number_format( $end , 0 , '', '' );
+        $end_string   = ( strlen( $end ) >= $char_limit ) ? substr( $end, -$char_limit ) : $end;
+
+        $calendars_string = $this->generate_calendar_string_for_transient_cache( $calendars, $char_limit );
+
+        $limit   = number_format( $limit , 0 , '', '' );
+        $limit_string   = ( strlen( $limit ) >= $char_limit ) ? substr( $limit, -$char_limit ) : $limit;
+
+
+        $transient_name = "s" . $start_string . "_e" . $end_string . "_c" . $calendars_string . "_l" . $limit_string;
+
+        //I don't think this is possible, but I suupose you have to check
+        if( strlen( $transient_name ) > 40 ) {
+
+            return new WP_Error( 'transient_name_error', __( 'transient_name is too long (' . strlen( $transient_name )
+                . ' chars) and will not be findable in future', "test-events" ) );
+        }
+
+        return $transient_name;
+    }
+
+    private function generate_calendar_string_for_transient_cache( $calendars, $char_limit ) {
+
+        if( empty( $calendars ) )
+            return '';
 
         //so "usc,custom,western film" is now an array. ( csu, motsuc, mlifnretsew )
-        $calendars_array =  explode( "," , str_replace( ' ', '', str_replace( '%20', ' ', strrev( $calendars ) ) ) );
+        $calendars_array =  explode( "," , strrev( str_replace( ' ', '', str_replace( '%20', ' ', $calendars ) ) ) );
 
         foreach ($calendars_array as $key => $calendar) {
             $calendars_array[$key] = str_split( $calendar );
         }
 
-        $max = 6;
         $calendars_string = '';
 
-        while( !empty( $calendars_array ) && $max > 0 ) {
+        while( !empty( $calendars_array ) && $char_limit > 0 ) {
 
             $calendars_array = array_values($calendars_array);
 
-            foreach( $calendars_array as $key => $calendar_array ) {
+            //basically, array_shift elements off the front of their
+            //respective arrays while they're not empty and while max > 0;
+            foreach( $calendars_array as $key => &$calendar_array ) {
 
                 $calendars_string .= array_shift( $calendar_array );
-                ++$max;
+                --$char_limit;
 
-                if ( empty( $calendar_array ));
+                if ( empty( $calendar_array ) )
                     unset($calendars_array[$key]);
 
             }
+            unset($calendar_array);
         }
 
-        //basically, array_shift elements off the front of their
-        //respective arrays while they're not empty and while max > 0;
-
-
-
-
-
-        $limit_string   = number_format( $limit , 0 , '', '' );
-
+        return $calendars_string;
     }
 
     public function if_stored_in_wordpress_transient_cache( $transient_name ) {

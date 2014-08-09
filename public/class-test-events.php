@@ -105,14 +105,19 @@ class Test_Events {
     public function testplugin_func ( $atts ) {
 
         //initialize your variables
-        $get = $show = $limit = $result = false;
+        $get = $show = $start = $end = $calendars = $limit = $result = false;
+
+        $april_2014 = 1396310401;
 
         extract(
             shortcode_atts(
                 array(
-                    'get'   => 'events',
-                    'show'  => 'count',
-                    'limit'   => 10,
+                    'get'       => 'events',
+                    'show'      => 'count',
+                    'start'     => $april_2014,
+                    'end'       => $april_2014 + (YEAR_IN_SECONDS * 2),
+                    'calendars' => '',
+                    'limit'     => 0,
                 ), $atts ),
             EXTR_OVERWRITE);
 
@@ -120,6 +125,9 @@ class Test_Events {
 
             $parameters = array(
 
+                $start,
+                $end,
+                $calendars,
                 intval($limit),
             );
 
@@ -173,7 +181,7 @@ class Test_Events {
      *
      * @since    0.9.7
      */
-    private function events_ajax( $limit = 0 ) {
+    private function events_ajax( $start, $end, $calendars, $limit ) {
 
         //add_action( 'wp_head', array( $this, 'add_ajax_library' ) );
 
@@ -186,10 +194,12 @@ class Test_Events {
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
         wp_localize_script( 'public_filterjs', "options", array(
             'ajax_url'          => admin_url( 'admin-ajax.php' ),
+            'start'             => $start,
+            'end'               => $end,
+            'calendars'         => $calendars,
             'limit'             => $limit,
-            'start'             => "1391212801",
-            'transient_name'    => "call_events_api_public_filterjs",
-        ) );
+            )
+        );
 
         return require_once('views/ajax-list.php');
     }
@@ -200,7 +210,7 @@ class Test_Events {
      *
      * @since    0.9.7
      */
-    private function events_widget( $limit = 0 ) {
+    private function events_widget( $start, $end, $calendars, $limit ) {
 
         wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
         wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
@@ -211,10 +221,12 @@ class Test_Events {
         // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
         wp_localize_script( 'public_widgetjs', "options", array(
             'ajax_url'          => admin_url( 'admin-ajax.php' ),
+            'start'             => $start,
+            'end'               => $end,
+            'calendars'         => $calendars,
             'limit'             => $limit,
-            'start'             => "1391212801",
-            'transient_name'    => "call_events_api_widget_filterjs",
-    ) );
+            )
+        );
 
         //enqueue the css file for the homepage widget
         wp_enqueue_style( 'public_widgetcss', plugins_url( 'assets/css/public-widget.css', __FILE__ ), array(), self::VERSION );
