@@ -62,7 +62,7 @@
                     options.calendars   = data['calendars'];
                     options.limit       = data['limit'];
 
-                    AjaxEvents.ajax_update_wordpress_transient_cache( options );
+                    //AjaxEvents.ajax_update_wordpress_transient_cache( options );
 
                     /*
                     if( data['if_cached'] ) {

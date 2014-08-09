@@ -205,11 +205,12 @@
             "ticket_uri_fb",
         ]
 
-        //console.log(values);
+        console.log(values);
 
         for (var key in values) {
 
             if (values.hasOwnProperty(key)) {
+
                 //if the key ends with _fb and it is undefined and it is NOT in the preserve_empty_values array.
                 if(key.endsWith("_fb") && values[key] === undefined && ($.inArray( key, preserve_empty_values ) < 0 ) ) {
 
@@ -220,6 +221,8 @@
 
                     $('.modify_' + key_without_fb).val( values[key_without_fb] );
                 }
+
+                console.log(key);
 
                 $('.modify_' + key).val( values[key] );
                 $('.modify_' + key).trigger( 'update' );  //can hook into this if necessary

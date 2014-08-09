@@ -20,7 +20,6 @@ class Manage_Events extends AdminPageFramework {
      * @since    0.6.0
      */
     public function start_Manage_Events() { // start_{extended class name} - this method gets automatically triggered at the end of the class constructor.
-
         /*
          * Register custom field types.
          */
@@ -326,7 +325,7 @@ class Manage_Events extends AdminPageFramework {
         //this is the end of the form defined in ::addSettingFields
         ?>
 
-        <h3 class="title">This is an H3 tag</h3>
+        <h3 class="title">Values saved 9</h3>
 
     <?php
 
@@ -362,6 +361,7 @@ class Manage_Events extends AdminPageFramework {
 				    $('#modify_event_submit').on('click', function() {
 				        $('.hasDatepicker').datepicker( 'enable' );
 				    });
+
 			});
 			</script>
 		" . PHP_EOL;
@@ -382,6 +382,17 @@ class Manage_Events extends AdminPageFramework {
      * @return mixed        returns the values to the screen.  Nothing happens with them right now.
      */
     public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
+
+        echo 'Hi, my name is Paul: 387';
+
+        $this->setSettingNotice( "</strong><p>Everything is fine, don't worry</p></strong>", 'updated' );
+
+        var_dump('hi there');
+
+        return $aInput;
+
+        //wp_die('whaterv');
+
 
         $error_array = array();
 
