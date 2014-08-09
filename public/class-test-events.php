@@ -24,7 +24,7 @@ class Test_Events {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.7';
+	const VERSION = '0.9.8';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -98,7 +98,7 @@ class Test_Events {
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
      *
-     * @since    0.9.0
+     * @since    0.9.8
      *
      * @return string       a complimentary adjective for students
      */
@@ -166,7 +166,6 @@ class Test_Events {
         //@TODO:caching
         $events_array = $this->wp_ajax->call_events_api();
 
-        //$events_array = $this->wp_ajax->facebook_urls($events_array);
         $events_array = $this->wp_ajax->merge_fb_and_db_events($events_array);
 
         $events_array = $this->wp_ajax->remove_removed_events($events_array);
@@ -179,11 +178,9 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.7
+     * @since    0.9.8
      */
     private function events_ajax( $start, $end, $calendars, $limit ) {
-
-        //add_action( 'wp_head', array( $this, 'add_ajax_library' ) );
 
 
         wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
@@ -208,7 +205,7 @@ class Test_Events {
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
      *
-     * @since    0.9.7
+     * @since    0.9.8
      */
     private function events_widget( $start, $end, $calendars, $limit ) {
 

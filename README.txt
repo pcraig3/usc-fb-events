@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.9.7
+Stable tag: 0.9.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,6 +37,13 @@ It almost works.
 
 
 == Changelog ==
+
+= 0.9.8 =
+* Huge update.  Revolutionized the API calling.
+* Now calling the same URL as the calendar on the old site (wasn't the same before)
+* Can now pass limits and calendars through our plugins to the API so as to reduce post-processing of data
+* API now takes UNIX start-times rather than urls
+* Caching works in a way I'm pretty happy with
 
 = 0.9.7 =
 * Using the HTTP API now instead of cURL

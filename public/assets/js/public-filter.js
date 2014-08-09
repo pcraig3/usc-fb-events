@@ -5,8 +5,7 @@ jQuery(function ($) {
 
         $('.filterjs__loading').addClass('hidden');
 
-        //ideally, you cut down on the event array before processing it, but the API is making that harder.
-        events = AjaxEvents.limit_events( events, limit );
+        //events = AjaxEvents.limit_events( events, limit );
 
         fJS = filterInit( events );
 

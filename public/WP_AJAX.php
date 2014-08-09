@@ -18,7 +18,6 @@ class WP_AJAX {
     protected static $instance  = null;
 
     /**
-     *
      * today: 1407456001
      *
      * Feb, 2014:   1391212801
@@ -29,11 +28,11 @@ class WP_AJAX {
      * 2014: 1388534401
      * 2013: 1356998401
      * 2012: 1325376001
-     *
      */
     //set some default starts and ends, so that we can call our API without parameters
     public $start        = null;
     public $end          = null;
+    public $expiration   = null;
 
     private function __construct() {
 
@@ -50,6 +49,8 @@ class WP_AJAX {
 
         //seems like a reasonable limit
         $this->end = $this->start + (YEAR_IN_SECONDS * 2);
+
+        $this->expiration = WEEK_IN_SECONDS;
     }
 
     /**
@@ -68,22 +69,6 @@ class WP_AJAX {
 
         return self::$instance;
     }
-
-    /**
-     * Adds the WordPress Ajax Library to the frontend.
-     * http://code.tutsplus.com/tutorials/a-primer-on-ajax-in-the-wordpress-frontend-actually-doing-it--wp-27073
-     *
-     * Kind of hack-y method, it looks like to me, but -- hey -- found it online.
-     *
-    public function add_ajax_library() {
-
-    $html = '<script type="text/javascript">';
-    $html .= 'var ajaxurl = "' . admin_url( 'admin-ajax.php' ) . '"';
-    $html .= '</script>';
-
-    echo $html;
-
-    } // end add_ajax_library
 
     /**
      * This function right here is executed when, in the "manage events" menu, someone
@@ -155,7 +140,7 @@ class WP_AJAX {
      * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
      * and then returns everything to the javascript function waiting for it.
      *
-     * @since    0.9.7
+     * @since    0.9.8
      */
     public function get_events() {
 
@@ -180,8 +165,6 @@ class WP_AJAX {
             $response = $events_stored_in_cache;
             $events_stored_in_cache = true;
         }
-
-        $response = $this->facebook_urls($response);
 
         if($whitelist)
             $response['events'] = DB_API::whitelist_array_items($response['events']);
@@ -219,7 +202,7 @@ class WP_AJAX {
      * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
      * cached value.
      *
-     * @since    0.9.7
+     * @since    0.9.8
      *
      */
     public function update_wordpress_transient_cache() {
@@ -228,13 +211,13 @@ class WP_AJAX {
 
 
         $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : 'call_events_api_generic';
-        $expiration     = ( isset($_POST['expiration'] ) )      ? $_POST['expiration']      : 300;
         $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
         $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
         $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
+        $expiration = $this->expiration;
 
         delete_site_transient( $transient_name );
 
@@ -274,32 +257,6 @@ class WP_AJAX {
         if ( ! wp_verify_nonce( $nonce, $attr_id . "_nonce") )
             exit("No naughty business please");
 
-    }
-
-
-    /**
-     * Function generates a facebook URL based on a facebook eid.
-     * Events in the array are given a new key ('url'): their Facebook page
-     *
-     * @param array $event_array  an array of events (from Facebook)
-     *
-     * @since    0.9.0
-     *
-     * @return array mixed  an array of events with Facebook urls added
-     */
-    public function facebook_urls( array $event_array ) {
-
-        $total = $event_array['total'];
-        $events = $event_array['events'];
-
-        for( $i = 0; $i < $total; $i++ ) {
-
-            $events[$i]['url'] = 'http://facebook.com/' . $events[$i]['eid'] . "/";
-        }
-
-        $event_array['events'] = $events;
-
-        return $event_array;
     }
 
     /**
@@ -484,6 +441,20 @@ class WP_AJAX {
         return end($args);
     }
 
+    /**
+     * In order to cache a result properly, we need to make sure that only that particular API call can access it.
+     * Further, the things that can affect your API calls are the start/end times, the calendars you want, and the
+     * event limits you ask for.  This method, then, creates transient names based on api calls so that new calls
+     * call Facebook but reused calls just get the (much faster queried) transient data.
+     *
+     * @since       0.9.8
+     *
+     * @param $start            a unix timestamp, get all events from facebook starting after this time
+     * @param $end              a unix timestamp, get all events from facebook starting before this time
+     * @param $calendars        names of text files on the server
+     * @param $limit            limit events retrieved to this number or less
+     * @return string|WP_Error  a shiny new name for our transient
+     */
     public function generate_transient_name( $start, $end, $calendars, $limit) {
 
         $transient_name = '';
@@ -527,6 +498,21 @@ class WP_AJAX {
         return $transient_name;
     }
 
+    /**
+     * This one was fun.  We need a unique identifier for the calendars variable, but with a limit
+     * on the length of the transient name, we couldn't just use the entire string or even trust that
+     * the first (or last) six characters wouldn't just be one calendar.  So,
+     *      sort the various calendars
+     *      get the first letter from each calendar in sequence (until empty)
+     *
+     * this way, every calendar contributes to the whole. (max of 6 calendars)
+     *
+     * @since       0.9.8
+     *
+     * @param $calendars    a string of comma-separated calendars to call events from
+     * @param $char_limit   the total length of the string.  returned string will be equal or less than this limit
+     * @return string       part of our new transient name
+     */
     private function generate_calendar_string_for_transient_cache( $calendars, $char_limit ) {
 
         if( empty( $calendars ) )
@@ -534,6 +520,7 @@ class WP_AJAX {
 
         //so "usc,custom,western film" is now an array. ( csu, motsuc, mlifnretsew )
         $calendars_array =  explode( "," , strrev( str_replace( ' ', '', str_replace( '%20', ' ', $calendars ) ) ) );
+        sort( $calendars_array );
 
         foreach ($calendars_array as $key => $calendar) {
             $calendars_array[$key] = str_split( $calendar );
@@ -543,6 +530,7 @@ class WP_AJAX {
 
         while( !empty( $calendars_array ) && $char_limit > 0 ) {
 
+            //re-order the calendar
             $calendars_array = array_values($calendars_array);
 
             //basically, array_shift elements off the front of their
@@ -562,6 +550,14 @@ class WP_AJAX {
         return $calendars_string;
     }
 
+    /**
+     * Function checks for the existence of a specific cached object.
+     *
+     * @since    0.9.7
+     *
+     * @param $transient_name   looks for a cached object with this name
+     * @return bool|mixed       returns 'false' if no object, or a json decoded array if found
+     */
     public function if_stored_in_wordpress_transient_cache( $transient_name ) {
 
         $events_or_false = get_site_transient( $transient_name );
@@ -572,7 +568,7 @@ class WP_AJAX {
     /**
      * Uses the WordPress HTTP API to call our AmAzE-O Facebook events api
      *
-     * @since    0.9.7
+     * @since    0.9.8
      *
      * @param string $start     the start time (as a unix timestamp) when to start calling FB events from
      * @param string $end       the end time when to stop calling events

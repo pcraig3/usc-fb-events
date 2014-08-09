@@ -9,41 +9,9 @@ jQuery(function ($) {
 
         $('.filterjs__loading').addClass('hidden');
 
-       /* @TODO: This is bad infrastructure */
-       var usc_events = AjaxEvents.remove_non_usc_events( events );
-
-        /* @TODO: ideally, you cut down on the event array before processing it, but the API is making that harder. */
-       usc_events = AjaxEvents.limit_events( usc_events, limit );
-
-       fJS = filterInit( usc_events );
+       fJS = filterInit( events );
 
         $('#event_list').trigger( "change" );
-    };
-
-    AjaxEvents.remove_non_usc_events = function( events ) {
-
-        /*
-         name: "University Students' Council of Western"
-         page_id: "153227864727516"
-
-         name: "The Wave & Spoke"
-         page_id: "206752339379800"
-         */
-        var university_students_council_of_western = "153227864727516";
-        var the_wave_and_spoke = "206752339379800";
-        var usc_events = [];
-
-        $.each( events, function( key, value ) {
-
-            var event_creator = value.creator.toString();
-
-            if(event_creator === university_students_council_of_western
-                || event_creator === the_wave_and_spoke)
-                usc_events.push(value);
-
-        });
-
-        return usc_events;
     };
 
 
