@@ -6,7 +6,6 @@
 
         ajax_get_events: function( options ) {
 
-            options.api_url = options.api_url || "testwestern.com/api/events/events/2014-04-01"; //@TODO: this date is sort of arbitrary
             options.limit = options.limit || 0;
 
             // Assign handlers immediately after making the request,
@@ -15,12 +14,16 @@
                 options.ajax_url,
                 {
                     action:         "get_events",
-                    api_url:        options.api_url,
                     //this exists for the wp_nonce check
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
                     remove_events:  1,
-                    transient_name: options.transient_name
+                    transient_name: options.transient_name,
+
+                    start:          options.start,
+                    end:            options.end,
+                    calendars:      options.calendars,
+                    limit:          options.limit
                     //we don't need this column because it defaults to false.
                     //whitelist: 0
                 },
@@ -57,7 +60,14 @@
                     }
                     else {
 
-                        console.log('data not cached');
+                        options.transient_name = data['transient_name'];
+
+                        options.start       = data['start'];
+                        options.end         = data['end'];
+                        options.calendars   = data['calendars'];
+                        options.limit       = data['limit'];
+
+                        console.log('data was NOT cached');
                         AjaxEvents.ajax_update_wordpress_transient_cache( options );
                     }
 
@@ -82,10 +92,14 @@
                 options.ajax_url,
                 {
                     action:         "update_wordpress_transient_cache",
-                    api_url:        options.api_url,
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
-                    transient_name: options.transient_name
+                    transient_name: options.transient_name,
+
+                    start:          options.start,
+                    end:            options.end,
+                    calendars:      options.calendars,
+                    limit:          options.limit
                 },
 
                 function( data ) {

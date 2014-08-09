@@ -195,6 +195,10 @@ class Manage_Events extends AdminPageFramework {
                     )
                 ),
             ),
+            /**
+             * @TODO: the old ticket value (if there is no new ticket) shows up in the new ticket slot
+             * Everything seems to work okay, just that it doesn't do what you might expect.
+             */
             array(	// Multiple text fields
                 'field_id'	=>	'ticket_uri',
                 'title'	=>	'Event Ticket URI',

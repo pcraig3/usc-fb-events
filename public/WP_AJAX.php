@@ -15,7 +15,25 @@ class WP_AJAX {
      *
      * @var      object
      */
-    protected static $instance = null;
+    protected static $instance  = null;
+
+    /**
+     *
+     * today: 1407456001
+     *
+     * Feb, 2014:   1391212801
+     * March, 2014: 1393632001
+     * April, 2014: 1396310401
+     *
+     * 2015: 1420070401
+     * 2014: 1388534401
+     * 2013: 1356998401
+     * 2012: 1325376001
+     *
+     */
+    //set some default starts and ends, so that we can call our API without parameters
+    public $start        = null;
+    public $end          = null;
 
     private function __construct() {
 
@@ -27,6 +45,11 @@ class WP_AJAX {
 
         add_action("wp_ajax_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache" ) );
         add_action("wp_ajax_nopriv_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache") );
+
+        $this->start = 1396310401;
+
+        //seems like a reasonable limit
+        $this->end = $this->start + (YEAR_IN_SECONDS * 2);
     }
 
     /**
@@ -139,16 +162,21 @@ class WP_AJAX {
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 
-        $whitelist = ( isset($_POST['whitelist'] ) ) ? $_POST['whitelist'] : false;
-        $remove_events = ( isset($_POST['remove_events']) ) ? $_POST['remove_events'] : false;
-        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_events_api_generic';
+        $whitelist      = ( isset($_POST['whitelist'] ) )       ? $_POST['whitelist']       : false;
+        $remove_events  = ( isset($_POST['remove_events']) )    ? $_POST['remove_events']   : false;
+        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : 'call_events_api_generic';
+        $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
+        $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
+        $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
+        $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
+        //@TODO: sort this out right quick
         delete_site_transient('call_events_api_public_filterjs');
         $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
         if( false === $events_stored_in_cache ) {
 
-            $response = ( isset($_POST['api_url']) ) ? $this->call_events_api( $_POST['api_url'] ) : $this->call_events_api();
+            $response = $this->call_events_api( $start, $end, $calendars, $limit );
         } else {
 
             $response = $events_stored_in_cache;
@@ -168,9 +196,16 @@ class WP_AJAX {
         //javascript CANNOT understand dates
         $response = $this->date_strings_to_timestamps($response);
 
-        $result['if_cached'] = $events_stored_in_cache;
+        $result['if_cached']        = $events_stored_in_cache;
+        $result['transient_name']   = $transient_name;
+
+        $result['start']        = $start;
+        $result['end']          = $end;
+        $result['calendars']    = $calendars;
+        $result['limit']        = $limit;
+
         $result['response'] = $response;
-        $result['success'] = ( false !== $response ) ? true : false;
+        $result['success']  = ( false !== $response ) ? true : false;
 
         echo json_encode($result);
         die();
@@ -194,9 +229,14 @@ class WP_AJAX {
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 
-        $transient_name = ( isset($_POST['transient_name'] ) ) ? $_POST['transient_name'] : 'call_events_api_generic';
-        $expiration = ( isset($_POST['expiration'] ) ) ? $_POST['expiration'] : 300;
-        $json_decoded_events_array = ( isset($_POST['api_url']) ) ? $this->call_events_api( $_POST['api_url'] ) : $this->call_events_api();
+        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : 'call_events_api_generic';
+        $expiration     = ( isset($_POST['expiration'] ) )      ? $_POST['expiration']      : 300;
+        $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
+        $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
+        $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
+        $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
+
+        $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
 
         delete_site_transient( $transient_name );
 
@@ -458,11 +498,29 @@ class WP_AJAX {
      *
      * @since    0.9.7
      *
-     * @param string $api_url   perhaps unsurprisingly, this is the url we call the events from
+     * @param string $start     the start time (as a unix timestamp) when to start calling FB events from
+     * @param string $end       the end time when to stop calling events
+     * @param string $calendars the calendar names, separated by commas (which correspond to text files in a specific directory).
+     * @param string $limit     the limit on events.  this is actually bogus right now, as the API doesn't support the option
      *
      * @return array            at this point, return open Facebook events as an indexed array
      */
-    public function call_events_api( $api_url = 'testwestern.com/api/events/events/2014-04-01' ) {
+    public function call_events_api( $start = '', $end = '', $calendars = '', $limit = '' ) {
+
+        //for example
+        //http://testwestern.com/api/events/events/usc?start=1388534401&end=1392072393&calendars=custom,usc
+
+        $api_url = 'http://testwestern.com/api/events/events/usc?';
+
+        //there HAS to be a start and an end, so we're just going to give the class a start and end time.
+        $api_url .= ( !empty( $start ) )                ? "start=" . number_format( $start , 0 , '', '' )
+                                                            : "start=" . number_format( $this->start , 0 , '', '' );
+        $api_url .= ( !empty( $end ) )                  ? "&end=" . number_format( $end , 0 , '', '' )
+                                                            : "&end=" . number_format( $this->end , 0 , '', '' );
+        $api_url .= ( !empty( $calendars ) )            ? "&calendars=" . $calendars    : '';
+        $api_url .= ( !empty( $limit ) && $limit > 0)   ? "&limit=" . $limit            : '';
+
+        //$api_url = "http://testwestern.com/api/events/events/2014-04-01";
 
         $returned_string = wp_remote_retrieve_body( wp_remote_get( $this->add_http_if_not_exists($api_url) ) );
 
@@ -470,6 +528,10 @@ class WP_AJAX {
 
             return new WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "test-events" ) );
         }
+
+        /*echo '<pre>';
+        var_dump( json_decode( $returned_string, true ) );
+        echo '</pre>';*/
 
         return json_decode( $returned_string, true );
     }

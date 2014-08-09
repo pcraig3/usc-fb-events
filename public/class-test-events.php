@@ -155,9 +155,10 @@ class Test_Events {
         //function returns Facebook events as a json array.
         //in the future, we'll have this take a parameter
 
+        //@TODO:caching
         $events_array = $this->wp_ajax->call_events_api();
 
-        $events_array = $this->wp_ajax->facebook_urls($events_array);
+        //$events_array = $this->wp_ajax->facebook_urls($events_array);
         $events_array = $this->wp_ajax->merge_fb_and_db_events($events_array);
 
         $events_array = $this->wp_ajax->remove_removed_events($events_array);
@@ -186,8 +187,8 @@ class Test_Events {
         wp_localize_script( 'public_filterjs', "options", array(
             'ajax_url'          => admin_url( 'admin-ajax.php' ),
             'limit'             => $limit,
+            'start'             => "1391212801",
             'transient_name'    => "call_events_api_public_filterjs",
-
         ) );
 
         return require_once('views/ajax-list.php');
@@ -211,7 +212,7 @@ class Test_Events {
         wp_localize_script( 'public_widgetjs', "options", array(
             'ajax_url'          => admin_url( 'admin-ajax.php' ),
             'limit'             => $limit,
-            'api_url'           => "testwestern.com/api/events/events/2014-02-01",
+            'start'             => "1391212801",
             'transient_name'    => "call_events_api_widget_filterjs",
     ) );
 

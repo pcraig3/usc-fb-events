@@ -22,12 +22,6 @@ if ( $limit < 1 || $limit > $total ) {
     $limit = $total;
 }
 
-//if something goes wrong, then stop the method
-if( $limit < 1 ) {
-    //@TODO: write some kind of exception
-    return;
-}
-
 //we redefining it as the indexed 'events' array. losing $events_array['total'] for example
 $events_array = $events_array['events'];
 
