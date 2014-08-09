@@ -486,6 +486,63 @@ class WP_AJAX {
         return end($args);
     }
 
+    public function generate_transient_name( $start, $end, $calendars, $limit) {
+
+        $transient_name = '';
+
+        /**
+         * Okay, so here's the algorithm I worked out earlier
+         * Basically, transients have to be different if we have a different
+         *  start
+         *  end
+         *  calendars
+         *  limit
+         *
+         * so use a bit of each of them to make your string.  easy.
+         *
+         * transient names can be a maximum of 40 characters, so I'm limiting every field to 6 characters
+         * so there it is.  pick (up to) six characters from every value
+         */
+
+        $start_string   = number_format( $start , 0 , '', '' );
+        $end_string     = number_format( $end , 0 , '', '' );
+
+        //so "usc,custom,western film" is now an array. ( csu, motsuc, mlifnretsew )
+        $calendars_array =  explode( "," , str_replace( ' ', '', str_replace( '%20', ' ', strrev( $calendars ) ) ) );
+
+        foreach ($calendars_array as $key => $calendar) {
+            $calendars_array[$key] = str_split( $calendar );
+        }
+
+        $max = 6;
+        $calendars_string = '';
+
+        while( !empty( $calendars_array ) && $max > 0 ) {
+
+            $calendars_array = array_values($calendars_array);
+
+            foreach( $calendars_array as $key => $calendar_array ) {
+
+                $calendars_string .= array_shift( $calendar_array );
+                ++$max;
+
+                if ( empty( $calendar_array ));
+                    unset($calendars_array[$key]);
+
+            }
+        }
+
+        //basically, array_shift elements off the front of their
+        //respective arrays while they're not empty and while max > 0;
+
+
+
+
+
+        $limit_string   = number_format( $limit , 0 , '', '' );
+
+    }
+
     public function if_stored_in_wordpress_transient_cache( $transient_name ) {
 
         $events_or_false = get_site_transient( $transient_name );
