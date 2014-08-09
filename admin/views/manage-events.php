@@ -383,17 +383,6 @@ class Manage_Events extends AdminPageFramework {
      */
     public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
 
-        echo 'Hi, my name is Paul: 387';
-
-        $this->setSettingNotice( "</strong><p>Everything is fine, don't worry</p></strong>", 'updated' );
-
-        var_dump('hi there');
-
-        return $aInput;
-
-        //wp_die('whaterv');
-
-
         $error_array = array();
 
         //@TODO: This is kind of a crude way of implementing the 'reset modifications' button
