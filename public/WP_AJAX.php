@@ -207,6 +207,9 @@ class WP_AJAX {
      */
     public function update_wordpress_transient_cache() {
 
+        // Ignore user abort.  We want the cache updated whether or not a user is still on the page.
+        ignore_user_abort(true);
+
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 

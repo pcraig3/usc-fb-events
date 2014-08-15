@@ -14,7 +14,7 @@ date_default_timezone_set("America/Toronto");
 ?>
 
     <div id="events">
-        <h1>Events</h1>
+        <h1><?php echo $title; ?></h1>
         <a class="viewEvent" href="/events">View Events Calendar</a>
 
         <div class="filterjs">

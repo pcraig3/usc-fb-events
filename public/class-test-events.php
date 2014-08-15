@@ -105,7 +105,7 @@ class Test_Events {
     public function testplugin_func ( $atts ) {
 
         //initialize your variables
-        $get = $show = $start = $end = $calendars = $limit = $result = false;
+        $get = $show = $start = $end = $calendars = $limit = $title = $result = false;
 
         $april_2014 = 1396310401;
 
@@ -118,6 +118,7 @@ class Test_Events {
                     'end'       => $april_2014 + (YEAR_IN_SECONDS * 2),
                     'calendars' => '',
                     'limit'     => 0,
+                    'title'     => 'Events',
                 ), $atts ),
             EXTR_OVERWRITE);
 
@@ -129,6 +130,7 @@ class Test_Events {
                 $end,
                 $calendars,
                 intval($limit),
+                $title,
             );
 
             $testevents_function = (string) $get . "_" . (string) $show;
@@ -207,7 +209,7 @@ class Test_Events {
      *
      * @since    0.9.8
      */
-    private function events_widget( $start, $end, $calendars, $limit ) {
+    private function events_widget( $start, $end, $calendars, $limit, $title ) {
 
         wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
         wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
