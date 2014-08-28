@@ -30,15 +30,16 @@
 
   position:         relative;
   height:           100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  border:           rgba(0, 0, 0, 0.1) dashed 1px;
+  background-color: transparent;
+  border-top:       rgba(0, 0, 0, 0.1) dashed 1px;
+  border-bottom:    rgba(0, 0, 0, 0.1) dashed 1px;
 
   .filterjs__loading__status,
   .filterjs__loading__img {
 
       display:        table;
       margin:         0 auto;
-      padding-top:    20px;
+      padding:        20px 0;
   }
 
   .filterjs__loading__status {

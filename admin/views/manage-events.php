@@ -291,7 +291,7 @@ class Manage_Events extends AdminPageFramework {
         </div>
         <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--list">
-                <img class="filterjs__loading__img" title="meow!"
+                <img class="filterjs__loading__img" title="go mustangs!"
                     src="/wp-content/plugins/usc-fb-events/assets/horse.gif" alt="Loading" height="91" width="160">
             </div>
             <div class="filterjs__list__crop">
