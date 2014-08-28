@@ -36,6 +36,13 @@ class WP_AJAX {
     public $end          = null;
     public $expiration   = null;
 
+    /**
+     * @var used for saving the default $wp_using_ext_object_cache so as not to bugger up our plugin
+     *
+     * @since 0.9.2
+     */
+    private $wp_using_ext_object_cache_status;
+
     private function __construct() {
 
         add_action("wp_ajax_return_to_or_remove_from_calendar", array( $this, "return_to_or_remove_from_calendar" ) );
@@ -53,6 +60,31 @@ class WP_AJAX {
         $this->end = $this->start + (YEAR_IN_SECONDS * 2);
 
         $this->expiration = WEEK_IN_SECONDS;
+
+        //set a default value to the object cache whatever so that we don't accidentally call the wrong method before it's set
+        global $_wp_using_ext_object_cache;
+        $this->wp_using_ext_object_cache_status = $_wp_using_ext_object_cache;
+    }
+
+    /**
+     * @since 0.9.2
+     */
+    public function turn_off_object_cache_so_our_bloody_plugin_works() {
+
+        global $_wp_using_ext_object_cache;
+
+        $this->wp_using_ext_object_cache_status = $_wp_using_ext_object_cache;
+
+        $_wp_using_ext_object_cache = false;
+    }
+    /**
+     * @since 0.9.2
+     */
+    public function turn_object_caching_back_on_for_the_next_poor_sod() {
+
+        global $_wp_using_ext_object_cache;
+
+        $_wp_using_ext_object_cache = $this->wp_using_ext_object_cache_status;
     }
 
     /**

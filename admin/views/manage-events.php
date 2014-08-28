@@ -243,6 +243,9 @@ class Manage_Events extends AdminPageFramework {
             )
         );
 
+        //reset the default object caching value because so we don't unintentionally BUGGER UP SOMEONE ELSE'S PLUGIN
+        \USC_Events\WP_AJAX::get_instance()->turn_object_caching_back_on_for_the_next_poor_sod();
+
     }
 
     /**
@@ -325,7 +328,7 @@ class Manage_Events extends AdminPageFramework {
         //this is the end of the form defined in ::addSettingFields
         ?>
 
-        <h3 class="title">Values saved 9</h3>
+        <h3 class="title">Values saved</h3>
 
     <?php
 
@@ -382,6 +385,11 @@ class Manage_Events extends AdminPageFramework {
      * @return mixed        returns the values to the screen.  Nothing happens with them right now.
      */
     public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
+
+        //$this->setSettingNotice( "</strong><p>Invalid URL: <strong></strong></p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>" );
+
+        //turn off object caching because it's breaking our plugin
+        \USC_Events\WP_AJAX::get_instance()->turn_off_object_cache_so_our_bloody_plugin_works();
 
         $error_array = array();
 
@@ -441,8 +449,10 @@ class Manage_Events extends AdminPageFramework {
         var_dump($aInput);
         echo "///////////////////////";
         var_dump($values);
+        echo "///////////////////////";
+        var_dump($error_array);
         echo "</pre>";
-        die();
+        wp_die('dead');
         */
 
         if( ! empty($error_array)) {
