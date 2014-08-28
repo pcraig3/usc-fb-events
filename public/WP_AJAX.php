@@ -255,9 +255,13 @@ class WP_AJAX {
         $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
         $expiration = $this->expiration;
 
+        $this->turn_off_object_cache_so_our_bloody_plugin_works();
+
         delete_site_transient( $transient_name );
 
         $if_transient_set = set_site_transient( $transient_name, json_encode($json_decoded_events_array), $expiration );
+
+        $this->turn_object_caching_back_on_for_the_next_poor_sod();
 
         $result['success'] = $if_transient_set;
 
@@ -596,7 +600,11 @@ class WP_AJAX {
      */
     public function if_stored_in_wordpress_transient_cache( $transient_name ) {
 
+        $this->turn_off_object_cache_so_our_bloody_plugin_works();
+
         $events_or_false = get_site_transient( $transient_name );
+
+        $this->turn_object_caching_back_on_for_the_next_poor_sod();
 
         return ( false === $events_or_false ) ? false : json_decode( $events_or_false, true );
     }

@@ -62,7 +62,7 @@
                     options.calendars   = data['calendars'];
                     options.limit       = data['limit'];
 
-                    //AjaxEvents.ajax_update_wordpress_transient_cache( options );
+                    AjaxEvents.ajax_update_wordpress_transient_cache( options );
 
                     /*
                     if( data['if_cached'] ) {
@@ -105,13 +105,12 @@
 
                 function( data ) {
 
-                    /*
-                    if(! data['success']) {
+                    /*if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
                     else
                         console.log('Yay! WordPress transient DB has been updated.');
-                        */
+                    */
 
                 }, "json");
             /*.fail(function() {

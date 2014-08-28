@@ -245,7 +245,6 @@ class Manage_Events extends AdminPageFramework {
 
         //reset the default object caching value because so we don't unintentionally BUGGER UP SOMEONE ELSE'S PLUGIN
         \USC_Events\WP_AJAX::get_instance()->turn_object_caching_back_on_for_the_next_poor_sod();
-
     }
 
     /**
