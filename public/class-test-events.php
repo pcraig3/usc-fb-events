@@ -67,7 +67,7 @@ class Test_Events {
 	 */
 	private function __construct() {
 
-        $this->wp_ajax = WP_AJAX::get_instance();
+        $this->wp_ajax = \USC_Events\WP_AJAX::get_instance();
 
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
@@ -87,8 +87,8 @@ class Test_Events {
 
         add_shortcode( 'testevents', array( $this, 'testplugin_func') );
 
-        add_action( 'init', 'DB_API::register_fbevents_table', '1' );
-        add_action( 'switch_blog', 'DB_API::register_fbevents_table' );
+        add_action( 'init', '\USC_Events\DB_API::register_fb_events_table', '1' );
+        add_action( 'switch_blog', '\USC_Events\DB_API::register_fb_events_table' );
 
     }
 
@@ -386,7 +386,7 @@ class Test_Events {
 	private static function single_activate() {
 		// Define activation functionality here
 
-        DB_API::create_fbevents_table();
+        \USC_Events\DB_API::create_fb_events_table();
 	}
 
 	/**
@@ -398,7 +398,7 @@ class Test_Events {
 		// Define deactivation functionality here
 
         //@TODO: stop removing table on deactivate.
-        DB_API::drop_fbevents_table();
+        \USC_Events\DB_API::drop_fb_events_table();
     }
 
 	/**

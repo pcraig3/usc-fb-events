@@ -6,6 +6,8 @@
  * Time: 11:05 AM
  */
 
+namespace USC_Events;
+
 class WP_AJAX {
 
     /**
@@ -73,7 +75,7 @@ class WP_AJAX {
     /**
      * This function right here is executed when, in the "manage events" menu, someone
      * clicks the "Remove From/Return To Calendar" buttons.
-     * The event is then either removed from or returned to 'test_fbevents'
+     * The event is then either removed from or returned to 'usc_fb_events'
      * Based on tutorial here:
      * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
      *
@@ -112,7 +114,6 @@ class WP_AJAX {
             $response = ( $fbevent_exists_unmodified_in_db ) ?
                 DB_API::delete_fbevent( $eid ) :
                 DB_API::update_fbevent( $eid, array( 'removed' => 0) );
-
         }
 
         if($response === false) {
@@ -311,7 +312,7 @@ class WP_AJAX {
      */
     public function merge_fb_and_db_events( array $event_array ) {
 
-        $all_db_events_mysql = DB_API::get_fbevents();
+        $all_db_events_mysql = DB_API::get_fb_events();
 
         if( ! empty($all_db_events_mysql) ) {
 

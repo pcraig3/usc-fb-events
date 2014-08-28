@@ -390,7 +390,7 @@ class Manage_Events extends AdminPageFramework {
         if( is_array( $modify_events_submit_array ) && isset( $modify_events_submit_array[1] )
             && isset( $aInput[$this->section_id]['eid'] ) ) {
 
-            DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
+            \USC_Events\DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
 
             $this->setSettingNotice( "</strong><p>Modifications made to <strong>" . $aInput[$this->section_id]['name'] . "</strong> have been reset.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
@@ -456,7 +456,7 @@ class Manage_Events extends AdminPageFramework {
         //@TODO: This 'modifies' events even if there are no updated values present.
         if( isset($values['eid']) ) {
 
-            DB_API::insert_on_duplicate_key_update(
+            \USC_Events\DB_API::insert_on_duplicate_key_update(
                 $values['eid'],
                 array(
                     'removed' =>    $values['removed'],
