@@ -1,8 +1,8 @@
 <?php
 /**
- * Test Events.
+ * USC FB Events.
  *
- * @package   Test_Events
+ * @package   USC_FB_Events
  * @author    Paul Craig <pcraig3@uwo.ca>
  * @license   GPL-2.0+
  * @copyright 2014
@@ -12,19 +12,19 @@
  * Plugin class. This class should ideally be used to work with the
  * public-facing side of the WordPress site.
  *
- * @package Test_Events
+ * @package USC_FB_Events
  * @author  Paul Craig <pcraig3@uwo.ca>
  */
-class Test_Events {
+class USC_FB_Events {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   0.1.0
+	 * @since   0.9.9
 	 *
 	 * @var     string
 	 */
-	const VERSION = '0.9.8';
+	const VERSION = '0.9.9';
 
 	/*
 	 * Unique identifier for your plugin.
@@ -37,7 +37,7 @@ class Test_Events {
 	 *
 	 * @var      string
 	 */
-	protected $plugin_slug = 'test-events';
+	protected $plugin_slug = 'usc-fb-events';
 
 	/**
 	 * Instance of this class.
@@ -67,7 +67,7 @@ class Test_Events {
 	 */
 	private function __construct() {
 
-        $this->wp_ajax = \USC_Events\WP_AJAX::get_instance();
+        $this->wp_ajax = \USC_FB_Events\WP_AJAX::get_instance();
 
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
@@ -82,18 +82,16 @@ class Test_Events {
 		/* Define custom functionality.
 		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		//add_action( '@TODO', array( $this, 'action_method_name' ) );
-		//add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
-        add_shortcode( 'testevents', array( $this, 'testplugin_func') );
+        add_shortcode( 'usc_fb_events', array( $this, 'return_usc_fb_events') );
 
-        add_action( 'init', '\USC_Events\DB_API::register_fb_events_table', '1' );
-        add_action( 'switch_blog', '\USC_Events\DB_API::register_fb_events_table' );
+        add_action( 'init', '\USC_FB_Events\DB_API::register_fb_events_table', '1' );
+        add_action( 'switch_blog', '\USC_FB_Events\DB_API::register_fb_events_table' );
 
     }
 
     /**
-     * Function meant to target the [testplugin] shortcode.  Grabs the attributes in the shortcode to
+     * Function meant to target the [usc_fb_events] shortcode.  Grabs the attributes in the shortcode to
      * call a function somewhere down there.
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
@@ -102,7 +100,7 @@ class Test_Events {
      *
      * @return string       a complimentary adjective for students
      */
-    public function testplugin_func ( $atts ) {
+    public function return_usc_fb_events ( $atts ) {
 
         //initialize your variables
         $get = $show = $start = $end = $calendars = $limit = $title = $result = false;
@@ -133,12 +131,12 @@ class Test_Events {
                 $title,
             );
 
-            $testevents_function = (string) $get . "_" . (string) $show;
+            $usc_fb_events_function = (string) $get . "_" . (string) $show;
 
             ob_start();
 
             /* @TODO: Explain yourself. */
-            echo call_user_func_array( array( $this, $testevents_function ), $parameters );
+            echo call_user_func_array( array( $this, $usc_fb_events_function ), $parameters );
 
             $result = ob_get_clean();
         //}
@@ -161,9 +159,6 @@ class Test_Events {
      * @return string           a list of events from Facebook
      */
     private function events_list( $limit = 0 ) {
-
-        //function returns Facebook events as a json array.
-        //in the future, we'll have this take a parameter
 
         //@TODO:caching
         $events_array = $this->wp_ajax->call_events_api();
@@ -386,7 +381,7 @@ class Test_Events {
 	private static function single_activate() {
 		// Define activation functionality here
 
-        \USC_Events\DB_API::create_fb_events_table();
+        \USC_FB_Events\DB_API::create_fb_events_table();
 	}
 
 	/**
@@ -397,8 +392,7 @@ class Test_Events {
 	private static function single_deactivate() {
 		// Define deactivation functionality here
 
-        //@TODO: stop removing table on deactivate.
-        \USC_Events\DB_API::drop_fb_events_table();
+        \USC_FB_Events\DB_API::drop_fb_events_table();
     }
 
 	/**

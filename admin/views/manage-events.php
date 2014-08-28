@@ -27,7 +27,6 @@ class Manage_Events extends AdminPageFramework {
         /* 1. Include the file that defines the custom field type. */
         $aFiles = array(
 
-            dirname( __FILE__ ) . '/custom-fields/event-modify-custom-field-type/EventModifyCustomFieldType.php',
             dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/DateCustomFieldType.php',
             dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/TimeCustomFieldType.php',
             dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/admin-page-framework/third-party/date-time-custom-field-types/DateTimeCustomFieldType.php',
@@ -38,7 +37,6 @@ class Manage_Events extends AdminPageFramework {
 
         /* 2. Instantiate the classes  */
         $sClassName = get_class( $this );
-        new EventModifyCustomFieldType( $sClassName );
         new DateCustomFieldType( $sClassName );
         new TimeCustomFieldType( $sClassName );
         new DateTimeCustomFieldType( $sClassName );
@@ -244,7 +242,7 @@ class Manage_Events extends AdminPageFramework {
         );
 
         //reset the default object caching value because so we don't unintentionally BUGGER UP SOMEONE ELSE'S PLUGIN
-        \USC_Events\WP_AJAX::get_instance()->turn_object_caching_back_on_for_the_next_poor_sod();
+        \USC_FB_Events\WP_AJAX::get_instance()->turn_object_caching_back_on_for_the_next_poor_sod();
     }
 
     /**
@@ -294,7 +292,7 @@ class Manage_Events extends AdminPageFramework {
         <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--list">
                 <img class="filterjs__loading__img" title="meow!"
-                    src="/wp-content/plugins/test-events/assets/horse.gif" alt="Loading" height="91" width="160">
+                    src="/wp-content/plugins/usc-fb-events/assets/horse.gif" alt="Loading" height="91" width="160">
             </div>
             <div class="filterjs__list__crop">
                 <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
@@ -388,7 +386,7 @@ class Manage_Events extends AdminPageFramework {
         //$this->setSettingNotice( "</strong><p>Invalid URL: <strong></strong></p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>" );
 
         //turn off object caching because it's breaking our plugin
-        \USC_Events\WP_AJAX::get_instance()->turn_off_object_cache_so_our_bloody_plugin_works();
+        \USC_FB_Events\WP_AJAX::get_instance()->turn_off_object_cache_so_our_bloody_plugin_works();
 
         $error_array = array();
 
@@ -397,7 +395,7 @@ class Manage_Events extends AdminPageFramework {
         if( is_array( $modify_events_submit_array ) && isset( $modify_events_submit_array[1] )
             && isset( $aInput[$this->section_id]['eid'] ) ) {
 
-            \USC_Events\DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
+            \USC_FB_Events\DB_API::delete_fbevent( $aInput[$this->section_id]['eid'] );
 
             $this->setSettingNotice( "</strong><p>Modifications made to <strong>" . $aInput[$this->section_id]['name'] . "</strong> have been reset.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
@@ -465,7 +463,7 @@ class Manage_Events extends AdminPageFramework {
         //@TODO: This 'modifies' events even if there are no updated values present.
         if( isset($values['eid']) ) {
 
-            \USC_Events\DB_API::insert_on_duplicate_key_update(
+            \USC_FB_Events\DB_API::insert_on_duplicate_key_update(
                 $values['eid'],
                 array(
                     'removed' =>    $values['removed'],

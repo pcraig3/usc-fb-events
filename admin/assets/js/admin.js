@@ -132,7 +132,7 @@
                 //console.log(data);
 
                 if(!data['success']) {
-                    alert("Error performing " + button_id + " operation, bro.  Look for the problem in 'plugins/test-events/admin/assets/js/admin.js'");
+                    alert("Error performing " + button_id + " operation, bro.  Look for the problem in 'plugins/usc-fb-events/admin/assets/js/admin.js'");
                     return;
                 }
 
@@ -205,7 +205,7 @@
             "ticket_uri_fb",
         ]
 
-        console.log(values);
+        //console.log(values);
 
         for (var key in values) {
 
@@ -222,7 +222,7 @@
                     $('.modify_' + key_without_fb).val( values[key_without_fb] );
                 }
 
-                console.log(key);
+                //console.log(key);
 
                 $('.modify_' + key).val( values[key] );
                 $('.modify_' + key).trigger( 'update' );  //can hook into this if necessary

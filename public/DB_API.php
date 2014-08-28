@@ -6,7 +6,7 @@
  * Time: 10:23 PM
  */
 
-namespace USC_Events;
+namespace USC_FB_Events;
 
 class DB_API {
 
@@ -37,7 +37,6 @@ class DB_API {
         //Call this manually as we may have missed the init hook
         DB_API::register_fb_events_table();
 
-        //@TODO: change stupid table name
         $sql_create_table = "CREATE TABLE {$wpdb->fb_events} (
         eid bigint(20) NOT NULL,
         name varchar(255) NULL,
@@ -367,7 +366,7 @@ class DB_API {
     }
 
     /**
-     * Deletes fbevent from 'test_fb_events'
+     * Deletes fbevent from 'usc_fb_events'
      *
      *@param $eid string (or float) ID of the event to be deleted
      *

@@ -58,7 +58,10 @@ jQuery(function ($) {
             html_string +=  '</div>';
 
             html_string +=  '<div class="eventLinks">';
-            html_string +=  '<a target="_blank" href="#">Buy Tickets</a>';
+
+            if(ticket_uri)
+                html_string +=  '<a target="_blank" href="' + ticket_uri + '">Buy Tickets</a>';
+
             html_string +=  '<a target="_blank" href="' + event.url + '">View Event</a>';
             html_string +=  '</div>';
 

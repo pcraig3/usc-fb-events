@@ -1,8 +1,8 @@
 <?php
 /**
- * Test Events.
+ * USC FB Events.
  *
- * @package   Test_Events_Admin
+ * @package   USC_FB_Events_Admin
  * @author    Paul Craig <pcraig3@uwo.ca>
  * @license   GPL-2.0+
  * @copyright 2014
@@ -13,12 +13,12 @@
  * administrative side of the WordPress site.
  *
  * If you're interested in introducing public-facing
- * functionality, then refer to `class-test-events.php`
+ * functionality, then refer to `class-usc-fb-events.php`
  *
- * @package Test_Events_Admin
+ * @package USC_FB_Events_Admin
  * @author  Paul Craig <pcraig3@uwo.ca>
  */
-class Test_Events_Admin {
+class USC_FB_Events_Admin {
 
     /**
      * Instance of this class.
@@ -62,7 +62,7 @@ class Test_Events_Admin {
         /*
          * Call $plugin_slug from public plugin class.
          */
-        $plugin = Test_Events::get_instance();
+        $plugin = USC_FB_Events::get_instance();
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         /*
@@ -137,7 +137,7 @@ class Test_Events_Admin {
         $screen = get_current_screen();
 
         if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-            wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Test_Events::VERSION );
+            wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), USC_FB_Events::VERSION );
         }
 
     }
@@ -157,7 +157,7 @@ class Test_Events_Admin {
 
         $screen = get_current_screen();
         if ( $this->plugin_screen_hook_suffix == $screen->id ) {
-            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), USC_FB_Events::VERSION );
         }
 
     }
@@ -201,8 +201,8 @@ class Test_Events_Admin {
 
         if ( $on_page ) {
 
-            wp_enqueue_style( $this->plugin_slug . '-public-styles', plugins_url( '/' . $this->plugin_slug . '/public/assets/css/public.css' ), array(), Test_Events::VERSION );
-            wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Test_Events::VERSION );
+            wp_enqueue_style( $this->plugin_slug . '-public-styles', plugins_url( '/' . $this->plugin_slug . '/public/assets/css/public.css' ), array(), USC_FB_Events::VERSION );
+            wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), USC_FB_Events::VERSION );
         }
     }
 
@@ -230,10 +230,10 @@ class Test_Events_Admin {
 
         if ( $on_page ) {
 
-            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), Test_Events::VERSION );
-            wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), Test_Events::VERSION );
-            wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), Test_Events::VERSION );
-            wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), Test_Events::VERSION );
+            wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), USC_FB_Events::VERSION );
+            wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), USC_FB_Events::VERSION );
+            wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), USC_FB_Events::VERSION );
+            wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), USC_FB_Events::VERSION );
             wp_enqueue_script( 'jquery-ui-datepicker' );
 
             // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
@@ -257,8 +257,8 @@ class Test_Events_Admin {
          *
          *
         $this->plugin_screen_hook_suffix = add_options_page(
-            __( 'Test Events Settings', "manage_events_page" ),
-            __( 'Test Events Settings', "manage_events_page" ),
+            __( 'USC FB Events Settings', "manage_events_page" ),
+            __( 'USC FB Events Settings', "manage_events_page" ),
             'manage_options',
             "manage_events_page",
             array( $this, 'display_plugin_admin_page' )

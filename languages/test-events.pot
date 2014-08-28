@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the TODO package.
 msgid ""
 msgstr ""
-"Project-Id-Version: TODO 0.9.8\n"
+"Project-Id-Version: TODO 0.9.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/plugins/plugin-name\n"
 "POT-Creation-Date: 2013-05-10 11:23:19+00:00\n"
 "PO-Revision-Date: 2013-05-10 10:37-0500\n"
@@ -18,14 +18,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: class-test-events-admin.php:170
+#: class-usc-fb-events-admin.php:170
 msgid "Page Title"
 msgstr ""
 
-#: class-test-events-admin.php:171
+#: class-usc-fb-events-admin.php:171
 msgid "Menu Text"
 msgstr ""
 
-#: class-test-events-admin.php:197
+#: class-usc-fb-events-admin.php:197
 msgid "Settings"
 msgstr ""

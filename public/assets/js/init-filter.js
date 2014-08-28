@@ -30,7 +30,7 @@
 
                 function( data ) {
 
-                    console.log(data);
+                    //console.log(data);
 
                     if(! data['success']) {
                         alert("Ack! Problems getting your removed events back from the database.")

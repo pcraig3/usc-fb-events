@@ -6,7 +6,7 @@
  * Time: 11:05 AM
  */
 
-namespace USC_Events;
+namespace USC_FB_Events;
 
 class WP_AJAX {
 
@@ -67,27 +67,6 @@ class WP_AJAX {
     }
 
     /**
-     * @since 0.9.2
-     */
-    public function turn_off_object_cache_so_our_bloody_plugin_works() {
-
-        global $_wp_using_ext_object_cache;
-
-        $this->wp_using_ext_object_cache_status = $_wp_using_ext_object_cache;
-
-        $_wp_using_ext_object_cache = false;
-    }
-    /**
-     * @since 0.9.2
-     */
-    public function turn_object_caching_back_on_for_the_next_poor_sod() {
-
-        global $_wp_using_ext_object_cache;
-
-        $_wp_using_ext_object_cache = $this->wp_using_ext_object_cache_status;
-    }
-
-    /**
      * Return an instance of this class.
      *
      * @since     0.9.2
@@ -102,6 +81,27 @@ class WP_AJAX {
         }
 
         return self::$instance;
+    }
+
+    /**
+     * @since    0.9.9
+     */
+    public function turn_off_object_cache_so_our_bloody_plugin_works() {
+
+        global $_wp_using_ext_object_cache;
+
+        $this->wp_using_ext_object_cache_status = $_wp_using_ext_object_cache;
+
+        $_wp_using_ext_object_cache = false;
+    }
+    /**
+     * @since    0.9.9
+     */
+    public function turn_object_caching_back_on_for_the_next_poor_sod() {
+
+        global $_wp_using_ext_object_cache;
+
+        $_wp_using_ext_object_cache = $this->wp_using_ext_object_cache_status;
     }
 
     /**
@@ -235,7 +235,7 @@ class WP_AJAX {
      * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
      * cached value.
      *
-     * @since    0.9.8
+     * @since    0.9.9
      *
      */
     public function update_wordpress_transient_cache() {
@@ -532,7 +532,7 @@ class WP_AJAX {
         if( strlen( $transient_name ) > 40 ) {
 
             return new WP_Error( 'transient_name_error', __( 'transient_name is too long (' . strlen( $transient_name )
-                . ' chars) and will not be findable in future', "test-events" ) );
+                . ' chars) and will not be findable in future', "usc-fb-events" ) );
         }
 
         return $transient_name;
@@ -593,7 +593,7 @@ class WP_AJAX {
     /**
      * Function checks for the existence of a specific cached object.
      *
-     * @since    0.9.7
+     * @since    0.9.9
      *
      * @param $transient_name   looks for a cached object with this name
      * @return bool|mixed       returns 'false' if no object, or a json decoded array if found
@@ -642,7 +642,7 @@ class WP_AJAX {
 
         if( empty( $returned_string ) ) {
 
-            return new WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "test-events" ) );
+            return new WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "usc-fb-events" ) );
         }
 
         /*echo '<pre>';

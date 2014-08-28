@@ -36,6 +36,7 @@ if ( is_multisite() ) {
 
 	 	foreach ( $blogs as $blog ) {
 			switch_to_blog( $blog['blog_id'] );
+
 			/* @TODO: delete all transient, options and files you may have added
 			delete_transient( 'TRANSIENT_NAME' );
 			delete_option('OPTION_NAME');

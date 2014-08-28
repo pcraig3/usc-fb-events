@@ -1,20 +1,16 @@
-=== Test Events ===
+=== USC FB Events ===
 Contributors: pcraig3
-Donate link: http://example.com/
-Tags: comments, spam
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.9.8
+Stable tag: 0.9.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Plugin gets events from Facebook and lists them same as clubs.  Eventually a backend menu.
+Plugin gets events from Facebook and lists them same as clubs.  Backend menu and super-cool caching.
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
-
-Plugin gets events from Facebook and lists them same as clubs.  Eventually a backend menu.
+Plugin gets events from Facebook and lists them same as clubs.  Backend menu and super-cool caching.
 
 List of features we want:
 
@@ -23,6 +19,8 @@ List of features we want:
 *   Need to create database table.
 *   Need to create backend menu.
 *   Need to overwrite content using backend (adding tickets)
+
+**WOULD BE AWESOME TO INTERFACE WITH REAL EVENTS PLUGIN**
 
 == Installation ==
 
@@ -37,6 +35,15 @@ It almost works.
 
 
 == Changelog ==
+
+= 0.9.9 =
+* Updated the CSS for the events widget.
+* Made sure the caching pays nice even with that stupid APC nonsense.
+* Added namespaces to my other classes.
+* Events now save in DB no problem, but who knows for how long.
+* Changed name of backend table for FB events.
+* Changing the name of the plugin.
+
 
 = 0.9.8 =
 * Huge update.  Revolutionized the API calling.
