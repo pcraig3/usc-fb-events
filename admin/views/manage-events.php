@@ -319,7 +319,7 @@ class Manage_Events extends AdminPageFramework {
      * @remark  this is a pre-defined framework method
      *
      * @since    0.9.0
-     */
+     *
     public function do_manage_events_page() {
 
         //this is the end of the form defined in ::addSettingFields

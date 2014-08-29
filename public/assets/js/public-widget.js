@@ -59,10 +59,14 @@ jQuery(function ($) {
 
             html_string +=  '<div class="eventLinks">';
 
-            if(ticket_uri)
-                html_string +=  '<a target="_blank" href="' + ticket_uri + '">Buy Tickets</a>';
+            var ticket_class = (ticket_uri) ? 'half_size' : 'full_size';
 
-            html_string +=  '<a target="_blank" href="' + event.url + '">View Event</a>';
+            html_string +=  '<a class="' + ticket_class + '" target="_blank" href="' + event.url + '">View Event</a>';
+
+            if(ticket_uri)
+                html_string +=  '<a class="' + ticket_class + '" target="_blank" href="' + ticket_uri + '">Buy Tickets</a>';
+
+
             html_string +=  '</div>';
 
             html_string +=  '</div><!--end of eventItem-->';
