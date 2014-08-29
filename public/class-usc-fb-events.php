@@ -88,6 +88,135 @@ class USC_FB_Events {
         add_action( 'init', '\USC_FB_Events\DB_API::register_fb_events_table', '1' );
         add_action( 'switch_blog', '\USC_FB_Events\DB_API::register_fb_events_table' );
 
+       add_filter( 'eventorganiser_inject_my_events', array( $this, 'add_fb_events_to_the_event_organiser'), 10, 4);
+    }
+
+    public function add_fb_events_to_the_event_organiser( array $eventsarray, $tz, $start, $end ) {
+
+        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), "tabu" );
+
+        $response = $this->wp_ajax->merge_fb_and_db_events($response);
+        $response = $this->wp_ajax->remove_removed_events($response);
+
+        $events = $response['events'];
+
+        //okay, so now we have the array of events (or one event),
+
+        //set a description
+        $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
+            : 'This event has not provided a description.  Maybe you can message the host directly on '
+                .' <a href="http://facebook.com">Facebook.</a>';
+
+        if( strlen( $fb_event_description ) > 200 )
+            $fb_event_description = substr($fb_event_description, 0, 200) . "...";
+
+
+        //okay, so now we've error checked most of it.
+
+        foreach($events as &$event) {
+
+            //start_date is a timestamp, but start and end are just strings
+            $fb_start = new DateTime($event['eventStartDate'], $tz);
+            $fb_end = new DateTime($event['eventEndDate'], $tz);
+            $fb_end->add(new DateInterval('PT2H'));
+
+
+            $fb_event = array(
+
+                'className' => array('eo-event', 'eo-past-event', 'eo-fb-event'),
+                   // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
+                'title' 	=> esc_html($event['title']),
+                'url'		=> esc_url($event['url']),
+                'allDay'	=> false,
+                'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
+                'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
+
+                //CHECK THAT THERE IS ONE
+                'description' => $fb_start->format('F j, Y H:i') . ' - ' . $fb_end->format('H:i')
+                    . '</br></br>' . $fb_event_description,
+                //'venue'		=> $event['venue']['id'],  this is basically useless
+                //className = 'venue-university-community-center'
+                'category'	=> array(),
+                //className = 'category-categorySlug'
+                'tags'		=> array(),
+                //className = 'tag-tagSlug'
+                'color'     => '#16811B',
+                'textColor'	=> '#ffffff',
+
+
+                //_end = Date 2014-08-23T03:55:00.000Z
+                //_id = "_fc1"
+                //_start = Date 2014-08-22T23:30:00.000Z
+                //allDay = false
+                //category = array();
+                //classname = array( 'eo-event', 'eo-past-event', 'venue-univeristy-community-centre');
+                //description = 'August 22, 2014 7:30 pm - 11:55 pm</br></br>Western Film is gonna re-open and it's gonna be sweet. Can't even wait for Captain America 2.'
+                //end = Date 2014-08-23T03:55:00.000Z
+                //source = Object (?)
+                //start = Date 2014-08-22T23:30:00.000Z
+                //tags = array();
+                //textColor = "#ffffff";
+                //title = "Western Film Redux"
+                //url = "http://westernusc.org/events/event/western-film-redux/"
+                //venue = 560
+
+            );
+
+            array_push($eventsarray, $fb_event);
+
+        }
+
+        return $eventsarray;
+    }
+
+
+        public function add_a_fake_event_to_the_event_organiser( array $eventsarray, $tz, $start, $end ) {
+
+        $fake_start = new DateTime("now", $tz);
+        $fake_end = new DateTime("now", $tz);
+        $fake_end->add(new DateInterval('PT2H'));
+
+        $fake_event = array(
+
+            'className' => array('eo-event', 'eo-past-event', $start, $end),
+            'title' 	=> 'Fake Event',
+            'url'		=> 'http://google.com',
+            'allDay'	=> false,
+            'start'		=> $fake_start->format('Y-m-d\TH:i:s\Z'),
+            'end'		=> $fake_end->format('Y-m-d\TH:i:s\Z'),
+            'description' => $fake_start->format('F j, Y H:i') . ' - ' . $fake_end->format('H:i')
+                . '</br></br>' . 'This event is fake, but hopefully the JS file doesn\'t know.',
+            //'venue'		=> 560
+            //className = 'venue-university-community-center'
+            'category'	=> array(),
+            //className = 'category-categorySlug'
+            'tags'		=> array(),
+            //className = 'tag-tagSlug'
+            'color'     => '#16811B',
+            'textColor'	=> '#ffffff',
+
+
+            //_end = Date 2014-08-23T03:55:00.000Z
+            //_id = "_fc1"
+            //_start = Date 2014-08-22T23:30:00.000Z
+            //allDay = false
+            //category = array();
+            //classname = array( 'eo-event', 'eo-past-event', 'venue-univeristy-community-centre');
+            //description = 'August 22, 2014 7:30 pm - 11:55 pm</br></br>Western Film is gonna re-open and it's gonna be sweet. Can't even wait for Captain America 2.'
+            //end = Date 2014-08-23T03:55:00.000Z
+            //source = Object (?)
+            //start = Date 2014-08-22T23:30:00.000Z
+            //tags = array();
+            //textColor = "#ffffff";
+            //title = "Western Film Redux"
+            //url = "http://westernusc.org/events/event/western-film-redux/"
+            //venue = 560
+
+        );
+
+        array_push($eventsarray, $fake_event);
+
+        return $eventsarray;
     }
 
     /**
