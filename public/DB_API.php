@@ -311,16 +311,6 @@ class DB_API {
         if( !empty($append_to_where) )
             $where_sql .= $append_to_where;
 
-        /*$since = absint($since);
-        $until = absint($until);
-
-        if( !empty($since) )
-            $where_sql .= $wpdb->prepare(' AND start_date >= %s', date_i18n( 'Y-m-d H:i:s', $since,true));
-
-        if( !empty($until) )
-            $where_sql .= $wpdb->prepare(' AND start_date <= %s', date_i18n( 'Y-m-d H:i:s', $until,true));
-        */
-
         /* SQL Order */
         //Whitelist order
         $order = strtoupper($order);

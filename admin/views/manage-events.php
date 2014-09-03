@@ -476,6 +476,9 @@ class Manage_Events extends AdminPageFramework {
                 ));
         }
 
+
+
+
         $this->setSettingNotice( "</strong><p>Yes! The event <strong>" . $values['name'] . "</strong> has been updated.</p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>", 'updated' );
 
         return $aInput;

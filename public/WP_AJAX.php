@@ -37,11 +37,19 @@ class WP_AJAX {
     public $expiration   = null;
 
     /**
-     * @var used for saving the default $wp_using_ext_object_cache so as not to bugger up our plugin
+     * @var bool    for saving the default $wp_using_ext_object_cache so as not to bugger up our plugin
      *
      * @since 0.9.2
      */
     private $wp_using_ext_object_cache_status;
+
+    /**
+     * @var string  for saving the default server timezone before we do any date manipulations for events
+     *
+     * @since 0.9.9
+     *
+     */
+    private $date_default_timezone_get_status;
 
     private function __construct() {
 
@@ -64,6 +72,9 @@ class WP_AJAX {
         //set a default value to the object cache whatever so that we don't accidentally call the wrong method before it's set
         global $_wp_using_ext_object_cache;
         $this->wp_using_ext_object_cache_status = $_wp_using_ext_object_cache;
+
+        //set a default timezone so that we don't accidentally call the wrong method first and overwrite anything
+        $this->date_default_timezone_get_status = date_default_timezone_get();
     }
 
     /**
@@ -103,6 +114,21 @@ class WP_AJAX {
 
         $_wp_using_ext_object_cache = $this->wp_using_ext_object_cache_status;
     }
+
+    /**
+     * @since 0.8.3
+     */
+    public function set_server_to_local_time() {
+        $this->date_default_timezone_get_status = date_default_timezone_get();
+        date_default_timezone_set("America/Toronto");
+    }
+    /**
+     * @since 0.8.3
+     */
+    public function set_server_back_to_default_time() {
+        date_default_timezone_set($this->date_default_timezone_get_status);
+    }
+
 
     /**
      * This function right here is executed when, in the "manage events" menu, someone
@@ -308,6 +334,8 @@ class WP_AJAX {
      */
     public function date_strings_to_timestamps( array $event_array ) {
 
+        $this->set_server_to_local_time();
+
         $total = $event_array['total'];
         $events = $event_array['events'];
 
@@ -321,6 +349,8 @@ class WP_AJAX {
                 }
             }
         }
+
+        $this->set_server_back_to_default_time();
 
         $event_array['events'] = $events;
 
@@ -630,9 +660,9 @@ class WP_AJAX {
 
         //there HAS to be a start and an end, so we're just going to give the class a start and end time.
         $api_url .= ( !empty( $start ) )                ? "start=" . number_format( $start , 0 , '', '' )
-                                                            : "start=" . number_format( $this->start , 0 , '', '' );
+            : "start=" . number_format( $this->start , 0 , '', '' );
         $api_url .= ( !empty( $end ) )                  ? "&end=" . number_format( $end , 0 , '', '' )
-                                                            : "&end=" . number_format( $this->end , 0 , '', '' );
+            : "&end=" . number_format( $this->end , 0 , '', '' );
         $api_url .= ( !empty( $calendars ) )            ? "&calendars=" . $calendars    : '';
         $api_url .= ( !empty( $limit ) && $limit > 0)   ? "&limit=" . $limit            : '';
 

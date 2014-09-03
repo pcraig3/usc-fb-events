@@ -8,8 +8,7 @@
 
 ob_start();
 
-$default_timezone = date_default_timezone_get();
-date_default_timezone_set("America/Toronto");
+\USC_FB_Events\WP_AJAX::get_instance()->set_server_to_local_time();
 
 ?>
 
@@ -38,7 +37,7 @@ date_default_timezone_set("America/Toronto");
 
 <?php
 
-date_default_timezone_set($default_timezone);
+\USC_FB_Events\WP_AJAX::get_instance()->set_server_back_to_default_time();
 
 return ob_get_clean();
 

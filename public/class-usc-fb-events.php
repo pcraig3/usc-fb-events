@@ -98,32 +98,56 @@ class USC_FB_Events {
         $response = $this->wp_ajax->merge_fb_and_db_events($response);
         $response = $this->wp_ajax->remove_removed_events($response);
 
+        //$this->wp_ajax->set_server_to_local_time();
+
         $events = $response['events'];
-
-        //okay, so now we have the array of events (or one event),
-
-        //set a description
-        $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
-            : 'This event has not provided a description.  Maybe you can message the host directly on '
-                .' <a href="http://facebook.com">Facebook.</a>';
-
-        if( strlen( $fb_event_description ) > 200 )
-            $fb_event_description = substr($fb_event_description, 0, 200) . "...";
-
-
-        //okay, so now we've error checked most of it.
 
         foreach($events as &$event) {
 
+            //original start and end date.
+            $fb_original_start = new DateTime($event['eventStartDate']);
+            $fb_original_end = new DateTime($event['eventEndDate']);
+
+            $fb_original_timediff = $fb_original_start->diff($fb_original_end, true);
+
+
             //start_date is a timestamp, but start and end are just strings
-            $fb_start = new DateTime($event['eventStartDate'], $tz);
-            $fb_end = new DateTime($event['eventEndDate'], $tz);
-            $fb_end->add(new DateInterval('PT2H'));
+            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time']),
+                new DateTimeZone(date_default_timezone_get()));
+            $fb_end =  new DateTime($this->reformat_start_time_like_facebook($event['start_time']),
+                new DateTimeZone(date_default_timezone_get()));
+            $fb_end->add($fb_original_timediff);
+
+            //$fb_end = new DateTime($event['eventEndDate'], $tz);
+            //$fb_end->add(new DateInterval('PT2H'));
+
+            //okay, so now we have the array of events (or one event),
+
+            //set a description or an error message
+            $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
+                : 'This event has not provided a description.  Maybe you can message the host directly on '
+                .' <a href="http://facebook.com">Facebook.</a>';
+
+            $fb_event_description = "timezone: " . date_default_timezone_get();
+
+            if( strlen( $fb_event_description ) > 200 )
+                $fb_event_description = substr($fb_event_description, 0, 200) . "...";
+
+
+            ///classnames
+
+            $classNames = array('eo-event', 'eo-past-event', 'eo-fb-event');
+            array_push($classNames, "start_time-" . $fb_start->getTimestamp());
+            array_push($classNames, "start_time_string-" . $this->reformat_start_time_like_facebook($event['start_time']));
+            array_push($classNames, "end_time-" . $fb_end->getTimestamp());
+
+            //okay, so now we've error checked most of it.
+
 
 
             $fb_event = array(
 
-                'className' => array('eo-event', 'eo-past-event', 'eo-fb-event'),
+                'className' => $classNames,
                    // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
                 'title' 	=> esc_html($event['title']),
                 'url'		=> esc_url($event['url']),
@@ -166,7 +190,18 @@ class USC_FB_Events {
 
         }
 
+        ///$this->wp_ajax->set_server_back_to_default_time();
+
         return $eventsarray;
+    }
+
+    private function reformat_start_time_like_facebook($start_time) {
+
+        if (strpos($start_time,'T') !== false)
+            return $start_time;
+
+        //else, collapse whitespace and slap a "-0400" on the end (2014-08-30T22:00:00-0400)
+        return str_replace(' ', 'T', $start_time) . "-0400";
     }
 
 

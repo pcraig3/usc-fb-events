@@ -48,7 +48,8 @@ jQuery(function ($) {
 
             //Slice: positive #s are relative to the beginning, negative numbers are relative to the end.
             var localeTime = date.toLocaleTimeString();
-            html_string +=  localeTime.slice(0, 4) + " " + localeTime.slice(-2);
+            var firstColonPosition = localeTime.indexOf(":");
+            html_string +=  localeTime.slice(0, firstColonPosition + 3) + " " + localeTime.slice(-2);
             html_string +=  ' ';
 
             if(location) {
