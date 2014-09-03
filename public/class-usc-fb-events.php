@@ -93,7 +93,10 @@ class USC_FB_Events {
 
     public function add_fb_events_to_the_event_organiser( array $eventsarray, $tz, $start, $end ) {
 
-        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), "tabu" );
+        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), "custom" );
+
+        if( empty( $response['events'] ) )
+            return $eventsarray;
 
         $response = $this->wp_ajax->merge_fb_and_db_events($response);
         $response = $this->wp_ajax->remove_removed_events($response);
