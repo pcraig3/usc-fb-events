@@ -101,8 +101,6 @@ class USC_FB_Events {
         $response = $this->wp_ajax->merge_fb_and_db_events($response);
         $response = $this->wp_ajax->remove_removed_events($response);
 
-        //$this->wp_ajax->set_server_to_local_time();
-
         $events = $response['events'];
 
         foreach($events as &$event) {
@@ -121,17 +119,12 @@ class USC_FB_Events {
                 new DateTimeZone(date_default_timezone_get()));
             $fb_end->add($fb_original_timediff);
 
-            //$fb_end = new DateTime($event['eventEndDate'], $tz);
             //$fb_end->add(new DateInterval('PT2H'));
-
-            //okay, so now we have the array of events (or one event),
 
             //set a description or an error message
             $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
                 : 'This event has not provided a description.  Maybe you can message the host directly on '
                 .' <a href="http://facebook.com">Facebook.</a>';
-
-            $fb_event_description = "timezone: " . date_default_timezone_get();
 
             if( strlen( $fb_event_description ) > 200 )
                 $fb_event_description = substr($fb_event_description, 0, 200) . "...";
@@ -140,14 +133,9 @@ class USC_FB_Events {
             ///classnames
 
             $classNames = array('eo-event', 'eo-past-event', 'eo-fb-event');
-            array_push($classNames, "start_time-" . $fb_start->getTimestamp());
-            array_push($classNames, "start_time_string-" . $this->reformat_start_time_like_facebook($event['start_time']));
-            array_push($classNames, "end_time-" . $fb_end->getTimestamp());
 
-            //okay, so now we've error checked most of it.
-
-
-
+            //okay, so now it's time to actually create the event
+            
             $fb_event = array(
 
                 'className' => $classNames,
@@ -193,11 +181,16 @@ class USC_FB_Events {
 
         }
 
-        ///$this->wp_ajax->set_server_back_to_default_time();
-
         return $eventsarray;
     }
 
+    /**
+     * Basically, assumes that the start_time for events comes from London.
+     * Not a very good method.  More brute-force than anything.
+     *
+     * @param $start_time
+     * @return string
+     */
     private function reformat_start_time_like_facebook($start_time) {
 
         if (strpos($start_time,'T') !== false)
