@@ -756,7 +756,14 @@ class USC_FB_Events {
      * @since    0.1.0
      */
     public function enqueue_scripts() {
+
+        global $post;
+
         wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+
+        if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+        }
     }
 
     /**
