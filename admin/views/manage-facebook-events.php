@@ -7,7 +7,7 @@
  */
 
 // Extend the class
-class Manage_Events extends AdminPageFramework {
+class Manage_Facebook_Events extends AdminPageFramework {
 
     private $section_id = "modify";
 
@@ -19,7 +19,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @since    0.6.0
      */
-    public function start_Manage_Events() { // start_{extended class name} - this method gets automatically triggered at the end of the class constructor.
+    public function start_Manage_Facebook_Events() { // start_{extended class name} - this method gets automatically triggered at the end of the class constructor.
         /*
          * Register custom field types.
          */
@@ -56,22 +56,23 @@ class Manage_Events extends AdminPageFramework {
     public function setUp() {
 
         // Creates the root menu
-        $this->setRootMenuPage( 'Events' );    // specifies to which parent menu to add.
+        //$this->setRootMenuPage( 'Events' );    // specifies to which parent menu to add.
+        $this->setRootMenuPageBySlug( 'edit.php?post_type=event' );
 
         // Adds the sub menus and the pages
         $this->addSubMenuItems(
             array(
-                'title'    =>    'Manage Events',    // page and menu title
-                'page_slug'    =>    'manage_events_page'     // page slug
+                'title'    =>    'Manage Facebook Events',    // page and menu title
+                'page_slug'    =>    'manage_facebook_events_page'     // page slug
             )
         );
 
         $this->addSettingSections(
-            'manage_events_page',
+            'manage_facebook_events_page',
             array(
                 'section_id' => $this->section_id,
-                'title' => 'Modify Events',
-                'description' => 'Change events or return them to their defaults.',
+                'title' => 'Modify Facebook Events',
+                'description' => 'Modify output of Facebook events on the calendar.',
             )
         );
 
@@ -256,7 +257,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @since    0.9.0
      */
-    public function content_foot_manage_events_page( $sContent ) {
+    public function content_foot_manage_facebook_events_page( $sContent ) {
 
         echo $sContent;  //this is the title of the page set in the ::addSubMenuItems method above.
         ?>
@@ -320,7 +321,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @since    0.9.0
      *
-    public function do_manage_events_page() {
+    public function do_manage_facebook_events_page() {
 
         //this is the end of the form defined in ::addSettingFields
         ?>
@@ -329,7 +330,7 @@ class Manage_Events extends AdminPageFramework {
 
     <?php
 
-        echo $this->oDebug->getArray( get_option( 'Manage_Events' ) );
+        echo $this->oDebug->getArray( get_option( 'Manage Facebook_Events' ) );
 
     }
 
@@ -342,7 +343,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @since    0.6.0
      */
-    public function do_after_manage_events_page() {
+    public function do_after_manage_facebook_events_page() {
 
         echo "
             <script>
@@ -381,7 +382,7 @@ class Manage_Events extends AdminPageFramework {
      *
      * @return mixed        returns the values to the screen.  Nothing happens with them right now.
      */
-    public function validation_manage_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
+    public function validation_manage_facebook_events_page( $aInput, $aOldInput ) {	// validation_{page slug}
 
         //$this->setSettingNotice( "</strong><p>Invalid URL: <strong></strong></p><a class='dismiss_notice' style='cursor:pointer;'>Dismiss</a>" );
 

@@ -51,15 +51,6 @@ class USC_FB_Events_Admin {
     private function __construct() {
 
         /*
-         * @TODO :
-         *
-         * - Uncomment following lines if the admin class should only be available for super admins
-         */
-        /* if( ! is_super_admin() ) {
-            return;
-        } */
-
-        /*
          * Call $plugin_slug from public plugin class.
          */
         $plugin = USC_FB_Events::get_instance();
@@ -70,7 +61,7 @@ class USC_FB_Events_Admin {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
-        // Add the options page and menu item.add_manage_events_page
+        // Add the options page and menu item.add_manage_facebook_events_page
         add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
         // Add an action link pointing to the options page.
@@ -87,12 +78,12 @@ class USC_FB_Events_Admin {
         //add_filter( '@TODO', array( $this, 'filter_method_name' ) );
 
         $this->plugin_pages = array(
-            "manage_events_page",
+            "manage_facebook_events_page",
         );
 
-        $this->plugin_submenu = "events_page_";
+        $this->plugin_submenu = "event_page_";
 
-        $this->add_manage_events();
+        $this->add_manage_facebook_events();
     }
 
     /**
@@ -103,15 +94,6 @@ class USC_FB_Events_Admin {
      * @return    object    A single instance of this class.
      */
     public static function get_instance() {
-
-        /*
-         * @TODO :
-         *
-         * - Uncomment following lines if the admin class should only be available for super admins
-         */
-        /* if( ! is_super_admin() ) {
-            return;
-        } */
 
         // If the single instance hasn't been set, set it now.
         if ( null == self::$instance ) {
@@ -128,7 +110,7 @@ class USC_FB_Events_Admin {
      *
      * @return    null    Return early if no settings page is registered.
      */
-    public function enqueue_admin_styles() {
+    public function enqueue_admin_styles() { 
 
         if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
             return;
@@ -162,18 +144,18 @@ class USC_FB_Events_Admin {
 
     }
 
-    public function add_manage_events() {
+    public function add_manage_facebook_events() {
 
-        add_action( 'admin_enqueue_scripts', array( $this, 'add_manage_events_styles' ) );
-        add_action( 'admin_enqueue_scripts', array( $this, 'add_manage_events_scripts' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'add_manage_facebook_events_styles' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'add_manage_facebook_events_scripts' ) );
 
         if ( ! class_exists( 'AdminPageFramework' ) )
             include_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/admin-page-framework/library/admin-page-framework.min.php' );
 
-        include_once('views/manage-events.php');
+        include_once('views/manage-facebook-events.php');
 
         // Instantiate the class object.
-        new Manage_Events;
+        new Manage_Facebook_Events();
 
     }
 
@@ -184,7 +166,7 @@ class USC_FB_Events_Admin {
      *
      * @return    null    Return early if no custom pages are registered.
      */
-    public function add_manage_events_styles() {
+    public function add_manage_facebook_events_styles() {
 
         if ( ! isset( $this->plugin_pages ) ) {
             return;
@@ -213,7 +195,7 @@ class USC_FB_Events_Admin {
      *
      * @return    null    Return early if no custom pages are registered.
      */
-    public function add_manage_events_scripts() {
+    public function add_manage_facebook_events_scripts() {
 
         if ( ! isset( $this->plugin_pages ) ) {
             return;
@@ -257,10 +239,10 @@ class USC_FB_Events_Admin {
          *
          *
         $this->plugin_screen_hook_suffix = add_options_page(
-            __( 'USC FB Events Settings', "manage_events_page" ),
-            __( 'USC FB Events Settings', "manage_events_page" ),
+            __( 'USC FB Events Settings', "manage_facebook_events_page" ),
+            __( 'USC FB Events Settings', "manage_facebook_events_page" ),
             'manage_options',
-            "manage_events_page",
+            "manage_facebook_events_page",
             array( $this, 'display_plugin_admin_page' )
         );
     }
