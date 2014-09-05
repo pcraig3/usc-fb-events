@@ -233,6 +233,13 @@ class USC_FB_Events {
 
             }
 
+            //set a host for the event description
+            $host = ( !empty($event['host']) ) ? 'Host: <strong>' . esc_html($event['host']) . '</strong>' : '' ;
+
+            //set a location for the event description
+            $location = ( !empty($event['location']) ) ? 'Location: ' . esc_html($event['location']) : '' ;
+
+
             //set a description or an error message
             $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
                 : 'This event has not provided a description.  Maybe you can message the host directly on '
@@ -317,7 +324,7 @@ class USC_FB_Events {
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
                 'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
 
-                'description' => $date . '</br></br>' . $fb_event_description,
+                'description' => $date . '</br></br>' . $host . '</br>' . $location . '</br></br>' . $fb_event_description,
                 //'venue'		=> $event['venue']['id'],  this is basically useless
                 //className = 'venue-university-community-center'
 

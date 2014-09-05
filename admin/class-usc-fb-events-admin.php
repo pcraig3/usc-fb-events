@@ -110,7 +110,7 @@ class USC_FB_Events_Admin {
      *
      * @return    null    Return early if no settings page is registered.
      */
-    public function enqueue_admin_styles() { 
+    public function enqueue_admin_styles() {
 
         if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
             return;
