@@ -1,3 +1,36 @@
+$usc-events-green: rgb( 28, 216, 176 );
+$usc-events-green--transparent: rgba( 28, 216, 176, .8 );
+
+
+.page-id-292,
+.parent-pageid-292 {
+
+  .et_pb_fullwidth_header {
+
+    background-color: $usc-events-green;
+  }
+
+  .post-meta a,
+  #content-area .et_pb_widget_area li a,
+  .breadcrumbs a,
+  .collapseomatic {
+
+    &:hover {
+      color:  $usc-events-green--transparent !important;
+    }
+  }
+
+  h4 {
+
+    color: $usc-events-green;
+  }
+
+  blockquote {
+
+    border-color: $usc-events-green;
+  }
+}
+
 .clearfix:after {
   content: "";
   display: table;

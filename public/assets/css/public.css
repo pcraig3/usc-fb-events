@@ -1,3 +1,22 @@
+.page-id-292 .et_pb_fullwidth_header,
+.parent-pageid-292 .et_pb_fullwidth_header {
+  background-color: #1cd8b0; }
+.page-id-292 .post-meta a:hover,
+.page-id-292 #content-area .et_pb_widget_area li a:hover,
+.page-id-292 .breadcrumbs a:hover,
+.page-id-292 .collapseomatic:hover,
+.parent-pageid-292 .post-meta a:hover,
+.parent-pageid-292 #content-area .et_pb_widget_area li a:hover,
+.parent-pageid-292 .breadcrumbs a:hover,
+.parent-pageid-292 .collapseomatic:hover {
+  color: rgba(28, 216, 176, 0.8) !important; }
+.page-id-292 h4,
+.parent-pageid-292 h4 {
+  color: #1cd8b0; }
+.page-id-292 blockquote,
+.parent-pageid-292 blockquote {
+  border-color: #1cd8b0; }
+
 .clearfix:after {
   content: "";
   display: table;
