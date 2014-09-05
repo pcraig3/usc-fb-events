@@ -93,6 +93,10 @@ class USC_FB_Events {
 
     public function add_fb_events_to_the_event_organiser( array $eventsarray, $query ) {
 
+        /*
+         * Get the blog timezone using one of Stephen Harris' event-organiser functions
+         * see "includes/event-organiser-utility-functions.php"
+         */
         if (function_exists('eo_get_blog_timezone')) {
             $tz = eo_get_blog_timezone();
         }
@@ -103,38 +107,131 @@ class USC_FB_Events {
             $this->wp_ajax->set_server_back_to_default_time();
         }
 
+        /*
+         * Pretty basic.  Get start date and end date as passed in through the query
+         */
         $start = $query['event_end_after'];  //start time
         $end = $query['event_start_before'];  //end time
 
-        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), "custom" );
+        /*
+         * Set the categories in the category array, if this calendar is restricted by category
+         *
+         * NOTE: because EO is using taxonomy slugs to identify categories, we are going to get
+         * category requests like 'usc-2' or 'clubs-2' when we really want 'usc' or 'clubs'
+         *
+         * To get around this, I've cross referenced the slugs with the WP event-categories taxonomy
+         * and then returned the name of any matching texonomies.
+         *
+         * Convert any dashes in the slug into '%20s' for the call
+         */
+        $args = array(
+            'hide_empty'        => false,
+        );
 
+        //get the wordpress terms for the event-category taxonomy
+        $wp_event_categories = get_terms( 'event-category', $args );
 
+        $category_array = array();
+
+        //probably overkill, but preferable to underkill
+        if( isset( $query['tax_query'] ) && !empty( $query['tax_query'] )) {
+
+            foreach( $query['tax_query'] as $tax_query ) {
+
+                if( $tax_query['taxonomy'] === 'event-category' ) {
+
+                    //if we've gotten this far, we have at least one category slug
+                    foreach( $tax_query['terms'] as $term )
+                        //a term night be "usc-2"
+                        //now check for the slug in the event-categories taxonomy array of objects
+                        foreach( $wp_event_categories as $wp_event_category )
+                            if( $term === $wp_event_category->slug )
+                                array_push( $category_array, strtolower( $wp_event_category->name ) );
+                }
+            }
+        }
+
+        $calendar_string = '';
+
+        if( ! empty( $category_array ) )
+            $calendar_string = str_replace( ' ', '%20', implode( ',', $category_array ) );
+
+        /*
+         * Call the events from Facebook
+         */
+        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), $calendar_string );
 
         if( empty( $response['events'] ) )
             return $eventsarray;
 
+        /*
+         * This is a bit strange, admittedly, but we want the offset in th facebook start_time before the event is modified
+         */
+        $fb_event_offsets = array();
+
+        foreach( $response['events'] as $event ) {
+            //get the offset
+            //reverse the string, find the first hyphen and then
+            $last_hyphen = strpos(strrev($event['start_time']), '-');
+
+            $fb_event_offsets[$event['eid']] = substr($event['start_time'], -($last_hyphen + 1));
+        }
+
+        /*
+         * Update FB events with our database modifications or removals (if any)
+         */
         $response = $this->wp_ajax->merge_fb_and_db_events($response);
         $response = $this->wp_ajax->remove_removed_events($response);
 
         $events = $response['events'];
 
+        /*
+         * This is where we set up individual events
+         */
         foreach($events as &$event) {
 
-            //original start and end date.
+            /*
+             * Getting the original start and end dates allows us to figure out the time interval between them
+             * This is useful if we want to modify the start_time using our plugin
+             */
             $fb_original_start = new DateTime($event['eventStartDate']);
             $fb_original_end = new DateTime($event['eventEndDate']);
-
             $fb_original_timediff = $fb_original_start->diff($fb_original_end, true);
+            $fb_original_offset = ( isset($fb_event_offsets[$event['eid']]) ) ? $fb_event_offsets[$event['eid']] : '' ;
 
-
-            //start_date is a timestamp, but start and end are just strings
-            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time']),
+            /*
+             * TODO: if this works without the reformatting method, we should ditch it
+             */
+            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
                 $tz);
-            $fb_end =  new DateTime($this->reformat_start_time_like_facebook($event['start_time']),
+            $fb_end =  new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
                 $tz);
             $fb_end->add($fb_original_timediff);
 
             //$fb_end->add(new DateInterval('PT2H'));
+
+            /*
+             * format the date like Stephen Harris does it in includes/event-organiser-ajax.php
+             */
+
+            //if there is a preferred time format, use that.  Otherwise, use the default format ("7:30 pm").
+            $time_format = ( get_option('time_format') ) ? get_option('time_format') : 'g:i a';
+
+            if( $fb_start->format('Y-m-d') != $fb_end->format('Y-m-d') ){
+                //Start & ends on different days
+
+                //if( !eo_is_all_day() ){  //forget about all_day events
+                //Not all day, include time
+                $date = eo_format_datetime($fb_start,'F j '.$time_format).' - '.eo_format_datetime($fb_end,'F j '.$time_format);
+
+            }else{
+                //Start and end on the same day
+
+                //if( !eo_is_all_day() ){  forget about all_day events
+                //Not all day, include time
+                $date = eo_format_datetime($fb_start,$format="F j, Y $time_format").' - '.eo_format_datetime($fb_end,$time_format);
+
+            }
 
             //set a description or an error message
             $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
@@ -145,47 +242,71 @@ class USC_FB_Events {
                 $fb_event_description = substr($fb_event_description, 0, 200) . "...";
 
 
-            /****
-             *
-
-            //Event categories
-            $terms = get_the_terms( $post->ID, 'event-category' );
-            $event['category']=array();
-            if($terms):
-            foreach ($terms as $term):
-            $event['category'][]= $term->slug;
-            $event['className'][]='category-'.$term->slug;
-            endforeach;
-            endif;
-
-            //Event tags
-            if( eventorganiser_get_option('eventtag') ){
-            $terms = get_the_terms( $post->ID, 'event-tag' );
-            $event['tags'] = array();
-            if( $terms && !is_wp_error( $terms ) ):
-            foreach ($terms as $term):
-            $event['tags'][]= $term->slug;
-            $event['className'][]='tag-'.$term->slug;
-            endforeach;
-            endif;
-            }
+            /*
+             * Start to set the classnames
              */
-
-
-            ///classnames
-
             $classNames = array('eo-event', 'eo-fb-event');
 
-            //Colour past events
+            /*
+             * set the calendar as a classname
+             */
+            array_push($classNames, 'eo-fb-event-' . str_replace(' ', '-', $event['calendar']));
+
+            /*
+             * Set a class on the event to indicate whether or not it has passed. Logic is identical to Stephen Harris'
+             */
             $now = new DateTime(null,$tz);
             if($fb_start <= $now)
                 array_push($classNames, 'eo-past-event');
             else
                 array_push($classNames, 'eo-future-event');
 
+            /*
+             * Set a default bg color for the event
+             * If this event has a category color (very likely), then this value will be overwritten
+             */
+            $color = '#16811B';
+
+            /*
+             * Set the event categories as their calendars
+             * We don't have to worry about checking these with the category_array near the beginning of this method
+             * because events whose categories are not allowed simply won't be returned from Facebook
+             */
+            $fb_event_categories = array();
+
+            if( !empty( $event['calendar'] ) )
+                array_push( $fb_event_categories, $event['calendar'] );
+
+            $fb_event_categories_slugs = array();
+
+            //$wp_event_categories was set near the beginning of the method
+            if( !empty( $fb_event_categories ) && !empty( $wp_event_categories ) ) {
+                foreach( $fb_event_categories as $fb_event_category ) {
+                    foreach( $wp_event_categories as $wp_event_category ) {
+
+                        //if the fb_event_category matches the lowercased wp_category->name
+                        if( trim( $fb_event_category ) === trim( strtolower( $wp_event_category->name ) ) ) {
+                            array_push( $fb_event_categories_slugs, $wp_event_category->slug );
+
+                            /* Logic is the same as Stephen Harris'.  see "includes/event-organiser-event-functions.php" */
+                            if( ! empty( $wp_event_category->color ) ) {
+                                $color_code = ltrim( $wp_event_category->color, '#' );
+                                if ( ctype_xdigit( $color_code ) && (strlen( $color_code ) == 6 || strlen( $color_code ) == 3) ) {
+                                    $color = '#'.$color_code;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Just going through the motions.
+            //There's currently no way for a FB event to have more than one calendar/category
+            if( !empty( $fb_event_categories_slugs ) )
+                foreach( $fb_event_categories_slugs as $fb_event_category_slug )
+                    array_push( $classNames, 'category-' . $fb_event_category_slug );
 
             //okay, so now it's time to actually create the event
-
             $fb_event = array(
 
                 'className' => $classNames,
@@ -196,39 +317,21 @@ class USC_FB_Events {
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
                 'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
 
-                //CHECK THAT THERE IS ONE
-                'description' => $fb_start->format('F j, Y H:i') . ' - ' . $fb_end->format('H:i')
-                    . '</br></br>' . $fb_event_description,
+                'description' => $date . '</br></br>' . $fb_event_description,
                 //'venue'		=> $event['venue']['id'],  this is basically useless
                 //className = 'venue-university-community-center'
-                'category'	=> array(),
-                //className = 'category-categorySlug'
+
+                'category'	=> $fb_event_categories_slugs,
+
+
                 'tags'		=> array(),
                 //className = 'tag-tagSlug'
-                'color'     => '#16811B',
+
+                'color'     => $color,
                 'textColor'	=> '#ffffff',
-
-
-                //_end = Date 2014-08-23T03:55:00.000Z
-                //_id = "_fc1"
-                //_start = Date 2014-08-22T23:30:00.000Z
-                //allDay = false
-                //category = array();
-                //classname = array( 'eo-event', 'eo-past-event', 'venue-univeristy-community-centre');
-                //description = 'August 22, 2014 7:30 pm - 11:55 pm</br></br>Western Film is gonna re-open and it's gonna be sweet. Can't even wait for Captain America 2.'
-                //end = Date 2014-08-23T03:55:00.000Z
-                //source = Object (?)
-                //start = Date 2014-08-22T23:30:00.000Z
-                //tags = array();
-                //textColor = "#ffffff";
-                //title = "Western Film Redux"
-                //url = "http://westernusc.org/events/event/western-film-redux/"
-                //venue = 560
-
             );
 
             array_push($eventsarray, $fb_event);
-
         }
 
         //return $query;
@@ -241,15 +344,18 @@ class USC_FB_Events {
      * Not a very good method.  More brute-force than anything.
      *
      * @param $start_time
+     * @param $offset
      * @return string
      */
-    private function reformat_start_time_like_facebook($start_time) {
+    private function reformat_start_time_like_facebook( $start_time, $offset = '-4000' ) {
 
         if (strpos($start_time,'T') !== false)
             return $start_time;
 
+        $offset = ( empty( $offset ) ) ? '-4000' : $offset;
+
         //else, collapse whitespace and slap a "-0400" on the end (2014-08-30T22:00:00-0400)
-        return str_replace(' ', 'T', $start_time) . "-0400";
+        return str_replace(' ', 'T', $start_time) . $offset;
     }
 
 
