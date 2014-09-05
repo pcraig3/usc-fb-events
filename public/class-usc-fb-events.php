@@ -150,6 +150,11 @@ class USC_FB_Events {
                 }
             }
         }
+        //else, if no tax_query is set, just build a string with all term names
+        else {
+            foreach( $wp_event_categories as $wp_event_category )
+                array_push( $category_array, strtolower( $wp_event_category->name ) );
+        }
 
         $calendar_string = '';
 
