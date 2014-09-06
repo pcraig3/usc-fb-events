@@ -20,7 +20,7 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   0.9.9
+     * @since   0.9.9 
      *
      * @var     string
      */
@@ -88,8 +88,242 @@ class USC_FB_Events {
         add_action( 'init', '\USC_FB_Events\DB_API::register_fb_events_table', '1' );
         add_action( 'switch_blog', '\USC_FB_Events\DB_API::register_fb_events_table' );
 
+        add_action( 'widgets_init', array( $this, 'usc_fb_events_register_sidebars' ) );
+
         add_filter( 'eventorganiser_inject_my_events', array( $this, 'add_fb_events_to_the_event_organiser'), 10, 2);
+        // failed add_filter( 'eventorganiser_inject_my_dates_agenda', array( $this, 'add_fb_dates_to_the_event_organiser_agenda'), 10, 3);
+        // failed add_filter( 'eventorganiser_inject_my_events_agenda', array( $this, 'add_fb_events_to_the_event_organiser_agenda'), 10, 3);
     }
+
+
+    public function add_fb_dates_to_the_event_organiser_agenda( array $dates, $date, $today ) {
+
+        $limit = 1;
+
+        //basically, get 4 event dates.
+        ////make sure greater than query['date']
+        /// and greater than $today->format('Y-m-d')
+        //$dates = apply_filters( 'eventorganiser_inject_my_dates_agenda',
+        //$dates, $query['date'], $today->format('Y-m-d') );
+
+        //call whatever number of Facebook events (let's say, two month's worth)
+        //and then order them all and kick out the ones that don't belong.
+
+        //CALL 4 FACEBOOK EVENTS WITH START DATES GREATER THAN $DATE
+        $datestrtotime = strtotime($date);
+        $todaystrtotime = strtotime($today);
+
+        $start  = ( $datestrtotime >= $todaystrtotime ) ? $datestrtotime : $todaystrtotime ;
+        $end    = $start + (WEEK_IN_SECONDS * 4);
+
+        //we also need to make sure that the start dates are distinct -- ugh.  so fuck that.
+
+
+        /*
+        * Set the categories in the category array, if this calendar is restricted by category
+        *
+        * NOTE: because EO is using taxonomy slugs to identify categories, we are going to get
+        * category requests like 'usc-2' or 'clubs-2' when we really want 'usc' or 'clubs'
+        *
+        * To get around this, I've cross referenced the slugs with the WP event-categories taxonomy
+        * and then returned the name of any matching texonomies.
+        *
+        * Convert any dashes in the slug into '%20s' for the call
+        */
+        $args = array(
+            'hide_empty'        => false,
+        );
+
+        //get the wordpress terms for the event-category taxonomy
+        $wp_event_categories = get_terms( 'event-category', $args );
+
+        $category_array = array();
+
+        foreach( $wp_event_categories as $wp_event_category )
+            array_push( $category_array, strtolower( $wp_event_category->name ) );
+
+        $calendar_string = '';
+
+        if( ! empty( $category_array ) )
+            $calendar_string = str_replace( ' ', '%20', implode( ',', $category_array ) );
+
+        /*
+         * Call the events from Facebook
+         */
+        $response = $this->wp_ajax->call_events_api( $start, $end, $calendar_string, $limit );
+
+        if( empty( $response['events'] ) )
+            return $dates;
+
+        /*
+         * This is a bit strange, admittedly, but we want the offset in th facebook start_time before the event is modified
+         */
+        $fb_event_offsets = array();
+
+        foreach( $response['events'] as $event ) {
+            //get the offset
+            //reverse the string, find the first hyphen and then
+            $last_hyphen = strpos(strrev($event['start_time']), '-');
+
+            $fb_event_offsets[$event['eid']] = substr($event['start_time'], -($last_hyphen + 1));
+        }
+
+        /*
+         * Update FB events with our database modifications or removals (if any)
+         */
+        $response = $this->wp_ajax->merge_fb_and_db_events($response);
+        $response = $this->wp_ajax->remove_removed_events($response);
+
+        $events = $response['events'];
+
+        /*
+         * This is where we set up individual events
+         */
+        foreach($events as &$event) {
+
+            $fb_original_offset = ( isset($fb_event_offsets[$event['eid']]) ) ? $fb_event_offsets[$event['eid']] : '' ;
+
+            /*
+             * TODO: if this works without the reformatting method, we should ditch it
+             */
+            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset));
+
+            array_push( $dates, $fb_start->format( 'Y-m-d' ) );
+        }
+
+        sort($dates);
+
+        /*
+        $object = new stdClass();
+        $object->property = 'Here we go';
+
+        var_dump($object);
+
+        //return array_shift($dates);
+        */
+
+        return (object) ['StartDate' => array_shift($dates)];
+    }
+
+
+    public function add_fb_events_to_the_event_organiser_agenda( array $eventsarray, $query, $instance ) {
+
+
+        /*
+         * Get the blog timezone using one of Stephen Harris' event-organiser functions
+         * see "includes/event-organiser-utility-functions.php"
+         */
+        if (function_exists('eo_get_blog_timezone')) {
+            $tz = eo_get_blog_timezone();
+        }
+        else {
+            //this is kind of a hack, but not a terrible one.
+            $this->wp_ajax->set_server_to_local_time();
+            $tz = new DateTimeZone(date_default_timezone_get());
+            $this->wp_ajax->set_server_back_to_default_time();
+        }
+
+        /*
+         * Pretty basic.  Get start date and end date as passed in through the query
+         */
+        $start = $query['event_end_after'];  //start time
+        $end = $query['event_start_before'];  //end time
+
+        /*
+         * Set the categories in the category array, if this calendar is restricted by category
+         *
+         * NOTE: because EO is using taxonomy slugs to identify categories, we are going to get
+         * category requests like 'usc-2' or 'clubs-2' when we really want 'usc' or 'clubs'
+         *
+         * To get around this, I've cross referenced the slugs with the WP event-categories taxonomy
+         * and then returned the name of any matching texonomies.
+         *
+         * Convert any dashes in the slug into '%20s' for the call
+         */
+        $args = array(
+            'hide_empty'        => false,
+        );
+
+        //get the wordpress terms for the event-category taxonomy
+        $wp_event_categories = get_terms( 'event-category', $args );
+
+        $category_array = array();
+
+        foreach( $wp_event_categories as $wp_event_category )
+            array_push( $category_array, strtolower( $wp_event_category->name ) );
+
+        $calendar_string = '';
+
+        if( ! empty( $category_array ) )
+            $calendar_string = str_replace( ' ', '%20', implode( ',', $category_array ) );
+
+        /*
+         * Call the events from Facebook
+         */
+        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), $calendar_string );
+
+        if( empty( $response['events'] ) )
+            return $eventsarray;
+
+        /*
+         * This is a bit strange, admittedly, but we want the offset in th facebook start_time before the event is modified
+         */
+        $fb_event_offsets = array();
+
+        foreach( $response['events'] as $event ) {
+            //get the offset
+            //reverse the string, find the first hyphen and then
+            $last_hyphen = strpos(strrev($event['start_time']), '-');
+
+            $fb_event_offsets[$event['eid']] = substr($event['start_time'], -($last_hyphen + 1));
+        }
+
+        /*
+         * Update FB events with our database modifications or removals (if any)
+         */
+        $response = $this->wp_ajax->merge_fb_and_db_events($response);
+        $response = $this->wp_ajax->remove_removed_events($response);
+
+        $events = $response['events'];
+
+        /*
+         * This is where we set up individual events
+         */
+        foreach($events as &$event) {
+
+            $fb_original_offset = ( isset($fb_event_offsets[$event['eid']]) ) ? $fb_event_offsets[$event['eid']] : '' ;
+
+            /*
+             * TODO: if this works without the reformatting method, we should ditch it
+             */
+            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
+                $tz);
+
+
+            //okay, so now it's time to actually create the event
+            $fb_event = array(
+
+                //format = 2014-09-25
+                'StartDate'=> $fb_start->format('Y-m-d'),
+                'display'=>$fb_start->format($instance['group_format']),
+                'time'=> ( ($instance['mode']=='day' && false )  ? 'All Day' : $fb_start->format($instance['item_format']) ),
+                'post_title'=> $event['title'],
+                'color'=> '#16811B',
+                'event_url'=> $event['url'],
+                'link'=>'<a href="'.$event['url'].'">View</a>',
+                'Glink'=>'<a href="'.$event['url'].'" target="_blank">Add To Google Calendar</a>'
+
+            );
+
+            array_push($eventsarray, $fb_event);
+
+        }
+
+        return $eventsarray;
+
+
+    }
+
 
     public function add_fb_events_to_the_event_organiser( array $eventsarray, $query ) {
 
@@ -569,6 +803,27 @@ class USC_FB_Events {
         wp_enqueue_style( 'public_widgetcss', plugins_url( 'assets/css/public-widget.css', __FILE__ ), array(), self::VERSION );
 
         return require_once('views/widget-list.php');
+    }
+
+    /**
+     * Guess what this one does.
+     *
+     * @since    0.9.9
+     */
+    public function usc_fb_events_register_sidebars() {
+
+        /* Register the usc jobs archive sidebar. */
+        register_sidebar(
+            array(
+                'id' => 'usc_fb_events_widget',
+                'name' => __( 'USC FB Events Sidebar', 'usc-fb-events' ),
+                'description' => __( 'Widget meant only for the Event Calendar Page.', 'usc-fb-events' ),
+                'before_widget' => '<aside id="%1$s" class="et_pb_widget %2$s">',
+                'after_widget' => '</aside>',
+                'before_title' => '<h4 class="widgettitle">',
+                'after_title' => '</h4>'
+            )
+        );
     }
 
     /**
