@@ -20,7 +20,7 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   0.9.9 
+     * @since   0.9.9
      *
      * @var     string
      */
@@ -93,6 +93,14 @@ class USC_FB_Events {
         add_filter( 'eventorganiser_inject_my_events', array( $this, 'add_fb_events_to_the_event_organiser'), 10, 2);
         // failed add_filter( 'eventorganiser_inject_my_dates_agenda', array( $this, 'add_fb_dates_to_the_event_organiser_agenda'), 10, 3);
         // failed add_filter( 'eventorganiser_inject_my_events_agenda', array( $this, 'add_fb_events_to_the_event_organiser_agenda'), 10, 3);
+
+        add_filter( 'fullcalendar_render_event', array($this, 'test_func'));
+        add_filter( 'eventorganiser.fullcalendar_render_event', array($this, 'test_func'));
+    }
+
+    public function test_func() {
+
+        wp_die('test_func');
     }
 
 
@@ -557,7 +565,7 @@ class USC_FB_Events {
 
                 'className' => $classNames,
                 // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
-                'title' 	=> esc_html($event['title']),
+                'title' 	=> esc_html( html_entity_decode( $event['title'], ENT_NOQUOTES, 'UTF-8' ) ),
                 'url'		=> esc_url($event['url']),
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
