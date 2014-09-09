@@ -561,7 +561,7 @@ class WP_AJAX {
         //I don't think this is possible, but I suupose you have to check
         if( strlen( $transient_name ) > 40 ) {
 
-            return new WP_Error( 'transient_name_error', __( 'transient_name is too long (' . strlen( $transient_name )
+            return new \WP_Error( 'transient_name_error', __( 'transient_name is too long (' . strlen( $transient_name )
                 . ' chars) and will not be findable in future', "usc-fb-events" ) );
         }
 
@@ -672,7 +672,7 @@ class WP_AJAX {
 
         if( empty( $returned_string ) ) {
 
-            return new WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "usc-fb-events" ) );
+            return new \WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "usc-fb-events" ) );
         }
 
         /*echo '<pre>';

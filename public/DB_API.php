@@ -19,7 +19,7 @@ class DB_API {
      */
     public static function register_fb_events_table() {
         global $wpdb;
-        $wpdb->fb_events = "usc_fb_events";
+        $wpdb->fb_events = $wpdb->prefix . 'usc_fb_events';
     }
 
     /**
