@@ -136,9 +136,9 @@ class WP_AJAX {
         }
         else {
             //this is kind of a hack, but not a terrible one.
-            $this->wp_ajax->set_server_to_local_time();
-            $tz = new DateTimeZone(date_default_timezone_get());
-            $this->wp_ajax->set_server_back_to_default_time();
+            $this->set_server_to_local_time();
+            $tz = new \DateTimeZone(date_default_timezone_get());
+            $this->set_server_back_to_default_time();
         }
 
         return $tz;
@@ -154,7 +154,7 @@ class WP_AJAX {
      *
      * @since    0.9.7
      *
-     * @return 		returns an encoded JSON string
+     * @return 		string a encoded JSON string
      */
     public function return_to_or_remove_from_calendar() {
 
@@ -226,18 +226,7 @@ class WP_AJAX {
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
         $transient_name = $this->generate_transient_name( $start, $end, $calendars, $limit );
-        $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
-
-        if( false === $events_stored_in_cache ) {
-
-            $response = $this->call_events_api( $start, $end, $calendars, $limit );
-            $events_stored_in_cache = false;
-
-        } else {
-
-            $response = $events_stored_in_cache;
-            $events_stored_in_cache = true;
-        }
+        $response = $this->get_events_whether_cached_or_not( $start, $end, $calendars, $limit, $transient_name );
 
         if($whitelist)
             $response['events'] = DB_API::whitelist_array_items($response['events']);
@@ -250,7 +239,7 @@ class WP_AJAX {
         //javascript CANNOT understand dates
         $response = $this->date_strings_to_timestamps($response);
 
-        $result['if_cached']        = $events_stored_in_cache;
+        $result['if_cached']        = $response['events_stored_in_cache'];
         $result['transient_name']   = $transient_name;
 
         $result['start']        = $start;
@@ -296,15 +285,6 @@ class WP_AJAX {
 
         $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : $this->generate_transient_name( $start, $end, $calendars, $limit );
 
-        $result['start'] = $start;
-        $result['end'] = $end;
-        $result['calendars'] = $calendars;
-        $result['limit'] = $limit;
-        $result['transient_name'] = $transient_name;
-
-        echo json_encode( $result );
-        die();
-
         $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
         $expiration = $this->expiration;
 
@@ -317,6 +297,7 @@ class WP_AJAX {
         $this->turn_object_caching_back_on_for_the_next_poor_sod();
 
         $result['success'] = $if_transient_set;
+        $result['transient_name'] = $transient_name;
 
         echo json_encode( $result );
         die();
@@ -530,7 +511,7 @@ class WP_AJAX {
      * @author Robert C
      * C probably short for "Champ"
      *
-     * @param $data                 the array to be sorted
+     * @param $data                 array to be sorted
      * @param $sortCriteria         array of selected keys and how to sort them
      * @param bool $caseInSensitive whether or not to sort stings by case
      *
@@ -538,7 +519,7 @@ class WP_AJAX {
      *
      * @return bool|mixed           returns your array sorted by whatever the eff you asked for
      */
-    public function multisort($data, $sortCriteria, $caseInSensitive = true)
+    public function multisort(array $data, array $sortCriteria, $caseInSensitive = true)
     {
         if( !is_array($data) || !is_array($sortCriteria))
             return false;
@@ -575,11 +556,11 @@ class WP_AJAX {
      *
      * @since       0.9.8
      *
-     * @param $start            a unix timestamp, get all events from facebook starting after this time
-     * @param $end              a unix timestamp, get all events from facebook starting before this time
-     * @param $calendars        names of text files on the server
-     * @param $limit            limit events retrieved to this number or less
-     * @return string|WP_Error  a shiny new name for our transient
+     * @param $start            int a unix timestamp, get all events from facebook starting after this time
+     * @param $end              int a unix timestamp, get all events from facebook starting before this time
+     * @param $calendars        string names of text files on the server
+     * @param $limit            int limit events retrieved to this number or less
+     * @return string|\WP_Error  a shiny new name for our transient
      */
     public function generate_transient_name( $start, $end, $calendars, $limit) {
 
@@ -635,8 +616,8 @@ class WP_AJAX {
      *
      * @since       0.9.8
      *
-     * @param $calendars    a string of comma-separated calendars to call events from
-     * @param $char_limit   the total length of the string.  returned string will be equal or less than this limit
+     * @param $calendars    string of comma-separated calendars to call events from
+     * @param $char_limit   int the total length of the string.  returned string will be equal or less than this limit
      * @return string       part of our new transient name
      */
     private function generate_calendar_string_for_transient_cache( $calendars, $char_limit ) {
@@ -681,7 +662,7 @@ class WP_AJAX {
      *
      * @since    0.9.9
      *
-     * @param $transient_name   looks for a cached object with this name
+     * @param $transient_name   string looks for a cached object with this name
      * @return bool|mixed       returns 'false' if no object, or a json decoded array if found
      */
     public function if_stored_in_wordpress_transient_cache( $transient_name ) {
@@ -694,6 +675,23 @@ class WP_AJAX {
         $this->turn_object_caching_back_on_for_the_next_poor_sod();
 
         return ( false === $events_or_false || empty($events_or_false) ) ? false : json_decode( $events_or_false, true );
+    }
+
+    public function get_events_whether_cached_or_not( $start, $end, $calendars, $limit, $transient_name ) {
+
+        $response = $this->if_stored_in_wordpress_transient_cache( $transient_name );
+
+        if( false === $response ) {
+
+            $response = $this->call_events_api( $start, $end, $calendars, $limit );
+            $response['events_stored_in_cache'] = false;
+
+        } else {
+
+            $response['events_stored_in_cache'] = true;
+        }
+
+        return $response;
     }
 
     /**
@@ -748,7 +746,7 @@ class WP_AJAX {
      *
      * @since    0.9.7
      *
-     * @param $url      a url with or without an http:// prefix
+     * @param $url      string a url with or without an http:// prefix
      * @return string   a url with the http:// prefix, or whatever it had originally
      */
     private function add_http_if_not_exists($url) {

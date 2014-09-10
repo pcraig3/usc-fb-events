@@ -163,9 +163,24 @@ class USC_FB_Events {
             $calendar_string = str_replace( ' ', '%20', implode( ',', $category_array ) );
 
         /*
+         * Generate the transient value, if there were one
+         */
+        $transient_name = $this->wp_ajax->generate_transient_name(
+            $this->wp_ajax->start_end_dates_to_timestamps($start),  //start and end are 'YYYY-mm-dd' strings and we need timestamps
+            $this->wp_ajax->start_end_dates_to_timestamps($end),
+            $calendar_string,
+            0 );
+
+        /*
          * Call the events from Facebook
          */
-        $response = $this->wp_ajax->call_events_api( strtotime($start), strtotime($end), $calendar_string );
+        $response = $this->wp_ajax->get_events_whether_cached_or_not(
+            $this->wp_ajax->start_end_dates_to_timestamps($start),  //start and end are 'YYYY-mm-dd' strings and we need timestamps
+            $this->wp_ajax->start_end_dates_to_timestamps($end),
+            $calendar_string,
+            0,
+            $transient_name
+        );
 
         if( empty( $response['events'] ) )
             return $eventsarray;
@@ -318,6 +333,18 @@ class USC_FB_Events {
             if( !empty( $fb_event_categories_slugs ) )
                 foreach( $fb_event_categories_slugs as $fb_event_category_slug )
                     array_push( $classNames, 'category-' . $fb_event_category_slug );
+
+
+            /*
+            array_push($classNames, 'fb-month-start-' . $start);
+            array_push($classNames, 'fb-month-end-' . $end);
+            array_push($classNames, 'fb-calendars-' . $calendar_string);
+
+            array_push($classNames, 'fb-transient-' . $transient_name);
+            */
+            $if_cached = ( $response['events_stored_in_cache'] ) ? '' : 'not-' ;
+            array_push($classNames, 'fb-' . $if_cached . 'cached');
+
 
             //okay, so now it's time to actually create the event
             $fb_event = array(

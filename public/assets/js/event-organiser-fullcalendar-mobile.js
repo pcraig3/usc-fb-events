@@ -361,6 +361,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
         ajax_options.calendars = _get_calendars_as_string();
         ajax_options.limit = 0;
 
+        console.log(ajax_options);
+
         _AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
 
     });
