@@ -528,10 +528,13 @@ class USC_FB_Events {
 
             wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front', 'init_filterjs' ), self::VERSION, true );
 
+            $id = 'eo_fullcalendar__list';
             //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
             wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
                 //'is_cached' => $is_cached,
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'ajax_url'  => admin_url( 'admin-ajax.php' ),
+                'id'        => $id,
+                'nonce'     => wp_create_nonce( $id . '__nonce' ),
                 //'transient_name' => $this->wp_db->transient_name,
             ) );
         }

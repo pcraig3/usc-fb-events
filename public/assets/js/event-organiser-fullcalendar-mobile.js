@@ -162,35 +162,45 @@
 var eventorganiser = window.eventorganiser || {};
 var EOAjaxFront = EOAjaxFront || {};
 
-var AjaxFullCalendarList = (function () {
+var AjaxFullCalendarList = (function ( options ) {
 
     //var $ = jQuery;
     var _eo_fullcalendar;
-    var _list_container_div;
+    var _list_container;
+    var _list_div;
 
     var _calendar_name = '';
+    var id = options.id;
 
     /* http://stackoverflow.com/questions/4793604/how-to-do-insert-after-in-javascript-without-using-a-library */
     var _insert_after = function (newNode, referenceNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
 
-    var _createListContainer = (function () {
+    var _create_list_container = (function () {
 
         //var html_string = '<div class="eo_fullcalendar--list"></div>';
+        //remove existing lists.
+        if( typeof( _list_div ) !== "undefined" )
+            _list_div.parentNode.removeChild(_list_div);
+
 
         var fragment = document.createDocumentFragment();
 
-        _list_container_div = document.createElement("div");
-        _list_container_div.classList.add("eo_fullcalendar--list");
+        _list_div = document.createElement("div");
+        _list_div.id = id;
+        //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
+        _list_div.setAttribute( "data_nonce", options.nonce );
 
-        _list_container_div.appendChild( document.createElement("ul") );
-        fragment.appendChild(_list_container_div);
+
+        _list_container =  document.createElement("ul");
+        _list_div.appendChild( _list_container );
+        fragment.appendChild(_list_div);
 
         _insert_after(fragment, _eo_fullcalendar);
     });
 
-    var _createListItem = (function( event ) {
+    var _create_list_item = (function( event ) {
 
         var fragment = document.createDocumentFragment();
         var list_item = document.createElement('li');
@@ -213,19 +223,17 @@ var AjaxFullCalendarList = (function () {
 
         fragment.appendChild(list_item);
 
-        _list_container_div.appendChild(fragment);
+        _list_container.appendChild(fragment);
 
     });
 
     var run_once_per_calendar = function( calendar_name ) {
 
-
-
         if( _calendar_name !== calendar_name ) {
 
             _eo_fullcalendar = document.querySelector('.eo-fullcalendar');
 
-            _createListContainer();
+            _create_list_container();
 
             _calendar_name = calendar_name;
         }
@@ -233,7 +241,7 @@ var AjaxFullCalendarList = (function () {
 
     var run_each_event = function( event ) {
 
-        _createListItem( event );
+        _create_list_item( event );
     }
 
     return {
@@ -241,7 +249,7 @@ var AjaxFullCalendarList = (function () {
         run_each_event: run_each_event
     };
 
-})();
+})(options || {});
 
 
 //var AjaxEvents;// =
