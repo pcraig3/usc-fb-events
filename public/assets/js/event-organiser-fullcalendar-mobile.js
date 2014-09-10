@@ -164,7 +164,7 @@ var EOAjaxFront = EOAjaxFront || {};
 var AjaxEvents = AjaxEvents || {};
 
 
-var AjaxFullCalendarList = (function ( options, AjaxEvents) {
+var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
 
     //var $ = jQuery;
     var _eo_fullcalendar;
@@ -271,6 +271,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents) {
         console.log('calendars: ' + ajax_options.calendars); //look for the categories in the EOAjaxFront object
         console.log('limit: ' + ajax_options.limit); //limit of 0 or less will be ignored
 
+        console.log(_get_calendars_as_string( eventorganiser ));
+
         /*options.ajax_url,
 
             transient_name: options.transient_name,
@@ -283,6 +285,22 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents) {
 
 
         AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
+
+    });
+
+    var _get_calendars_as_string = (function ( eventorganiser ) {
+
+        var categories = eventorganiser.fullcal.categories;
+        var calendar_names = [];
+
+        for (var i = 0; i < categories.length; i--) {
+
+            console.log(categories[i].name);
+            //do stuff
+        }
+
+        return 1;
+
 
     });
 
@@ -310,7 +328,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents) {
         run_each_event: run_each_event
     };
 
-})(options || {}, AjaxEvents);
+})(options, AjaxEvents, eventorganiser );
 
 
 //var AjaxEvents;// =
@@ -325,7 +343,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents) {
 window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function( bool, event, element, view ){
 
     console.log(bool);
-    console.log(event);
+    //console.log(event);
     //console.log(element);
     //console.log(view);
 
