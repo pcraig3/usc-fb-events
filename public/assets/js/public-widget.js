@@ -5,15 +5,15 @@
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
-    AjaxEvents.ajax_events_gotten = function( events, limit ) {
+    var ajax_events_gotten = function ( events ) {
 
-        $('.filterjs__loading').addClass('hidden');
+            $('.filterjs__loading').addClass('hidden');
 
-       fJS = filterInit( events );
+            fJS = filterInit( events );
 
-        $('#event_list').trigger( "change" );
+            $('#event_list').trigger( "change" );
+
     };
-
 
     function filterInit( events ) {
 
@@ -32,7 +32,7 @@ jQuery(function ($) {
 
             var past_or_upcoming_event = (AjaxEvents.is_upcoming_event( event )) ? "upcoming" : "past";
 
-            html_string += ' <div class="eventItem ' + past_or_upcoming_event + '">';
+            html_string += '<div class="eventItem ' + past_or_upcoming_event + '">';
 
             //if(img_url) {
             html_string += '<img class="hidden-xs" src="' + img_url + '" alt="" />';
@@ -92,7 +92,9 @@ jQuery(function ($) {
 
         //$('#removed :checkbox').prop('checked', true);
 
-        AjaxEvents.ajax_get_events( options );
+        console.log( options );
+
+        AjaxEvents.ajax_get_events( options, ajax_events_gotten );
     });
 
 });

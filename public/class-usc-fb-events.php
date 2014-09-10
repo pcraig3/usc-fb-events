@@ -451,21 +451,44 @@ class USC_FB_Events {
         $get = $show = $start = $end = $calendars = $limit = $title = $result = false;
 
         $april_2014 = 1396310401;
+        //set a default datetime
+        $this->wp_ajax->set_server_to_local_time();
+        $today= new DateTime('now');
+
 
         extract(
             shortcode_atts(
                 array(
                     'get'       => 'events',
                     'show'      => 'count',
-                    'start'     => $april_2014,
-                    'end'       => $april_2014 + (YEAR_IN_SECONDS * 2),
+                    'start'     => $today->getTimestamp(),
+                    'end'       => $today->getTimestamp() + YEAR_IN_SECONDS,
                     'calendars' => '',
                     'limit'     => 0,
                     'title'     => 'Events',
                 ), $atts ),
             EXTR_OVERWRITE);
 
-        //if( is_array( $returned_array ) ) {
+        //P2Y4DT6H8M  for example
+        /*
+         * DateInterval format: http://php.net/manual/en/dateinterval.construct.php
+         * 'P2Y4DT6H8M', for example, means '2 years, 4 days, 6 hours, 8 minutes.'  P == 'Period' and T == 'Time'
+         */
+        if( substr($start, 0, 1) === 'P' || substr($start, 0, 2) === '-P' ) { ///this means a date interval
+            $temp_date = new DateTime('now');
+            $temp_date = ( substr($start, 0, 2) === '-P' ) ?
+                $temp_date->sub( new DateInterval( str_replace( '-', '', $start ) ) ) : $temp_date->add( new DateInterval( $start ) );
+            $start = $temp_date->getTimestamp();
+        }
+        //I get that copying + pasting is bad, but it didn't seem worth doing anything more confusing just for two values.
+        if( substr($end, 0, 1) === 'P' || substr($end, 0, 2) === '-P' ) { ///this means a date interval
+            $temp_date = new DateTime('now');
+            $temp_date = ( substr($end, 0, 2) === '-P' ) ?
+                $temp_date->sub( new DateInterval( str_replace( '-', '', $end ) ) ) : $temp_date->add( new DateInterval( $end ) );
+            $end = $temp_date->getTimestamp();
+        }
+
+        $this->wp_ajax->set_server_back_to_default_time();
 
         $parameters = array(
 
@@ -567,7 +590,7 @@ class USC_FB_Events {
             )
         );
 
-        //enqueue the css file for the homepage widget
+            //enqueue the css file for the homepage widget
         wp_enqueue_style( 'public_widgetcss', plugins_url( 'assets/css/public-widget.css', __FILE__ ), array(), self::VERSION );
 
         return require_once('views/widget-list.php');
@@ -798,10 +821,16 @@ class USC_FB_Events {
 
         if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
             wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-        }
 
-        wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );
-        
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );
+
+            //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
+            wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
+                //'is_cached' => $is_cached,
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                //'transient_name' => $this->wp_db->transient_name,
+            ) );
+        }
     }
 
     /**

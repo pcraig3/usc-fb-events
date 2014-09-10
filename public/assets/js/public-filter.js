@@ -1,11 +1,9 @@
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
-    AjaxEvents.ajax_events_gotten = function( events, limit ) {
+    var ajax_events_gotten = function( events ) {
 
         $('.filterjs__loading').addClass('hidden');
-
-        //events = AjaxEvents.limit_events( events, limit );
 
         fJS = filterInit( events );
 
@@ -91,7 +89,9 @@ jQuery(function ($) {
 
         //$('#removed :checkbox').prop('checked', true);
 
-        AjaxEvents.ajax_get_events( options );
+        console.log(options);
+
+        AjaxEvents.ajax_get_events( options, ajax_events_gotten );
     });
 
 });

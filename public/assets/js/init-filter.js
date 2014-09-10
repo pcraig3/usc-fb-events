@@ -1,10 +1,10 @@
 
     var fJS;
 
-    var AjaxEvents = {
+    var AjaxEvents = (function () {
 
-
-        ajax_get_events: function( options ) {
+        //public method
+        var ajax_get_events =  function( options, ajax_events_gotten ) {
 
             options.limit = options.limit || 0;
 
@@ -30,9 +30,9 @@
 
                 function( data ) {
 
-                    //console.log(data);
+                    ///.log(data);
 
-                    if(! data['success']) {
+                    if(! data['success'] || typeof( ajax_events_gotten ) !== "function" ) {
                         alert("Ack! Problems getting your removed events back from the database.")
                     }
 
@@ -52,7 +52,7 @@
                             event.removed = "display";
                     });
 
-                    AjaxEvents.ajax_events_gotten( events, options.limit );
+                    ajax_events_gotten( events );
 
                     /* This is a bit sneaky.  Update the cache for the next person. */
                     options.transient_name = data['transient_name'];
@@ -62,7 +62,7 @@
                     options.calendars   = data['calendars'];
                     options.limit       = data['limit'];
 
-                    AjaxEvents.ajax_update_wordpress_transient_cache( options );
+                    ajax_update_wordpress_transient_cache( options );
 
                     /*
                     if( data['if_cached'] ) {
@@ -75,6 +75,7 @@
                     }
                     */
 
+
                 }, "json");
             /*.fail(function() {
              alert( "error" );
@@ -82,10 +83,10 @@
              .always(function() {
              alert( "finished" );
              });*/
-        },
+        };
 
-
-        ajax_update_wordpress_transient_cache: function( options ) {
+        //public method
+        var ajax_update_wordpress_transient_cache = function( options ) {
 
             // Assign handlers immediately after making the request,
             // and remember the jqxhr object for this request
@@ -105,7 +106,10 @@
 
                 function( data ) {
 
-                    /*if(! data['success']) {
+                    /*
+                    console.log(data);
+
+                    if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
                     else
@@ -119,10 +123,11 @@
              .always(function() {
              alert( "finished" );
              });*/
-        },
+        };
 
+        //public method
         /* Figure out if the event has passed or not. */
-        is_upcoming_event: function( event ) {
+        var is_upcoming_event = function( event ) {
 
             var current_timestamp = Math.floor((new Date()).getTime() );
             var event_timestamp = parseInt(event.start_time) * 1000;
@@ -130,6 +135,12 @@
             return ( event_timestamp > current_timestamp ) ? true : false;
         }
 
-    };
+        return {
+            ajax_get_events: ajax_get_events,
+            ajax_update_wordpress_transient_cache: ajax_update_wordpress_transient_cache,
+            is_upcoming_event: is_upcoming_event,
+        };
+
+    })();
 
 

@@ -147,9 +147,6 @@ class WP_AJAX {
 
         $this->make_sure_the_nonce_checks_out( $button_id, $_POST['nonce'] );
 
-
-        global $wpdb;
-
         //we want the id, the name, the host, and the start time
         $eid = 		$_POST['eid'];
         $name = 		$_POST['name'];
@@ -213,12 +210,15 @@ class WP_AJAX {
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
+
         $transient_name = $this->generate_transient_name( $start, $end, $calendars, $limit );
         $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
         if( false === $events_stored_in_cache ) {
 
             $response = $this->call_events_api( $start, $end, $calendars, $limit );
+            $events_stored_in_cache = false;
+
         } else {
 
             $response = $events_stored_in_cache;
@@ -633,10 +633,11 @@ class WP_AJAX {
         $this->turn_off_object_cache_so_our_bloody_plugin_works();
 
         $events_or_false = get_site_transient( $transient_name );
+        //if you get an empty result back, set this to false.
 
         $this->turn_object_caching_back_on_for_the_next_poor_sod();
 
-        return ( false === $events_or_false ) ? false : json_decode( $events_or_false, true );
+        return ( false === $events_or_false || empty($events_or_false) ) ? false : json_decode( $events_or_false, true );
     }
 
     /**
