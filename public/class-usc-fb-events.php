@@ -333,6 +333,7 @@ class USC_FB_Events {
                 'className' => $classNames,
                 // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
                 'title' 	=> $this->decodeHtmlEnt( esc_html( $event['title'] ) ),
+                'host'      => $this->decodeHtmlEnt( esc_html( $event['host'] ) ),
                 'url'		=> esc_url($event['url']),
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
@@ -521,7 +522,11 @@ class USC_FB_Events {
              */
             wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
-            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );
+            wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+            wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
+            wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
+
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front', 'init_filterjs' ), self::VERSION, true );
 
             //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
             wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(

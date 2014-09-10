@@ -1,7 +1,7 @@
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
-    var AjaxPublicWidget = (function (AjaxEvents) {
+    var AjaxEventsPublic = (function (AjaxEvents) {
 
         /**
          * @since     1.0.0
@@ -104,7 +104,7 @@ jQuery(function ($) {
 
         console.log(options);
 
-        AjaxPublicWidget.ajax_get_events( options, AjaxPublicWidget.ajax_events_gotten );
+        AjaxEventsPublic.ajax_get_events( options, AjaxEventsPublic.ajax_events_gotten );
     });
 
 });
