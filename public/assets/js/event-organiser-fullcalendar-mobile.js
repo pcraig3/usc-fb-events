@@ -1,3 +1,70 @@
+// Production steps of ECMA-262, Edition 5, 15.4.4.14
+// Reference: http://es5.github.io/#x15.4.4.14
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(searchElement, fromIndex) {
+
+        var k;
+
+        // 1. Let O be the result of calling ToObject passing
+        //    the this value as the argument.
+        if (this == null) {
+            throw new TypeError('"this" is null or not defined');
+        }
+
+        var O = Object(this);
+
+        // 2. Let lenValue be the result of calling the Get
+        //    internal method of O with the argument "length".
+        // 3. Let len be ToUint32(lenValue).
+        var len = O.length >>> 0;
+
+        // 4. If len is 0, return -1.
+        if (len === 0) {
+            return -1;
+        }
+
+        // 5. If argument fromIndex was passed let n be
+        //    ToInteger(fromIndex); else let n be 0.
+        var n = +fromIndex || 0;
+
+        if (Math.abs(n) === Infinity) {
+            n = 0;
+        }
+
+        // 6. If n >= len, return -1.
+        if (n >= len) {
+            return -1;
+        }
+
+        // 7. If n >= 0, then Let k be n.
+        // 8. Else, n<0, Let k be len - abs(n).
+        //    If k is less than 0, then let k be 0.
+        k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+        // 9. Repeat, while k < len
+        while (k < len) {
+            var kValue;
+            // a. Let Pk be ToString(k).
+            //   This is implicit for LHS operands of the in operator
+            // b. Let kPresent be the result of calling the
+            //    HasProperty internal method of O with argument Pk.
+            //   This step can be combined with c
+            // c. If kPresent is true, then
+            //    i.  Let elementK be the result of calling the Get
+            //        internal method of O with the argument ToString(k).
+            //   ii.  Let same be the result of applying the
+            //        Strict Equality Comparison Algorithm to
+            //        searchElement and elementK.
+            //  iii.  If same is true, return k.
+            if (k in O && O[k] === searchElement) {
+                return k;
+            }
+            k++;
+        }
+        return -1;
+    };
+}
+
 //(function ($) {
 
 //})(jQuery);
@@ -174,11 +241,31 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
     var _calendar_name = '';
     var id = options.id;
 
-    /* http://stackoverflow.com/questions/4793604/how-to-do-insert-after-in-javascript-without-using-a-library */
+    var _AjaxEvents =  AjaxEvents;
+    var _eventorganiser = eventorganiser;
+
+    /**
+     * Function inserts a newNode after another node.  This isn't a native JS function, but thankfully a guy on
+     * StackOverflow has has this problem before.
+     *
+     * @see: http://stackoverflow.com/questions/4793604/how-to-do-insert-after-in-javascript-without-using-a-library
+     * @author: karim79
+     *
+     * @param newNode           HTML node ready to insert
+     * @param referenceNode     DOM node to insert the new node after
+     * @private
+     */
     var _insert_after = function (newNode, referenceNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
 
+    /**
+     * function clears away any previous lists that may exist, and then creates a new list container <div>
+     * and fills it with a new <ul> element.
+     *
+     * @type {Function}
+     * @private
+     */
     var _create_list_container = (function () {
 
         //var html_string = '<div class="eo_fullcalendar--list"></div>';
@@ -202,6 +289,12 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
         _insert_after(fragment, _eo_fullcalendar);
     });
 
+    /**
+     * Nothing too glamourous.  Function creates a list item for our mobile events list.
+     *
+     * @type {Function}
+     * @private
+     */
     var _create_list_item = (function( event ) {
 
         var fragment = document.createDocumentFragment();
@@ -229,13 +322,19 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
 
     });
 
-    var _ajax_update_wordpress_transient_cache = (function( AjaxEvents ) {
+    /**
+     * function collects the values that AjaxEvents needs to run its
+     * ajax_update_wordpress_transient_cache method and then calls it.
+     *
+     * If all goes well, we'll update our WP cache and everything will go FASTER.
+     *
+     * @type {Function}
+     * @private
+     */
+    var _ajax_update_wordpress_transient_cache = (function() {
 
         /*var ajax_update_wordpress_transient_cache = function( options ) {
 
-            // Assign handlers immediately after making the request,
-            // and remember the jqxhr object for this request
-         var jqxhr = jQuery.post(
          options.ajax_url,
          {
          action:         "update_wordpress_transient_cache",
@@ -248,60 +347,52 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
          calendars:      options.calendars,
          limit:          options.limit
          },
-
-                function( data ) {
-                */
+       */
         var ajax_options = {};
 
         ajax_options.ajax_url = options.ajax_url;
         ajax_options.attr_id = options.id;
 
-        var days = document.querySelectorAll( '.fc-day:not(.fc-other-month)' );
+        //var days = document.querySelectorAll( '.fc-day:not(.fc-other-month)' );
+        var days = document.querySelectorAll( '.fc-day' );
 
         ajax_options.start = days[0].getAttribute('data-date');
         ajax_options.end = days[days.length - 1].getAttribute('data-date');
-        ajax_options.calendars = 0;
+        ajax_options.calendars = _get_calendars_as_string();
         ajax_options.limit = 0;
 
-
-        console.log('ajax_url: ' + ajax_options.ajax_url);
-        console.log('attr_id: ' + ajax_options.attr_id);
-        console.log('start: ' + ajax_options.start);
-        console.log('end: ' + ajax_options.end);
-        console.log('calendars: ' + ajax_options.calendars); //look for the categories in the EOAjaxFront object
-        console.log('limit: ' + ajax_options.limit); //limit of 0 or less will be ignored
-
-        console.log(_get_calendars_as_string( eventorganiser ));
-
-        /*options.ajax_url,
-
-            transient_name: options.transient_name,
-
-            start:          options.start,
-            end:            options.end,
-            calendars:      options.calendars,
-            limit:          options.limit
-            */
-
-
-        AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
+        _AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
 
     });
 
-    var _get_calendars_as_string = (function ( eventorganiser ) {
+    /**
+     * function that returns a calendars string compatible with the API.
+     * works whether categories have been specified or not
+     *
+     * @type {Function}
+     * @private
+     *
+     * @return   string comma-separated calendar names
+     */
+    var _get_calendars_as_string = (function () {
 
-        var categories = eventorganiser.fullcal.categories;
+        //this is all of the categories that we know about
+        var all_categories = _eventorganiser.fullcal.categories;
+
+        //if this is valid, it means that we've picked certain categories to include on the calendar
+        var we_want_all_categories = ( _eventorganiser.calendars[0].event_category === '' );
+        var categories_used = _eventorganiser.calendars[0].event_category.split(',');//: "faculty-councils,usc-2"
+
         var calendar_names = [];
 
-        for (var i = 0; i < categories.length; i--) {
-
-            console.log(categories[i].name);
-            //do stuff
+        //for each of our categories (if we don't want them all) check if they are in our categories_used array before returning them
+        for (var i in all_categories) {
+            if ({}.hasOwnProperty.call(all_categories, i))
+                if( we_want_all_categories || categories_used.indexOf( all_categories[i].slug ) >= 0 )
+                    calendar_names.push( all_categories[i].name.replace(' ', '%20').toLowerCase() );
         }
 
-        return 1;
-
-
+        return calendar_names.join();
     });
 
     var run_once_per_calendar = function( calendar_name ) {
@@ -314,7 +405,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
 
             _calendar_name = calendar_name;
 
-            _ajax_update_wordpress_transient_cache( AjaxEvents );
+            _ajax_update_wordpress_transient_cache();
         }
     }
 

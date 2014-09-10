@@ -285,25 +285,25 @@ class WP_AJAX {
 
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
-
-        $result['anything'] = true;
-        $result['nonce'] = $_POST['nonce'];
-        $result['attr_id'] = $_POST['attr_id'];
-
-        echo json_encode( $result );
-        die();
-
         $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
         $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
-        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : $this->generate_transient_name( $start, $end, $calendars, $limit );
-
         //if start / end are not numeric, convert them
         $start = $this->start_end_dates_to_timestamps( $start );
         $end = $this->start_end_dates_to_timestamps( $end, 'P1D' );
 
+        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : $this->generate_transient_name( $start, $end, $calendars, $limit );
+
+        $result['start'] = $start;
+        $result['end'] = $end;
+        $result['calendars'] = $calendars;
+        $result['limit'] = $limit;
+        $result['transient_name'] = $transient_name;
+
+        echo json_encode( $result );
+        die();
 
         $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
         $expiration = $this->expiration;
