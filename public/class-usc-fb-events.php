@@ -488,6 +488,13 @@ class USC_FB_Events {
             $end = $temp_date->getTimestamp();
         }
 
+        //okay, now change the start and end dates into the timestamp for just the current DAY so that our caching system takes effect.
+        if( !empty($start) )
+            $start = strtotime( date('Y-m-d', $start) );
+
+        if( !empty($end) )
+            $end = strtotime( date('Y-m-d', $end) );
+
         $this->wp_ajax->set_server_back_to_default_time();
 
         $parameters = array(
@@ -820,6 +827,17 @@ class USC_FB_Events {
         wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
         if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
+
+            /* put this in a separate method */
+            /* what we want to do is include the filter-init again because it knows about the caching method */
+            /*
+             * options.ajax_url         = we already have this
+             * options.transient_name   = we can generate if we have the right stuff
+             * options.start            = we can get this from the JS file.
+             * options.end              = we can get this in the JS
+             * options.calendars        = we can get this in the JS
+             * options.limit            = no limit
+             */
             wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
             wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );

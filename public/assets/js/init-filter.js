@@ -64,7 +64,7 @@
 
                     ajax_update_wordpress_transient_cache( options );
 
-                    /*
+
                     if( data['if_cached'] ) {
 
                         console.log('data was gotten from cache');
@@ -73,7 +73,7 @@
 
                         console.log('data was NOT cached');
                     }
-                    */
+
 
 
                 }, "json");
