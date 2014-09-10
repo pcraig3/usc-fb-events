@@ -4,6 +4,12 @@
     var AjaxEvents = (function () {
 
         //public method
+        /**
+         * @since     1.0.0
+         *
+         * @param options
+         * @param ajax_events_gotten
+         */
         var ajax_get_events =  function( options, ajax_events_gotten ) {
 
             options.limit = options.limit || 0;
@@ -64,7 +70,7 @@
 
                     ajax_update_wordpress_transient_cache( options );
 
-
+                    /*
                     if( data['if_cached'] ) {
 
                         console.log('data was gotten from cache');
@@ -73,8 +79,7 @@
 
                         console.log('data was NOT cached');
                     }
-
-
+                    */
 
                 }, "json");
             /*.fail(function() {
@@ -86,6 +91,11 @@
         };
 
         //public method
+        /**
+         * @since     1.0.0
+         *
+         * @param options
+         */
         var ajax_update_wordpress_transient_cache = function( options ) {
 
             // Assign handlers immediately after making the request,
@@ -125,8 +135,14 @@
              });*/
         };
 
-        //public method
-        /* Figure out if the event has passed or not. */
+        /**
+         * Figure out if the event has passed or not.
+         *
+         * @since     1.0.0
+         *
+         * @param event
+         * @returns {boolean}
+         */
         var is_upcoming_event = function( event ) {
 
             var current_timestamp = Math.floor((new Date()).getTime() );
@@ -135,6 +151,9 @@
             return ( event_timestamp > current_timestamp ) ? true : false;
         }
 
+        /**
+         * @since     1.0.0
+         */
         return {
             ajax_get_events: ajax_get_events,
             ajax_update_wordpress_transient_cache: ajax_update_wordpress_transient_cache,

@@ -3,6 +3,10 @@ jQuery(function ($) {
 
     var AjaxPublicWidget = (function (AjaxEvents) {
 
+        /**
+         * @since     1.0.0
+         * @param events
+         */
         var ajax_events_gotten = function( events ) {
 
         $('.filterjs__loading').addClass('hidden');
@@ -18,7 +22,7 @@ jQuery(function ($) {
      *
      * @param events    a list of events. Data from FB is merged with information from our database.
      *
-     * @since   0.4.0
+     * @since    1.0.0
      *
      * @returns {*} A list of searchable events in the backend.
      */

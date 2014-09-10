@@ -196,7 +196,7 @@ class WP_AJAX {
      * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
      * and then returns everything to the javascript function waiting for it.
      *
-     * @since    0.9.8
+     * @since    1.0.0
      */
     public function get_events() {
 
@@ -623,7 +623,7 @@ class WP_AJAX {
     /**
      * Function checks for the existence of a specific cached object.
      *
-     * @since    0.9.9
+     * @since    1.0.0
      *
      * @param $transient_name   looks for a cached object with this name
      * @return bool|mixed       returns 'false' if no object, or a json decoded array if found

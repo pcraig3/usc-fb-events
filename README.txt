@@ -2,7 +2,7 @@
 Contributors: pcraig3
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 0.9.9
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,19 @@ It almost works.
 
 
 == Changelog ==
+
+= 1.0.0 =
+* ALMOST DONE
+* * Events inject into the event-organiser calendar
+* * Changed name of backend DB table again to avoid conflicts
+* * Frontpage widget accepts DateInterval arguments, which makes sense.
+* * came up with a color for Events
+* * Timezones sh*t
+* * event-organiser categories control the calendars from which to pull FB events
+* * Found a JS hook.  Potentially we could create a mobile view for the fullcalendar.
+* * Changed the way that the JS module works: added more modules.
+* * Added and then removed the Event sidebar.  I don't think we need it.
+* * FIXED THE HTML CODED COMMAS THAT NOBODY LIKES ANYWAY.
 
 = 0.9.9 =
 * Updated the CSS for the events widget.

@@ -20,11 +20,11 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   0.9.9
+     * @since   1.0.0
      *
      * @var     string
      */
-    const VERSION = '0.9.9';
+    const VERSION = '1.0.0';
 
     /*
      * Unique identifier for your plugin.
@@ -63,7 +63,7 @@ class USC_FB_Events {
      * and styles.
      * ALSO queue up our horrible AJAX methods.
      *
-     * @since     0.9.1
+     * @since     1.0.0
      */
     private function __construct() {
 
@@ -90,10 +90,17 @@ class USC_FB_Events {
 
         /*add_action( 'widgets_init', array( $this, 'usc_fb_events_register_sidebars' ) ); */
 
-        add_filter( 'eventorganiser_inject_my_events', array( $this, 'add_fb_events_to_the_event_organiser'), 10, 2);
+        add_filter( 'eventorganiser_inject_my_events', array( $this, 'event_organiser_add_fb_events_to_fullcalendar'), 10, 2);
+
+        add_action( 'wp_enqueue_scripts', array( $this, 'event_organiser_mobile_view_for_fullcalender' ) );
+
     }
 
-    public function add_fb_events_to_the_event_organiser( array $eventsarray, $query ) {
+    /**
+     *
+     * @since     1.0.0
+     */
+    public function event_organiser_add_fb_events_to_fullcalendar( array $eventsarray, $query ) {
 
         /*
          * Get the blog timezone using one of Stephen Harris' event-organiser functions
@@ -325,7 +332,7 @@ class USC_FB_Events {
 
                 'className' => $classNames,
                 // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
-                'title' 	=> esc_html( html_entity_decode( $event['title'], ENT_NOQUOTES, 'UTF-8' ) ),
+                'title' 	=> $this->decodeHtmlEnt( esc_html( $event['title'] ) ),
                 'url'		=> esc_url($event['url']),
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
@@ -353,9 +360,56 @@ class USC_FB_Events {
         return $eventsarray;
     }
 
+
+
     /**
-     * Basically, assumes that the start_time for events comes from London.
-     * Not a very good method.  More brute-force than anything.
+     * Function to decode HTML entities that look like &#2423;
+     * Ripped off the PHP reference page from one of the comments.
+     * http://php.net/manual/en/function.html-entity-decode.php#111859
+     *
+     * @author Benjamin
+     * most likely a badass mofo
+     *
+     * @param $str      string with horrible HTML codes to decode
+     *
+     * @since     1.0.0
+     *
+     * @return string   returns your string with the html codes swapped for sane characters
+     */
+    private function decodeHtmlEnt($str) {
+        $ret = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
+        $p2 = -1;
+        for(;;) {
+            $p = strpos($ret, '&#', $p2+1);
+            if ($p === FALSE)
+                break;
+            $p2 = strpos($ret, ';', $p);
+            if ($p2 === FALSE)
+                break;
+
+            if (substr($ret, $p+2, 1) == 'x')
+                $char = hexdec(substr($ret, $p+3, $p2-$p-3));
+            else
+                $char = intval(substr($ret, $p+2, $p2-$p-2));
+
+            //echo "$char\n";
+            $newchar = iconv(
+                'UCS-4', 'UTF-8',
+                chr(($char>>24)&0xFF).chr(($char>>16)&0xFF).chr(($char>>8)&0xFF).chr($char&0xFF)
+            );
+            //echo "$newchar<$p<$p2<<\n";
+            $ret = substr_replace($ret, $newchar, $p, 1+$p2-$p);
+            $p2 = $p + strlen($newchar);
+        }
+        return $ret;
+    }
+
+    /**
+     * If the events have been updated from the database, they've lost the offset value -- which, it
+     * turns out -- is actually pretty useful.   This short little method adds an offset back into
+     * the start_time string and rams a 'T' into the middle of it, mimicking the Facebook format.
+     *
+     * @since     1.0.0
      *
      * @param $start_time
      * @param $offset
@@ -372,7 +426,16 @@ class USC_FB_Events {
         return str_replace(' ', 'T', $start_time) . $offset;
     }
 
-
+    /**
+     * Proof-of-concept method that we don't use anymore.
+     * Adds a nonsense event to the event calendar.
+     *
+     * @since     1.0.0
+     *
+     * @param array $eventsarray
+     * @param $query
+     * @return array
+     */
     public function add_a_fake_event_to_the_event_organiser( array $eventsarray, $query ) {
 
         if (function_exists('eo_get_blog_timezone')) {
@@ -436,12 +499,46 @@ class USC_FB_Events {
     }
 
     /**
+     * @TODO: Work it good.
+     *
+     * @since     1.0.0
+     */
+    public function event_organiser_mobile_view_for_fullcalender() {
+
+        global $post;
+
+        if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
+
+            /* put this in a separate method */
+            /* what we want to do is include the filter-init again because it knows about the caching method */
+            /*
+             * options.ajax_url         = we already have this
+             * options.transient_name   = we can generate if we have the right stuff
+             * options.start            = we can get this from the JS file.
+             * options.end              = we can get this in the JS
+             * options.calendars        = we can get this in the JS
+             * options.limit            = no limit
+             */
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );
+
+            //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
+            wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
+                //'is_cached' => $is_cached,
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                //'transient_name' => $this->wp_db->transient_name,
+            ) );
+        }
+    }
+
+    /**
      * Function meant to target the [usc_fb_events] shortcode.  Grabs the attributes in the shortcode to
      * call a function somewhere down there.
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
      *
-     * @since    0.9.8
+     * @since     1.0.0
      *
      * @return string       a complimentary adjective for students
      */
@@ -606,7 +703,7 @@ class USC_FB_Events {
     /**
      * Guess what this one does.
      *
-     * @since    0.9.9
+     * @since    1.0.0.
      *
     public function usc_fb_events_register_sidebars() {
 
@@ -822,33 +919,7 @@ class USC_FB_Events {
      */
     public function enqueue_scripts() {
 
-        global $post;
-
         wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-
-        if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
-
-            /* put this in a separate method */
-            /* what we want to do is include the filter-init again because it knows about the caching method */
-            /*
-             * options.ajax_url         = we already have this
-             * options.transient_name   = we can generate if we have the right stuff
-             * options.start            = we can get this from the JS file.
-             * options.end              = we can get this in the JS
-             * options.calendars        = we can get this in the JS
-             * options.limit            = no limit
-             */
-            wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-
-            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front' ), self::VERSION, true );
-
-            //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-            wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
-                //'is_cached' => $is_cached,
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                //'transient_name' => $this->wp_db->transient_name,
-            ) );
-        }
     }
 
     /**

@@ -7,6 +7,10 @@ jQuery(function ($) {
 
     var AjaxEventsWidget = (function (AjaxEvents) {
 
+        /**
+         * @since     1.0.0
+         * @param events
+         */
         var ajax_events_gotten = function ( events ) {
 
             $('.filterjs__loading').addClass('hidden');
@@ -17,6 +21,12 @@ jQuery(function ($) {
 
         };
 
+        /**
+         * @since     1.0.0
+         *
+         * @param events
+         * @returns {*}
+         */
         var filterInit = function( events ) {
 
             var view = function( event ){
@@ -90,6 +100,9 @@ jQuery(function ($) {
             return FilterJS(events, "#event_list", view, settings);
         }
 
+        /**
+         * @since     1.0.0
+         */
         return {
             ajax_events_gotten: ajax_events_gotten,
             ajax_get_events: AjaxEvents.ajax_get_events
@@ -97,6 +110,9 @@ jQuery(function ($) {
 
     })(AjaxEvents || {});
 
+    /**
+     * @since     1.0.0
+     */
     $(document).ready(function($) {
 
         //$('#removed :checkbox').prop('checked', true);
