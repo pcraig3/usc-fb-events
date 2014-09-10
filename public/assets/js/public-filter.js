@@ -1,7 +1,9 @@
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
-    var ajax_events_gotten = function( events ) {
+    var AjaxPublicWidget = (function (AjaxEvents) {
+
+        var ajax_events_gotten = function( events ) {
 
         $('.filterjs__loading').addClass('hidden');
 
@@ -20,7 +22,7 @@ jQuery(function ($) {
      *
      * @returns {*} A list of searchable events in the backend.
      */
-    function filterInit( events ) {
+    var filterInit = function( events ) {
 
         var view = function( event ){
 
@@ -85,13 +87,20 @@ jQuery(function ($) {
         return FilterJS(events, "#event_list", view, settings);
     }
 
+        return {
+            ajax_events_gotten: ajax_events_gotten,
+            ajax_get_events: AjaxEvents.ajax_get_events
+        };
+
+    })(AjaxEvents || {});
+
     $(document).ready(function($) {
 
         //$('#removed :checkbox').prop('checked', true);
 
         console.log(options);
 
-        AjaxEvents.ajax_get_events( options, ajax_events_gotten );
+        AjaxPublicWidget.ajax_get_events( options, AjaxPublicWidget.ajax_events_gotten );
     });
 
 });

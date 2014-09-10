@@ -138,7 +138,7 @@
         return {
             ajax_get_events: ajax_get_events,
             ajax_update_wordpress_transient_cache: ajax_update_wordpress_transient_cache,
-            is_upcoming_event: is_upcoming_event,
+            is_upcoming_event: is_upcoming_event
         };
 
     })();
