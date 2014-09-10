@@ -129,6 +129,21 @@ class WP_AJAX {
         date_default_timezone_set($this->date_default_timezone_get_status);
     }
 
+    public function get_event_organiser_timezone() {
+
+        if (function_exists('eo_get_blog_timezone')) {
+            $tz = eo_get_blog_timezone();
+        }
+        else {
+            //this is kind of a hack, but not a terrible one.
+            $this->wp_ajax->set_server_to_local_time();
+            $tz = new DateTimeZone(date_default_timezone_get());
+            $this->wp_ajax->set_server_back_to_default_time();
+        }
+
+        return $tz;
+    }
+
 
     /**
      * This function right here is executed when, in the "manage events" menu, someone
@@ -210,7 +225,6 @@ class WP_AJAX {
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
 
-
         $transient_name = $this->generate_transient_name( $start, $end, $calendars, $limit );
         $events_stored_in_cache = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
@@ -272,11 +286,24 @@ class WP_AJAX {
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
 
-        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : 'call_events_api_generic';
+        $result['anything'] = true;
+        $result['nonce'] = $_POST['nonce'];
+        $result['attr_id'] = $_POST['attr_id'];
+
+        echo json_encode( $result );
+        die();
+
         $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
         $end            = ( isset($_POST['end'] ) )             ? $_POST['end']             : $start + (YEAR_IN_SECONDS * 2);
         $calendars      = ( isset($_POST['calendars'] ) )       ? $_POST['calendars']       : '';
         $limit          = ( isset($_POST['limit'] ) )           ? $_POST['limit']           : 0;
+
+        $transient_name = ( isset($_POST['transient_name'] ) )  ? $_POST['transient_name']  : $this->generate_transient_name( $start, $end, $calendars, $limit );
+
+        //if start / end are not numeric, convert them
+        $start = $this->start_end_dates_to_timestamps( $start );
+        $end = $this->start_end_dates_to_timestamps( $end, 'P1D' );
+
 
         $json_decoded_events_array = $this->call_events_api( $start, $end, $calendars, $limit);
         $expiration = $this->expiration;
@@ -323,6 +350,35 @@ class WP_AJAX {
         if ( ! wp_verify_nonce( $nonce, $attr_id . "_nonce") )
             exit("No naughty business please");
 
+    }
+
+    /**
+     * small utility function takes a string and, if it doesn't consist purely of numbers, converts it to a timestamp
+     * I mean, the assumption is that we're passing in a date string
+     *
+     * @param $time     string|int a date string or timestamp
+     * @param $interval string to be used for a DateInterval constructor
+     * @return int      int a timestamp
+     */
+    public function start_end_dates_to_timestamps( $time, $interval = '' ) {
+
+        if( ! ctype_digit( (string) $time ) ) {
+            //        $fake_end->add(new DateInterval('PT2H'));
+
+            $tz = $this->get_event_organiser_timezone();
+            $temp_date = new \DateTime($time, $tz);
+
+            if( substr($interval, 0, 1) === 'P' )
+                $temp_date->add( new \DateInterval( $interval ) );
+
+            else if( substr($interval, 0, 2) === '-P' )
+                $temp_date->sub( new \DateInterval( str_replace( '-', '', $interval ) ) );
+
+
+            $time = $temp_date->getTimestamp();
+        }
+
+        return $time;
     }
 
     /**
@@ -623,7 +679,7 @@ class WP_AJAX {
     /**
      * Function checks for the existence of a specific cached object.
      *
-     * @since    1.0.0
+     * @since    0.9.9
      *
      * @param $transient_name   looks for a cached object with this name
      * @return bool|mixed       returns 'false' if no object, or a json decoded array if found

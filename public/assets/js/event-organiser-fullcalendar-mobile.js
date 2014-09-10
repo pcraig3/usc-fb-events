@@ -161,8 +161,10 @@
  */
 var eventorganiser = window.eventorganiser || {};
 var EOAjaxFront = EOAjaxFront || {};
+var AjaxEvents = AjaxEvents || {};
 
-var AjaxFullCalendarList = (function ( options ) {
+
+var AjaxFullCalendarList = (function ( options, AjaxEvents) {
 
     //var $ = jQuery;
     var _eo_fullcalendar;
@@ -190,7 +192,7 @@ var AjaxFullCalendarList = (function ( options ) {
         _list_div = document.createElement("div");
         _list_div.id = id;
         //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
-        _list_div.setAttribute( "data_nonce", options.nonce );
+        _list_div.setAttribute( "data-nonce", options.nonce );
 
 
         _list_container =  document.createElement("ul");
@@ -227,6 +229,63 @@ var AjaxFullCalendarList = (function ( options ) {
 
     });
 
+    var _ajax_update_wordpress_transient_cache = (function( AjaxEvents ) {
+
+        /*var ajax_update_wordpress_transient_cache = function( options ) {
+
+            // Assign handlers immediately after making the request,
+            // and remember the jqxhr object for this request
+         var jqxhr = jQuery.post(
+         options.ajax_url,
+         {
+         action:         "update_wordpress_transient_cache",
+         attr_id:        options.attr_id,
+         nonce:          jQuery("#" + options.attr_id).data("nonce"),
+         transient_name: options.transient_name,
+
+         start:          options.start,
+         end:            options.end,
+         calendars:      options.calendars,
+         limit:          options.limit
+         },
+
+                function( data ) {
+                */
+        var ajax_options = {};
+
+        ajax_options.ajax_url = options.ajax_url;
+        ajax_options.attr_id = options.id;
+
+        var days = document.querySelectorAll( '.fc-day:not(.fc-other-month)' );
+
+        ajax_options.start = days[0].getAttribute('data-date');
+        ajax_options.end = days[days.length - 1].getAttribute('data-date');
+        ajax_options.calendars = 0;
+        ajax_options.limit = 0;
+
+
+        console.log('ajax_url: ' + ajax_options.ajax_url);
+        console.log('attr_id: ' + ajax_options.attr_id);
+        console.log('start: ' + ajax_options.start);
+        console.log('end: ' + ajax_options.end);
+        console.log('calendars: ' + ajax_options.calendars); //look for the categories in the EOAjaxFront object
+        console.log('limit: ' + ajax_options.limit); //limit of 0 or less will be ignored
+
+        /*options.ajax_url,
+
+            transient_name: options.transient_name,
+
+            start:          options.start,
+            end:            options.end,
+            calendars:      options.calendars,
+            limit:          options.limit
+            */
+
+
+        AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
+
+    });
+
     var run_once_per_calendar = function( calendar_name ) {
 
         if( _calendar_name !== calendar_name ) {
@@ -236,6 +295,8 @@ var AjaxFullCalendarList = (function ( options ) {
             _create_list_container();
 
             _calendar_name = calendar_name;
+
+            _ajax_update_wordpress_transient_cache( AjaxEvents );
         }
     }
 
@@ -249,7 +310,7 @@ var AjaxFullCalendarList = (function ( options ) {
         run_each_event: run_each_event
     };
 
-})(options || {});
+})(options || {}, AjaxEvents);
 
 
 //var AjaxEvents;// =
@@ -261,14 +322,12 @@ var AjaxFullCalendarList = (function ( options ) {
  });
  */
 
-console.log(EOAjaxFront);
-
 window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function( bool, event, element, view ){
 
     console.log(bool);
     console.log(event);
-    console.log(element);
-    console.log(view);
+    //console.log(element);
+    //console.log(view);
 
     //pass in the title of the calendar. if it changes, we update.
     AjaxFullCalendarList.run_once_per_calendar( document.querySelector('.fc-header-title').innerHTML );

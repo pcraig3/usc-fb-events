@@ -106,15 +106,7 @@ class USC_FB_Events {
          * Get the blog timezone using one of Stephen Harris' event-organiser functions
          * see "includes/event-organiser-utility-functions.php"
          */
-        if (function_exists('eo_get_blog_timezone')) {
-            $tz = eo_get_blog_timezone();
-        }
-        else {
-            //this is kind of a hack, but not a terrible one.
-            $this->wp_ajax->set_server_to_local_time();
-            $tz = new DateTimeZone(date_default_timezone_get());
-            $this->wp_ajax->set_server_back_to_default_time();
-        }
+        $tz = $this->wp_ajax->get_event_organiser_timezone();
 
         /*
          * Pretty basic.  Get start date and end date as passed in through the query
@@ -439,15 +431,7 @@ class USC_FB_Events {
      */
     public function add_a_fake_event_to_the_event_organiser( array $eventsarray, $query ) {
 
-        if (function_exists('eo_get_blog_timezone')) {
-            $tz = eo_get_blog_timezone();
-        }
-        else {
-            //this is kind of a hack, but not a terrible one.
-            $this->wp_ajax->set_server_to_local_time();
-            $tz = new DateTimeZone(date_default_timezone_get());
-            $this->wp_ajax->set_server_back_to_default_time();
-        }
+        $tz = $this->wp_ajax->get_event_organiser_timezone();
 
         $start = $query['event_end_after'];  //start time
         $end = $query['event_start_before'];  //end time
@@ -534,7 +518,7 @@ class USC_FB_Events {
                 //'is_cached' => $is_cached,
                 'ajax_url'  => admin_url( 'admin-ajax.php' ),
                 'id'        => $id,
-                'nonce'     => wp_create_nonce( $id . '__nonce' ),
+                'nonce'     => wp_create_nonce( $id . '_nonce' ),
                 //'transient_name' => $this->wp_db->transient_name,
             ) );
         }
@@ -579,21 +563,14 @@ class USC_FB_Events {
          * DateInterval format: http://php.net/manual/en/dateinterval.construct.php
          * 'P2Y4DT6H8M', for example, means '2 years, 4 days, 6 hours, 8 minutes.'  P == 'Period' and T == 'Time'
          */
-        if( substr($start, 0, 1) === 'P' || substr($start, 0, 2) === '-P' ) { ///this means a date interval
-            $temp_date = new DateTime('now');
-            $temp_date = ( substr($start, 0, 2) === '-P' ) ?
-                $temp_date->sub( new DateInterval( str_replace( '-', '', $start ) ) ) : $temp_date->add( new DateInterval( $start ) );
-            $start = $temp_date->getTimestamp();
-        }
-        //I get that copying + pasting is bad, but it didn't seem worth doing anything more confusing just for two values.
-        if( substr($end, 0, 1) === 'P' || substr($end, 0, 2) === '-P' ) { ///this means a date interval
-            $temp_date = new DateTime('now');
-            $temp_date = ( substr($end, 0, 2) === '-P' ) ?
-                $temp_date->sub( new DateInterval( str_replace( '-', '', $end ) ) ) : $temp_date->add( new DateInterval( $end ) );
-            $end = $temp_date->getTimestamp();
-        }
+        if( substr($start, 0, 1) === 'P' || substr($start, 0, 2) === '-P' )  ///this means a date interval
+            $start = $this->wp_ajax->start_end_dates_to_timestamps('now', $start);
 
-        //okay, now change the start and end dates into the timestamp for just the current DAY so that our caching system takes effect.
+        //I get that copying + pasting is bad, but it didn't seem worth doing anything more confusing just for two values.
+        if( substr($end, 0, 1) === 'P' || substr($end, 0, 2) === '-P' )  ///this means a date interval
+            $end = $this->wp_ajax->start_end_dates_to_timestamps('now', $end);
+
+            //okay, now change the start and end dates into the timestamp for just the current DAY so that our caching system takes effect.
         if( !empty($start) )
             $start = strtotime( date('Y-m-d', $start) );
 

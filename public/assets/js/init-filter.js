@@ -100,12 +100,17 @@
 
             // Assign handlers immediately after making the request,
             // and remember the jqxhr object for this request
+            options.attr_id = options.attr_id || 'event_list';
+
+            console.log('AjaxEvents');
+            console.log(options);
+
             var jqxhr = jQuery.post(
                 options.ajax_url,
                 {
                     action:         "update_wordpress_transient_cache",
-                    attr_id:        "event_list",
-                    nonce:          jQuery("#event_list").data("nonce"),
+                    attr_id:        options.attr_id,
+                    nonce:          jQuery("#" + options.attr_id).data("nonce"),
                     transient_name: options.transient_name,
 
                     start:          options.start,
@@ -116,9 +121,10 @@
 
                 function( data ) {
 
-                    /*
+                    console.log('Back');
                     console.log(data);
 
+                    /*
                     if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
