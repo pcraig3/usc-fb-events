@@ -236,10 +236,12 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
     //var $ = jQuery;
     var _eo_fullcalendar;
     var _list_container;
+
     var _list_div;
+    var _list_id = options.id;
+
 
     var _calendar_name = '';
-    var id = options.id;
 
     var _AjaxEvents =  AjaxEvents;
     var _eventorganiser = eventorganiser;
@@ -259,6 +261,30 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
 
+    var _remove = function (node_to_remove) {
+
+        if( !node_to_remove || node_to_remove.length === null || node_to_remove.length <= 0)
+            return false;
+
+        //if d.length equals something, it means we have an array of nodes
+        if ( typeof(node_to_remove) === "object" ) {
+
+            if( node_to_remove.length ) {
+
+                for (var index in node_to_remove) {
+                    if (node_to_remove[index].nodeType == 1)
+                        _remove(node_to_remove[index]);
+                }
+
+            }
+            else
+                node_to_remove.parentNode.removeChild(node_to_remove);
+
+        }
+
+        return node_to_remove;
+    }
+
     /**
      * function clears away any previous lists that may exist, and then creates a new list container <div>
      * and fills it with a new <ul> element.
@@ -268,16 +294,13 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
      */
     var _create_list_container = (function () {
 
-        //var html_string = '<div class="eo_fullcalendar--list"></div>';
-        //remove existing lists.
-        if( typeof( _list_div ) !== "undefined" )
-            _list_div.parentNode.removeChild(_list_div);
-
+        //remove existing list(s).
+        _remove( _list_div );
 
         var fragment = document.createDocumentFragment();
 
         _list_div = document.createElement("div");
-        _list_div.id = id;
+        _list_div.id = _list_id;
         //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
         _list_div.setAttribute( "data-nonce", options.nonce );
 
@@ -347,7 +370,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
          calendars:      options.calendars,
          limit:          options.limit
          },
-       */
+         */
         var ajax_options = {};
 
         ajax_options.ajax_url = options.ajax_url;
@@ -396,6 +419,22 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
 
         return calendar_names.join();
     });
+
+    /*
+     Basic click-event adding function.  Most of the code stolen from:
+     http://jsperf.com/jquery-click-event-vs-pure-javascript/2
+     */
+    window.onload = function() {
+        var buttons = document.querySelectorAll('.fc-button:not( .fc-button-today )');
+        for (var i in buttons) {
+            if (buttons[i].nodeType == 1) buttons[i].addEventListener('click', function(event) {
+
+                //remove existing list items when calendar is pressed.
+                _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
+
+            });
+        }
+    };
 
     var run_once_per_calendar = function( calendar_name ) {
 

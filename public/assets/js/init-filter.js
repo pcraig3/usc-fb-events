@@ -102,9 +102,6 @@
             // and remember the jqxhr object for this request
             options.attr_id = options.attr_id || 'event_list';
 
-            console.log('AjaxEvents');
-            console.log(options);
-
             var jqxhr = jQuery.post(
                 options.ajax_url,
                 {
@@ -121,16 +118,12 @@
 
                 function( data ) {
 
-                    console.log('Back');
-                    console.log(data);
-
-                    /*
                     if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
                     else
                         console.log('Yay! WordPress transient DB has been updated.');
-                    */
+
 
                 }, "json");
             /*.fail(function() {
