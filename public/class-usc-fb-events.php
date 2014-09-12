@@ -220,9 +220,6 @@ class USC_FB_Events {
             $fb_original_timediff = $fb_original_start->diff($fb_original_end, true);
             $fb_original_offset = ( isset($fb_event_offsets[$event['eid']]) ) ? $fb_event_offsets[$event['eid']] : '' ;
 
-            /*
-             * TODO: if this works without the reformatting method, we should ditch it
-             */
             $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
                 $tz);
             $fb_end =  new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
@@ -259,6 +256,8 @@ class USC_FB_Events {
 
             //set a location for the event description
             $location = ( !empty($event['location']) ) ? '@ ' . esc_html($event['location']) : '' ;
+
+            $tickets = ( !empty($event['ticket_uri']) ) ? '</br></br><a href="' . esc_url( $event['ticket_uri']) . '" target="_blank">Get Tickets!</a>' : '' ;
 
 
             //set a description or an error message
@@ -358,7 +357,8 @@ class USC_FB_Events {
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
                 'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
 
-                'description' => $date . '</br></br>' . $host . '</br>' . $location . '</br></br>' . $fb_event_description,
+                'description' => $date . '</br></br>' . $host . '</br></br>' . $location . $tickets
+                    . '</br></br>' . $fb_event_description,
                 //'venue'		=> $event['venue']['id'],  this is basically useless
                 //className = 'venue-university-community-center'
 
@@ -556,6 +556,10 @@ class USC_FB_Events {
                 'nonce'         => wp_create_nonce( $id . '_nonce' ),
                 //'transient_name' => $this->wp_db->transient_name,
             ) );
+
+            //last but not least: CSS file
+            wp_enqueue_style( $this->plugin_slug . '-public-fullcalendar', plugins_url( 'assets/css/public-fullcalendar.css', __FILE__ ), array(), self::VERSION );
+
         }
     }
 

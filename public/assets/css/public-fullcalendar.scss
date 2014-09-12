@@ -1,0 +1,84 @@
+
+
+/**
+These are the things about the events that we can't change.
+It mostly looks like stuff that we wouldn't want to.
+
+element.style {
+position: absolute;
+z-index: 8;
+left: 28px;
+border-color: rgb(203, 135, 205);
+color: rgb(255, 255, 255);
+width: 99px;
+top: 448px;
+background-color: rgb(203, 135, 205);
+}
+
+.fc-ltr .fc-event-hori.fc-event-end, .fc-rtl .fc-event-hori.fc-event-start {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.fc-ltr .fc-event-hori.fc-event-start, .fc-rtl .fc-event-hori.fc-event-end {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+*/
+
+.ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+
+  font-family: inherit !important; /* Matches the font to the rest of the site */
+}
+
+.page .ui-widget-header,
+  .post .ui-widget-header {
+
+  background-image: none;
+  background-color: #f2f2f2; /* same as the hover color for the top nav */
+}
+
+
+.eo-event-toolip.ui-tooltip.qtip {
+
+  border: 2px solid #ccc;
+
+  .qtip-title,
+  .ui-tooltip-content {
+
+    padding: 5px;
+  }
+
+  .qtip-title {
+
+    padding-top: 3px;
+    font-size: 1.3em;
+  }
+
+  .ui-tooltip-content {
+
+    border: none;
+  }
+
+}
+
+.eo-fullcalendar.eo-fullcalendar-shortcode .fc-view {
+
+  .fc-event {
+
+    border-radius: 0px;
+    font-size: .9em;
+    margin-bottom: 2px;
+
+    &:hover {
+
+      opacity: .9;
+    }
+  }
+
+  .fc-event-time, .fc-event-title {
+
+    display: block;
+    padding: 0 5px;
+  }
+}

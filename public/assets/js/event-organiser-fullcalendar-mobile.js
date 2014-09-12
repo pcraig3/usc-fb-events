@@ -356,6 +356,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         __list_item.className = event.className.join(' ');
         __list_item.classList.add("eo-fb-eid-" + event.eid);
+        __list_item.classList.add("eo-fb-event-list");
         __list_item.setAttribute( 'date-timestamp_start', __start_date.getTime().toString() );
         __list_item.innerHTML = event.title;
         __list_item.style.color = event.color;
