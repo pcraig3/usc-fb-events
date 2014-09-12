@@ -263,10 +263,19 @@ class USC_FB_Events {
             //set a description or an error message
             $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
                 : 'This event has not provided a description.  Maybe you can message the host directly on '
-                .' <a href="http://facebook.com">Facebook.</a>';
+                .' <a href="http://facebook.com/' . $event['eid'] .'/">Facebook.</a>';
 
-            if( strlen( $fb_event_description ) > 200 )
-                $fb_event_description = substr($fb_event_description, 0, 200) . "...";
+            //@TODO: add a filter
+            if( strlen( $fb_event_description ) > 200 ) {
+
+
+                $fb_event_description = array_slice( explode( ' ', $fb_event_description ), 0, 30 );
+                //remove punctuation from the end of the last element and add an elipses.
+                $fb_event_description[sizeof($fb_event_description) - 1] = trim($fb_event_description[sizeof($fb_event_description) - 1] , '"\'.,:=-?!');
+                $fb_event_description = implode(' ', $fb_event_description) . '...';
+            }
+
+
 
 
             /*

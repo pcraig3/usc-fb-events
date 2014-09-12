@@ -355,15 +355,48 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
 
         __list_item.className = event.className.join(' ');
-        __list_item.classList.add("eo-fb-eid-" + event.eid);
-        __list_item.classList.add("eo-fb-event-list");
+        __list_item.className += " eo-fb-eid-" + event.eid + " eo-fb-event-list";
         __list_item.setAttribute( 'date-timestamp_start', __start_date.getTime().toString() );
         __list_item.innerHTML = event.title;
         __list_item.style.color = event.color;
 
-        //at this point, we have three cases and one of them is always true.
+        //now we fill the list item with STUFF//
 
-       //__start_string_midnight.
+        //keep the name, host, and time in here
+        var __prefix = "__event__";
+        var __visible_elements = [ "host", "title", "start" ];
+        var max = __visible_elements.length;
+
+        var __visible_div = document.createElement('div');
+
+        for( var i = 0; i < max; i++ ) {
+
+            var temp = document.createElement('span');
+            temp.classList.add(__prefix + __visible_elements[i]);
+            temp.innerHTML = event[__visible_elements[i]];
+            __visible_div.appendChild(temp);
+        }
+
+        //format the date
+
+        //keep the description, location, link and maybe tickets in here.
+        var __prefix = "__event__";
+        var __hidden_elements = [ "location", "description", "url" ];
+        var max = __hidden_elements.length;
+
+        var __hidden_div = document.createElement('div');
+        __hidden_div.className = "meta hidden";
+
+        for( var i = 0; i < max; i++ ) {
+
+            var temp = document.createElement('span');
+            temp.classList.add(__prefix + __hidden_elements[i]);
+            temp.innerHTML = event[__hidden_elements[i]];
+            __hidden_div.appendChild(temp);
+        }
+
+
+        //__start_string_midnight.
         var __event_list_classes = [];
 
         do {
@@ -379,7 +412,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         var max = __event_list_array.length;
         for (var i = 0; i < max; i++) {
-            __event_list_array[i].appendChild( __list_item.cloneNode(true) );
+            __event_list_array[i].appendChild( __visible_div.cloneNode(true) );
+            __event_list_array[i].appendChild( __hidden_div.cloneNode(true) );
             //reveal the node. *wink*
             __event_list_array[i].parentNode.classList.remove( 'hidden' );
         }
