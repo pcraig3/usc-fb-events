@@ -365,14 +365,13 @@ class USC_FB_Events {
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
                 'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
-
                 'description' => $date . '</br></br>' . $host . '</br></br>' . $location . $tickets
                     . '</br></br>' . $fb_event_description,
+
                 //'venue'		=> $event['venue']['id'],  this is basically useless
                 //className = 'venue-university-community-center'
 
                 'category'	=> $fb_event_categories_slugs,
-
 
                 'tags'		=> array(),
                 //className = 'tag-tagSlug'
@@ -381,7 +380,9 @@ class USC_FB_Events {
                 'textColor'	=> '#ffffff',
 
                 //extra
-                'eid'       => $event['eid'],
+                'eid'               => $event['eid'],
+                'fbDescription'    => $fb_event_description,
+
             );
 
             array_push($eventsarray, $fb_event);
@@ -556,6 +557,7 @@ class USC_FB_Events {
 
             $id = 'fullcalendar__list';
             $plugin_prefix = 'usc_fb_events_';
+
             //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
             wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
                 //'is_cached' => $is_cached,

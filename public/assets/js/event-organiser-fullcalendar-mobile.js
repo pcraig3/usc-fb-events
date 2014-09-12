@@ -320,6 +320,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return __date.join('-');
     });
 
+    var _return_12_hour_AMPM_time_string = (function(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        return hours + ':' + minutes + ' ' + ampm;
+    });
+
     /**
      * Nothing too glamourous.  Function creates a list item for our mobile events list.
      *
@@ -357,44 +367,36 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         __list_item.className = event.className.join(' ');
         __list_item.className += " eo-fb-eid-" + event.eid + " eo-fb-event-list";
         __list_item.setAttribute( 'date-timestamp_start', __start_date.getTime().toString() );
-        __list_item.innerHTML = event.title;
         __list_item.style.color = event.color;
 
-        //now we fill the list item with STUFF//
+        //now we fill the list item with stuff
+        var __prefix = "event__info event__";
 
         //keep the name, host, and time in here
-        var __prefix = "__event__";
-        var __visible_elements = [ "host", "title", "start" ];
-        var max = __visible_elements.length;
-
         var __visible_div = document.createElement('div');
 
-        for( var i = 0; i < max; i++ ) {
-
-            var temp = document.createElement('span');
-            temp.classList.add(__prefix + __visible_elements[i]);
-            temp.innerHTML = event[__visible_elements[i]];
-            __visible_div.appendChild(temp);
-        }
-
-        //format the date
-
-        //keep the description, location, link and maybe tickets in here.
-        var __prefix = "__event__";
-        var __hidden_elements = [ "location", "description", "url" ];
-        var max = __hidden_elements.length;
-
+        //keep the description, location, link and tickets (if any) in here.
         var __hidden_div = document.createElement('div');
-        __hidden_div.className = "meta hidden";
+        __hidden_div.className = "meta";
 
-        for( var i = 0; i < max; i++ ) {
+        var __event_atts = {
+            'host':             __visible_div,
+            'title':            __visible_div,
+            'start':            __visible_div,
+            'location':         __hidden_div,
+            'fbDescription':    __hidden_div,
+            'url':              __hidden_div,
+            'ticket_uri':       __hidden_div
+        };
 
-            var temp = document.createElement('span');
-            temp.classList.add(__prefix + __hidden_elements[i]);
-            temp.innerHTML = event[__hidden_elements[i]];
-            __hidden_div.appendChild(temp);
+        for (var key in __event_atts) {
+            if (__event_atts.hasOwnProperty(key)) {
+                _create_event_info_span_and_append_to_element( event, key, __prefix, __event_atts[key] );
+            }
         }
 
+        __list_item.appendChild(  __visible_div.cloneNode(true) );
+        __list_item.appendChild(  __hidden_div.cloneNode(true) );
 
         //__start_string_midnight.
         var __event_list_classes = [];
@@ -412,13 +414,27 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         var max = __event_list_array.length;
         for (var i = 0; i < max; i++) {
-            __event_list_array[i].appendChild( __visible_div.cloneNode(true) );
-            __event_list_array[i].appendChild( __hidden_div.cloneNode(true) );
+
+            /** TODO: Check for times here **/
+            __event_list_array[i].appendChild( __list_item.cloneNode(true) );
             //reveal the node. *wink*
             __event_list_array[i].parentNode.classList.remove( 'hidden' );
         }
 
         return event;
+    });
+
+    var _create_event_info_span_and_append_to_element = (function( event, attribute, __prefix, to_append ) {
+
+        if( event[attribute] ) {
+            var temp = document.createElement('span');
+            temp.className = __prefix + attribute;
+            temp.innerHTML = event[attribute];
+            to_append.appendChild( temp.cloneNode( true ) );
+            return temp;
+        }
+
+        return false;
     });
 
     /**
