@@ -537,15 +537,20 @@ class USC_FB_Events {
             wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
             wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
 
-            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ), array( 'jquery', 'eo_front', 'init_filterjs' ), self::VERSION, true );
+            wp_enqueue_script( $this->plugin_slug . '-classList', plugins_url( 'assets/js/util/classList.js', __FILE__ ), array(), self::VERSION, true );
+            wp_enqueue_script( $this->plugin_slug . '-indexOf', plugins_url( 'assets/js/util/indexOf.js', __FILE__ ), array(), self::VERSION, true );
+            wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ),
+                array( 'jquery', 'eo_front', 'init_filterjs', $this->plugin_slug . '-classList', $this->plugin_slug . '-indexOf' ), self::VERSION, true );
 
-            $id = 'eo_fullcalendar__list';
+            $id = 'fullcalendar__list';
+            $plugin_prefix = 'usc_fb_events_';
             //declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
             wp_localize_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', "options", array(
                 //'is_cached' => $is_cached,
-                'ajax_url'  => admin_url( 'admin-ajax.php' ),
-                'id'        => $id,
-                'nonce'     => wp_create_nonce( $id . '_nonce' ),
+                'ajax_url'      => admin_url( 'admin-ajax.php' ),
+                'id'            => $id,
+                'plugin_prefix' => $plugin_prefix,
+                'nonce'         => wp_create_nonce( $id . '_nonce' ),
                 //'transient_name' => $this->wp_db->transient_name,
             ) );
         }

@@ -1,69 +1,5 @@
 // Production steps of ECMA-262, Edition 5, 15.4.4.14
 // Reference: http://es5.github.io/#x15.4.4.14
-if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(searchElement, fromIndex) {
-
-        var k;
-
-        // 1. Let O be the result of calling ToObject passing
-        //    the this value as the argument.
-        if (this == null) {
-            throw new TypeError('"this" is null or not defined');
-        }
-
-        var O = Object(this);
-
-        // 2. Let lenValue be the result of calling the Get
-        //    internal method of O with the argument "length".
-        // 3. Let len be ToUint32(lenValue).
-        var len = O.length >>> 0;
-
-        // 4. If len is 0, return -1.
-        if (len === 0) {
-            return -1;
-        }
-
-        // 5. If argument fromIndex was passed let n be
-        //    ToInteger(fromIndex); else let n be 0.
-        var n = +fromIndex || 0;
-
-        if (Math.abs(n) === Infinity) {
-            n = 0;
-        }
-
-        // 6. If n >= len, return -1.
-        if (n >= len) {
-            return -1;
-        }
-
-        // 7. If n >= 0, then Let k be n.
-        // 8. Else, n<0, Let k be len - abs(n).
-        //    If k is less than 0, then let k be 0.
-        k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
-
-        // 9. Repeat, while k < len
-        while (k < len) {
-            var kValue;
-            // a. Let Pk be ToString(k).
-            //   This is implicit for LHS operands of the in operator
-            // b. Let kPresent be the result of calling the
-            //    HasProperty internal method of O with argument Pk.
-            //   This step can be combined with c
-            // c. If kPresent is true, then
-            //    i.  Let elementK be the result of calling the Get
-            //        internal method of O with the argument ToString(k).
-            //   ii.  Let same be the result of applying the
-            //        Strict Equality Comparison Algorithm to
-            //        searchElement and elementK.
-            //  iii.  If same is true, return k.
-            if (k in O && O[k] === searchElement) {
-                return k;
-            }
-            k++;
-        }
-        return -1;
-    };
-}
 
 //(function ($) {
 
@@ -230,21 +166,26 @@ var eventorganiser = window.eventorganiser || {};
 var EOAjaxFront = EOAjaxFront || {};
 var AjaxEvents = AjaxEvents || {};
 
+console.log(eventorganiser);
+console.log(EOAjaxFront);
 
-var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
+
+var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAjaxFront ) {
 
     //var $ = jQuery;
     var _eo_fullcalendar;
-    var _list_container;
 
     var _list_div;
     var _list_id = options.id;
+    var _plugin_prefix = options.plugin_prefix;
 
 
     var _calendar_name = '';
 
     var _AjaxEvents =  AjaxEvents;
     var _eventorganiser = eventorganiser;
+    var _locale = EOAjaxFront.locale;
+
 
     /**
      * Function inserts a newNode after another node.  This isn't a native JS function, but thankfully a guy on
@@ -261,7 +202,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
 
-    var _remove = function (node_to_remove) {
+    var _remove = (function (node_to_remove) {
 
         if( !node_to_remove || node_to_remove.length === null || node_to_remove.length <= 0)
             return false;
@@ -272,7 +213,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
             if( node_to_remove.length ) {
 
                 for (var index in node_to_remove) {
-                    if (node_to_remove[index].nodeType == 1)
+                    if (node_to_remove.hasOwnProperty(index) && node_to_remove[index].nodeType == 1)
                         _remove(node_to_remove[index]);
                 }
 
@@ -283,7 +224,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
         }
 
         return node_to_remove;
-    }
+    });
 
     /**
      * function clears away any previous lists that may exist, and then creates a new list container <div>
@@ -292,24 +233,65 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
      * @type {Function}
      * @private
      */
-    var _create_list_container = (function () {
+    var _create_date_list = (function ( view ) {
 
         //remove existing list(s).
         _remove( _list_div );
 
-        var fragment = document.createDocumentFragment();
+        var __fragment = document.createDocumentFragment();
 
         _list_div = document.createElement("div");
-        _list_div.id = _list_id;
+        _list_div.id = _plugin_prefix + _list_id;
         //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
         _list_div.setAttribute( "data-nonce", options.nonce );
 
+        _list_div.appendChild( _create_date_list_items( view ) );
+        __fragment.appendChild(_list_div);
 
-        _list_container =  document.createElement("ul");
-        _list_div.appendChild( _list_container );
-        fragment.appendChild(_list_div);
+        _insert_after(__fragment, _eo_fullcalendar);
+    });
 
-        _insert_after(fragment, _eo_fullcalendar);
+    var _create_date_list_items = (function ( view ) {
+
+        var __date_list =  document.createElement("ul");
+        __date_list.classList.add('dates');
+
+        //okay, so now find the start and the end and get the dates and format the hell out of them
+        var __start     = new Date( view.start );
+        var __end       = new Date( view.end );
+        var __current   = new Date( view.start );
+        var __today     = new Date();
+
+        /** TODO: Check that events at 10pm at the end of the month show up. **/
+        while( __current.getTime() < __end.getTime() ) {
+
+            var __date_list_item = document.createElement('li');
+            __date_list_item.classList.add('date');
+            // @TODO: date like the event-calendar uses YYYY-mm-dd
+            //__date_list_item.classList.add( __current.toString() );
+            // @TODO: either past or upcoming or today
+            __date_list_item.classList.add( "date-past" );
+            // @TODO: start and end
+            __date_list_item.setAttribute( 'date-timestamp', __current.getTime().toString() );
+
+            //now create the title and the unordered list container
+            var __date_title = document.createElement('h4');
+            __date_title.classList.add("date__title");
+            __date_title.innerHTML =  __current.toString();
+
+            //no events as of yet.  We only get events once at a time
+            var __event_list_container = document.createElement('ul');
+            __event_list_container.classList.add('events');
+
+            __date_list_item.appendChild(__date_title);
+            __date_list_item.appendChild(__event_list_container);
+
+            __date_list.appendChild(__date_list_item);
+
+            __current.setDate(__current.getDate() + 1);
+        }
+
+        return __date_list;
     });
 
     /**
@@ -320,28 +302,30 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
      */
     var _create_list_item = (function( event ) {
 
-        var fragment = document.createDocumentFragment();
-        var list_item = document.createElement('li');
+        var __fragment = document.createDocumentFragment();
+        var __list_item = document.createElement('li');
 
-        var list_item_array = [ "title", "start", "host" ];
-        var list_item_array_length = list_item_array.length;
+        var __list_item_array = [ "title", "start", "host" ];
+        var __list_item_array_length = __list_item_array.length;
 
-        for (var i = 0; i < list_item_array_length; i++) {
+        for (var i = 0; i < __list_item_array_length; i++) {
 
+            var temp;
 
-            if( typeof( list_item_array[i] ) !== "undefined" ) {
+            if( typeof( __list_item_array[i] ) !== "undefined" ) {
 
                 temp = document.createElement("p");
-                temp.innerHTML = event[list_item_array[i]];
-                list_item.appendChild(temp);
+                temp.innerHTML = event[__list_item_array[i]];
+                __list_item.appendChild(temp);
             }
         }
 
-        list_item.style.color = event.color;
+        __list_item.style.color = event.color;
 
-        fragment.appendChild(list_item);
+        __fragment.appendChild(__list_item);
 
-        _list_container.appendChild(fragment);
+        /** @TODO: remove this variable **/
+        _list_container.appendChild(__fragment);
 
     });
 
@@ -427,40 +411,41 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
     window.onload = function() {
         var buttons = document.querySelectorAll('.fc-button:not( .fc-button-today )');
         for (var i in buttons) {
-            if (buttons[i].nodeType == 1) buttons[i].addEventListener('click', function(event) {
+            if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
+                buttons[i].addEventListener('click', function(event) {
 
-                //remove existing list items when calendar is pressed.
-                _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
+                    //remove existing list items when calendar is pressed.
+                    _remove( document.querySelectorAll( '#' + _plugin_prefix + _list_id + ' li' ) );
 
-            });
+                });
         }
     };
 
-    var run_once_per_calendar = function( calendar_name ) {
+    var run_once_per_calendar = (function( view ) {
 
-        if( _calendar_name !== calendar_name ) {
+        if( _calendar_name !== view.title ) {
 
             _eo_fullcalendar = document.querySelector('.eo-fullcalendar');
 
-            _create_list_container();
+            _create_date_list( view );
 
-            _calendar_name = calendar_name;
+            _calendar_name = view.title;
 
             _ajax_update_wordpress_transient_cache();
         }
-    }
+    });
 
-    var run_each_event = function( event ) {
+    var run_each_event = (function( event ) {
 
-        _create_list_item( event );
-    }
+        //_create_list_item( event );
+    });
 
     return {
         run_once_per_calendar: run_once_per_calendar,
         run_each_event: run_each_event
     };
 
-})(options, AjaxEvents, eventorganiser );
+})(options, AjaxEvents, eventorganiser, EOAjaxFront );
 
 
 //var AjaxEvents;// =
@@ -475,39 +460,26 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser) {
 window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function( bool, event, element, view ){
 
     console.log(bool);
-    //console.log(event);
+    console.log(event);
     //console.log(element);
-    //console.log(view);
+    console.log(view);
+
+    var d = view.calendar.getDate();
+    console.log(    view.calendar.getDate());
+    var date = new Date(d);
+    console.log(d);
+    console.log(d.getTime());
+
+    console.log(view.start);
+    var  o = new Date(view.start);
+    console.log(o.getTime());
+
+    //okay, so we have the time.  And, if this makes a difference, the time difference is off.
 
     //pass in the title of the calendar. if it changes, we update.
-    AjaxFullCalendarList.run_once_per_calendar( document.querySelector('.fc-header-title').innerHTML );
+    AjaxFullCalendarList.run_once_per_calendar( view );
     AjaxFullCalendarList.run_each_event( event );
 
     return bool;
 }, 4 );
 
-
-/*
- so, we need a run_once function
-
-
- Run_once removes .whatever_name_of_list
-
- Run_once adds .whatever name of list
-
- Run_once adds listeners to click buttons
- Run_once adds listeners to events so that they can open and close.
-
-
- Run_once sets title. (for now)  or day or whatever.
-
-
-
- */
-
-/*
- and we need a Run_for_each_event function.
-
- Run_for_each_event generates event template and adds it to list.
-
- */
