@@ -169,16 +169,13 @@ var AjaxEvents = AjaxEvents || {};
 console.log(eventorganiser);
 console.log(EOAjaxFront);
 
-
 var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAjaxFront ) {
 
     //var $ = jQuery;
     var _eo_fullcalendar;
 
     var _list_div;
-    var _list_id = options.id;
-    var _plugin_prefix = options.plugin_prefix;
-
+    var _list_id = options.plugin_prefix + options.id;
 
     var _calendar_name = '';
 
@@ -241,7 +238,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var __fragment = document.createDocumentFragment();
 
         _list_div = document.createElement("div");
-        _list_div.id = _plugin_prefix + _list_id;
+        _list_div.id = _list_id;
         //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
         _list_div.setAttribute( "data-nonce", options.nonce );
 
@@ -267,17 +264,21 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             var __date_list_item = document.createElement('li');
             __date_list_item.classList.add('date');
-            // @TODO: date like the event-calendar uses YYYY-mm-dd
-            //__date_list_item.classList.add( __current.toString() );
-            // @TODO: either past or upcoming or today
-            __date_list_item.classList.add( "date-past" );
-            // @TODO: start and end
-            __date_list_item.setAttribute( 'date-timestamp', __current.getTime().toString() );
+
+            var __past_upcoming_or_today = ( __current.getDate() < __today.getDate() ) ? 'past' :
+                ( __current.getDate() > __today.getDate() ) ? 'upcoming' : 'today';
+            __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
+            __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
+
+            //data-date like the event-calendar uses: YYYY-mm-dd format
+            __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );
+            __date_list_item.setAttribute( 'data-timestamp_start', __current.getTime().toString() );
+            //set the data-timestamp_end below, after the date has been incremented
 
             //now create the title and the unordered list container
             var __date_title = document.createElement('h4');
             __date_title.classList.add("date__title");
-            __date_title.innerHTML =  __current.toString();
+            __date_title.innerHTML =  _return_day_name_day_of_month( __current );
 
             //no events as of yet.  We only get events once at a time
             var __event_list_container = document.createElement('ul');
@@ -289,9 +290,32 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             __date_list.appendChild(__date_list_item);
 
             __current.setDate(__current.getDate() + 1);
+
+            //set data-timestamp_end after the date has been incremented
+            __date_list_item.setAttribute( 'data-timestamp_end', __current.getTime().toString() );
         }
 
         return __date_list;
+    });
+
+    //DATE_ATOM http://php.net/manual/en/class.datetime.php#datetime.constants.types
+    var _return_day_name_day_of_month = (function( start ) {
+
+        //we want to return Monday 6
+        return _locale.dayNames[start.getDay()] + ' ' + start.getDate();
+
+    });
+
+    //DATE_ATOM http://php.net/manual/en/class.datetime.php#datetime.constants.types
+    var _return_ATOM_date_string_without_time = (function( start ) {
+
+        //we want to return YYYY-mm-dd
+        __date = [];
+        __date.push( start.getFullYear() );
+        __date.push( start.getMonth() + 1);
+        __date.push( start.getDate() );
+
+        return __date.join('-');
     });
 
     /**
@@ -300,33 +324,54 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @type {Function}
      * @private
      */
-    var _create_list_item = (function( event ) {
+    var _create_event_item = (function( event, view ) {
 
-        var __fragment = document.createDocumentFragment();
+        //basically, create a list item with the event name and attach it to the corresponding list
+
+        //okay, so get the midnight date.
+
         var __list_item = document.createElement('li');
 
-        var __list_item_array = [ "title", "start", "host" ];
-        var __list_item_array_length = __list_item_array.length;
+        var __start_date = new Date( event.start );
+        var __start_date_midnight = new Date( event.start );
+        __start_date_midnight.setHours( 0, 0, 0, 0 );
 
-        for (var i = 0; i < __list_item_array_length; i++) {
+        var __end_date = new Date( event.end );
+        var __end_of_month = new Date( view.end );
 
-            var temp;
+        //http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
 
-            if( typeof( __list_item_array[i] ) !== "undefined" ) {
-
-                temp = document.createElement("p");
-                temp.innerHTML = event[__list_item_array[i]];
-                __list_item.appendChild(temp);
-            }
-        }
-
+        __list_item.className = event.className.join(' ');
+        __list_item.classList.add("eo-fb-eid-" + event.eid);
+        __list_item.setAttribute( 'date-timestamp_start', __start_date.getTime().toString() );
+        __list_item.innerHTML = event.title;
         __list_item.style.color = event.color;
 
-        __fragment.appendChild(__list_item);
+        //at this point, we have three cases and one of them is always true.
 
-        /** @TODO: remove this variable **/
-        _list_container.appendChild(__fragment);
+       //__start_string_midnight.
+        var __event_list_classes = [];
 
+        do {
+
+            //first day is a freebie because it's the start_date
+            __event_list_classes.push( '#' + _list_id + ' .date-' + _return_ATOM_date_string_without_time( __start_date_midnight ) + ' .events' );
+
+            __start_date_midnight.setDate(__start_date_midnight.getDate() + 1);
+
+        } while ( __end_date.getTime() > __start_date_midnight.getTime() && __end_date.getTime() < __end_of_month.getTime() )
+
+        console.log(__event_list_classes);
+
+        var __event_list_array = document.querySelectorAll( __event_list_classes.join(', ') );
+
+        console.log(__event_list_array);
+
+        var max = __event_list_array.length;
+        for (var i = 0; i < max; i++) {
+            __event_list_array[i].appendChild( __list_item.cloneNode(true) );
+            //Do something
+        }
     });
 
     /**
@@ -415,7 +460,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 buttons[i].addEventListener('click', function(event) {
 
                     //remove existing list items when calendar is pressed.
-                    _remove( document.querySelectorAll( '#' + _plugin_prefix + _list_id + ' li' ) );
+                    _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
 
                 });
         }
@@ -435,9 +480,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         }
     });
 
-    var run_each_event = (function( event ) {
+    var run_each_event = (function( event, view ) {
 
-        //_create_list_item( event );
+        _create_event_item( event, view );
     });
 
     return {
@@ -464,21 +509,11 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     //console.log(element);
     console.log(view);
 
-    var d = view.calendar.getDate();
-    console.log(    view.calendar.getDate());
-    var date = new Date(d);
-    console.log(d);
-    console.log(d.getTime());
-
-    console.log(view.start);
-    var  o = new Date(view.start);
-    console.log(o.getTime());
-
     //okay, so we have the time.  And, if this makes a difference, the time difference is off.
 
     //pass in the title of the calendar. if it changes, we update.
     AjaxFullCalendarList.run_once_per_calendar( view );
-    AjaxFullCalendarList.run_each_event( event );
+    AjaxFullCalendarList.run_each_event( event, view );
 
     return bool;
 }, 4 );

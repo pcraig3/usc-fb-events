@@ -255,10 +255,10 @@ class USC_FB_Events {
             }
 
             //set a host for the event description
-            $host = ( !empty($event['host']) ) ? 'Host: <strong>' . esc_html($event['host']) . '</strong>' : '' ;
+            $host = ( !empty($event['host']) ) ? '<strong>' . esc_html($event['host']) . '</strong>' : '' ;
 
             //set a location for the event description
-            $location = ( !empty($event['location']) ) ? 'Location: ' . esc_html($event['location']) : '' ;
+            $location = ( !empty($event['location']) ) ? '@ ' . esc_html($event['location']) : '' ;
 
 
             //set a description or an error message
@@ -370,6 +370,9 @@ class USC_FB_Events {
 
                 'color'     => $color,
                 'textColor'	=> '#ffffff',
+
+                //extra
+                'eid'       => $event['eid'],
             );
 
             array_push($eventsarray, $fb_event);
