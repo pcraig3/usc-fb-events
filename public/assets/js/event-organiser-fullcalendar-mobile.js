@@ -173,6 +173,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     //var $ = jQuery;
     var _eo_fullcalendar;
+    var _eids = [];
 
     var _list_div;
     var _list_id = options.plugin_prefix + options.id;
@@ -269,6 +270,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 ( __current.getDate() > __today.getDate() ) ? 'upcoming' : 'today';
             __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
             __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
+            __date_list_item.classList.add( 'hidden' );
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
             __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );
@@ -326,6 +328,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      */
     var _create_event_item = (function( event, view ) {
 
+        //first, make sure we don't have any duplicates by pushing facebook events into an array.
+        //if not a facebook event, then who cares.
+        if( typeof( event.eid ) !== "undefined" ) {
+
+            if( _eids.indexOf( event.eid) >= 0 )
+                return false;
+
+            _eids.push( event.eid );
+        }
+
+
         //basically, create a list item with the event name and attach it to the corresponding list
 
         //okay, so get the midnight date.
@@ -359,19 +372,18 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             __start_date_midnight.setDate(__start_date_midnight.getDate() + 1);
 
-        } while ( __end_date.getTime() > __start_date_midnight.getTime() && __end_date.getTime() < __end_of_month.getTime() )
-
-        console.log(__event_list_classes);
+        } while ( __end_date.getTime() > __start_date_midnight.getTime() && __start_date_midnight.getTime() < __end_of_month.getTime() )
 
         var __event_list_array = document.querySelectorAll( __event_list_classes.join(', ') );
-
-        console.log(__event_list_array);
 
         var max = __event_list_array.length;
         for (var i = 0; i < max; i++) {
             __event_list_array[i].appendChild( __list_item.cloneNode(true) );
-            //Do something
+            //reveal the node. *wink*
+            __event_list_array[i].parentNode.classList.remove( 'hidden' );
         }
+
+        return event;
     });
 
     /**
@@ -450,7 +462,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     /*
-     Basic click-event adding function.  Most of the code stolen from:
+     Basic event-adding function.  Most of the code stolen from:
      http://jsperf.com/jquery-click-event-vs-pure-javascript/2
      */
     window.onload = function() {
@@ -461,6 +473,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
                     //remove existing list items when calendar is pressed.
                     _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
+                    _calendar_name = "";
+                    while( _eids.length )
+                        _eids.pop();
 
                 });
         }
