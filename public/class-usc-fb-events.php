@@ -381,7 +381,8 @@ class USC_FB_Events {
 
                 //extra
                 'eid'               => $event['eid'],
-                'fbDescription'    => $fb_event_description,
+                'location'          => $location,
+                'fbDescription'     => $fb_event_description,
 
             );
 

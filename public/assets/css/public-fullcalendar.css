@@ -12,16 +12,6 @@ width: 99px;
 top: 448px;
 background-color: rgb(203, 135, 205);
 }
-
-.fc-ltr .fc-event-hori.fc-event-end, .fc-rtl .fc-event-hori.fc-event-start {
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
-}
-
-.fc-ltr .fc-event-hori.fc-event-start, .fc-rtl .fc-event-hori.fc-event-end {
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-}
 */
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
   font-family: inherit !important;
@@ -54,5 +44,59 @@ background-color: rgb(203, 135, 205);
   display: block;
   padding: 0 5px; }
 
-#usc_fb_events_fullcalendar__list .event__info {
-  display: block; }
+#usc_fb_events_fullcalendar__list {
+  display: none;
+  text-align: right; }
+  #usc_fb_events_fullcalendar__list ul {
+    list-style-type: none;
+    padding: 0;
+    line-height: inherit; }
+  #usc_fb_events_fullcalendar__list .dates {
+    width: 100%;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee; }
+    #usc_fb_events_fullcalendar__list .dates .date {
+      position: relative; }
+    #usc_fb_events_fullcalendar__list .dates .date__title {
+      float: right;
+      display: inline-block;
+      border-top: 1px solid #f5f5f5;
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+      text-align: left;
+      padding: 10px;
+      font-size: 2em; }
+  #usc_fb_events_fullcalendar__list .events {
+    position: relative; }
+    #usc_fb_events_fullcalendar__list .events .eo-fb-event-list {
+      float: right;
+      display: inline-block;
+      font-size: 1.05em;
+      padding: 10px;
+      border-top: 1px solid #f5f5f5;
+      padding-left: 24%;
+      width: 100%;
+      box-sizing: border-box; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:hover {
+        background-color: #f9f9f9; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:first-of-type {
+        border-top: 1px solid #eee; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__info {
+        display: block; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__title {
+        font-size: 1.2em; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__start {
+        position: absolute;
+        width: 24%;
+        left: 0;
+        text-align: left;
+        padding-left: 10px; }
+
+@media only screen and (max-width: 959px) {
+  .eo-fullcalendar.eo-fullcalendar-shortcode .fc-content {
+    display: none; }
+
+  #usc_fb_events_fullcalendar__list {
+    display: block; } }

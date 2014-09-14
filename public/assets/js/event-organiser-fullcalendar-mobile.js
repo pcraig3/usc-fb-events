@@ -240,6 +240,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         _list_div = document.createElement("div");
         _list_div.id = _list_id;
+
         //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
         _list_div.setAttribute( "data-nonce", options.nonce );
 
@@ -254,13 +255,12 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var __date_list =  document.createElement("ul");
         __date_list.classList.add('dates');
 
-        //okay, so now find the start and the end and get the dates and format the hell out of them
+        //okay, so now find the start and the end dates
         var __start     = new Date( view.start );
         var __end       = new Date( view.end );
         var __current   = new Date( view.start );
         var __today     = new Date();
 
-        /** TODO: Check that events at 10pm at the end of the month show up. **/
         while( __current.getTime() < __end.getTime() ) {
 
             var __date_list_item = document.createElement('li');
@@ -270,6 +270,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 ( __current.getDate() > __today.getDate() ) ? 'upcoming' : 'today';
             __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
             __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
+            __date_list_item.classList.add( 'clearfix' );
             __date_list_item.classList.add( 'hidden' );
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
@@ -278,13 +279,14 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //set the data-timestamp_end below, after the date has been incremented
 
             //now create the title and the unordered list container
-            var __date_title = document.createElement('h4');
+            var __date_title = document.createElement('h3');
             __date_title.classList.add("date__title");
             __date_title.innerHTML =  _return_day_name_day_of_month( __current );
 
             //no events as of yet.  We only get events once at a time
             var __event_list_container = document.createElement('ul');
             __event_list_container.classList.add('events');
+            __event_list_container.classList.add('clearfix');
 
             __date_list_item.appendChild(__date_title);
             __date_list_item.appendChild(__event_list_container);
@@ -303,8 +305,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     //DATE_ATOM http://php.net/manual/en/class.datetime.php#datetime.constants.types
     var _return_day_name_day_of_month = (function( start ) {
 
+        return start.getDate();
         //we want to return Monday 6
-        return _locale.dayNames[start.getDay()] + ' ' + start.getDate();
+        //return _locale.dayNames[start.getDay()] + ' ' + start.getDate();
 
     });
 
@@ -365,9 +368,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
 
         __list_item.className = event.className.join(' ');
-        __list_item.className += " eo-fb-eid-" + event.eid + " eo-fb-event-list";
-        __list_item.setAttribute( 'date-timestamp_start', __start_date.getTime().toString() );
-        __list_item.style.color = event.color;
+        __list_item.className += " eo-fb-eid-" + event.eid + " eo-fb-event-list";//fb-four-fifth";
+        __list_item.setAttribute( 'data-timestamp_start', __start_date.getTime().toString() );
+        __list_item.setAttribute( 'data-timestamp_end', __end_date.getTime().toString() );
 
         //now we fill the list item with stuff
         var __prefix = "event__info event__";
@@ -377,12 +380,12 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         //keep the description, location, link and tickets (if any) in here.
         var __hidden_div = document.createElement('div');
-        __hidden_div.className = "meta";
+        __hidden_div.className = "meta hidden"
 
         var __event_atts = {
-            'host':             __visible_div,
-            'title':            __visible_div,
             'start':            __visible_div,
+            'title':            __visible_div,
+            'host':             __visible_div,
             'location':         __hidden_div,
             'fbDescription':    __hidden_div,
             'url':              __hidden_div,
@@ -408,20 +411,66 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             __start_date_midnight.setDate(__start_date_midnight.getDate() + 1);
 
-        } while ( __end_date.getTime() > __start_date_midnight.getTime() && __start_date_midnight.getTime() < __end_of_month.getTime() )
+        } while ( __end_date.getTime() > __start_date_midnight.getTime() && __start_date_midnight.getTime() < __end_of_month.getTime() );
 
         var __event_list_array = document.querySelectorAll( __event_list_classes.join(', ') );
 
         var max = __event_list_array.length;
         for (var i = 0; i < max; i++) {
 
-            /** TODO: Check for times here **/
-            __event_list_array[i].appendChild( __list_item.cloneNode(true) );
+            //because the max value is the total number of days
+            var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
+            item_to_add.addEventListener('click', _toggle_hidden_div_onclick );
+            _add_category_color_class_to_classes( item_to_add, [ '.event__title' ] );
+            __event_list_array[i].appendChild( item_to_add );
+
             //reveal the node. *wink*
             __event_list_array[i].parentNode.classList.remove( 'hidden' );
         }
 
         return event;
+    });
+
+        var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
+
+        var start_span = list_item.querySelector('.event__start');
+        var start_date = new Date( parseInt( list_item.getAttribute( 'data-timestamp_start' ) ) );
+        var end_date  = new Date( parseInt( list_item.getAttribute( 'data-timestamp_end' ) ) );
+        var time_date_string = '';
+
+        if(number_of_days === 1) {
+
+            time_date_string = _return_12_hour_AMPM_time_string( start_date );
+        }
+        else if( index === number_of_days ) {
+
+            time_date_string = "Ends at " + _return_12_hour_AMPM_time_string( end_date ) + " | Final Day";
+        }
+        else {
+
+            //get the time if it starts today //start at one because we incremented index when it was passed in
+            if( index === 1 )
+                time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
+
+            time_date_string += "Day " + index + " of " + number_of_days;
+        }
+
+        start_span.innerHTML = time_date_string;
+        return list_item;
+    });
+
+    var _add_category_color_class_to_classes = (function( list_item, classes_for_which_to_add_the_category_color ) {
+
+        var max = classes_for_which_to_add_the_category_color.length;
+
+        for(var i = 0; i < max; i++) {
+            //so this selects only ONE element in the list node.  More logic would be needed to one or more elements
+            var temp = list_item.querySelector(classes_for_which_to_add_the_category_color[i]);
+            if ( temp )
+                temp.classList.add('category__color');
+        }
+
+        return list_item;
     });
 
     var _create_event_info_span_and_append_to_element = (function( event, attribute, __prefix, to_append ) {
@@ -517,6 +566,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      http://jsperf.com/jquery-click-event-vs-pure-javascript/2
      */
     window.onload = function() {
+        //whenever you click the calendar buttons, remove existing list events
         var buttons = document.querySelectorAll('.fc-button:not( .fc-button-today )');
         for (var i in buttons) {
             if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
@@ -531,6 +581,13 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 });
         }
     };
+
+    var _toggle_hidden_div_onclick = (function() {
+
+        var meta_div = this.querySelector('.meta');
+
+        (meta_div.classList.contains('hidden')) ? meta_div.classList.remove("hidden") : meta_div.classList.add("hidden");
+    });
 
     var run_once_per_calendar = (function( view ) {
 
@@ -584,3 +641,27 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     return bool;
 }, 4 );
 
+(function add_category_css_to_head( eventorganiser ) {
+
+    //all of the categories that we know about
+    var all_categories = eventorganiser.fullcal.categories;
+    var categories_css_string = '';
+
+    //for each of our categories (if we don't want them all) check if they are in our categories_used array before returning them
+    for (var i in all_categories) {
+        if ({}.hasOwnProperty.call(all_categories, i))
+            categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
+    }
+
+     head = document.head || document.getElementsByTagName('head')[0];
+     style = document.createElement('style');
+
+     style.type = 'text/css';
+     if (style.styleSheet){
+     style.styleSheet.cssText = categories_css_string;
+     } else {
+     style.appendChild(document.createTextNode(categories_css_string));
+     }
+
+     head.appendChild(style);
+})( eventorganiser );
