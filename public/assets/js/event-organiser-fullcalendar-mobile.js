@@ -436,28 +436,50 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var start_span = list_item.querySelector('.event__start');
         var start_date = new Date( parseInt( list_item.getAttribute( 'data-timestamp_start' ) ) );
         var end_date  = new Date( parseInt( list_item.getAttribute( 'data-timestamp_end' ) ) );
-        var time_date_string = '';
+        var time_string = '';
+        var day_string = '';
 
         if(number_of_days === 1) {
 
-            time_date_string = _return_12_hour_AMPM_time_string( start_date );
+            time_string = _return_12_hour_AMPM_time_string( start_date );
         }
         else if( index === number_of_days ) {
 
-            time_date_string = "Ends at " + _return_12_hour_AMPM_time_string( end_date ) + " | Final Day";
+            //time_date_string = "Ends at " + _return_12_hour_AMPM_time_string( end_date ) + " | Final Day";
+            time_string = "Until " +  _return_12_hour_AMPM_time_string( end_date );
+            day_string = 'Final Day';
         }
         else {
 
             //get the time if it starts today //start at one because we incremented index when it was passed in
             if( index === 1 )
-                time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
+                //time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
+                time_string = _return_12_hour_AMPM_time_string( start_date );
 
-            time_date_string += "Day " + index + " of " + number_of_days;
+
+            if( time_string === '' )
+                time_string = 'Ongoing';
+
+            day_string =  'Day ' + index;
+            //time_date_string += "Day " + index + " of " + number_of_days;
         }
 
-        start_span.innerHTML = time_date_string;
+        start_span.innerHTML = time_string;
+        return _add_days_to_title_for_ongoing_events_and_return_list_item( list_item, day_string );
+    });
+
+    var _add_days_to_title_for_ongoing_events_and_return_list_item = (function( list_item, day_string ) {
+
+        if( !day_string )
+            return list_item;
+
+        var title_span = list_item.querySelector('.event__title');
+
+        title_span.innerHTML = title_span.innerHTML + ' (' + day_string + ')';
         return list_item;
     });
+
+
 
     var _add_category_color_class_to_classes = (function( list_item, classes_for_which_to_add_the_category_color ) {
 
