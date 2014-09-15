@@ -173,7 +173,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     //var $ = jQuery;
     var _eo_fullcalendar;
-    var _eids = [];
+    var _ids = [];
 
     var _list_div;
     var _list_id = options.plugin_prefix + options.id;
@@ -343,14 +343,13 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         //first, make sure we don't have any duplicates by pushing facebook events into an array.
         //if not a facebook event, then who cares.
-        if( typeof( event.eid ) !== "undefined" ) {
+        if( typeof( event._id ) !== "undefined" ) {
 
-            if( _eids.indexOf( event.eid) >= 0 )
+            if( _ids.indexOf( event._id) >= 0 )
                 return false;
 
-            _eids.push( event.eid );
+            _ids.push( event._id );
         }
-
 
         //basically, create a list item with the event name and attach it to the corresponding list
 
@@ -468,7 +467,11 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //time_date_string += "Day " + index + " of " + number_of_days;
         }
 
-        start_span.innerHTML = time_string;
+        if( list_item.classList.contains('eo-all-day') )
+            start_span.innerHTML = 'All Day';
+        else
+            start_span.innerHTML = time_string;
+
         return _add_days_to_title_for_ongoing_events_and_return_list_item( list_item, day_string );
     });
 
@@ -637,8 +640,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                     //remove existing list items when calendar is pressed.
                     _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
                     _calendar_name = "";
-                    while( _eids.length )
-                        _eids.pop();
+                    while( _ids.length )
+                        _ids.pop();
 
                 });
         }
