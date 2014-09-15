@@ -44,6 +44,11 @@ background-color: rgb(203, 135, 205);
   display: block;
   padding: 0 5px; }
 
+.fade_on_hover {
+  cursor: pointer; }
+  .fade_on_hover:hover {
+    opacity: .8; }
+
 #usc_fb_events_fullcalendar__list {
   display: none;
   text-align: right; }
@@ -61,40 +66,80 @@ background-color: rgb(203, 135, 205);
     #usc_fb_events_fullcalendar__list .dates .date__title {
       float: right;
       display: inline-block;
-      border-top: 1px solid #f5f5f5;
+      border-top: 1px solid #eee;
       width: 100%;
       box-sizing: border-box;
       cursor: pointer;
       text-align: left;
-      padding: 10px;
-      font-size: 2em; }
+      padding: 12px;
+      font-size: 2em;
+      line-height: inherit; }
+    #usc_fb_events_fullcalendar__list .dates .date-today .date__title {
+      background-color: #ffffe0; }
   #usc_fb_events_fullcalendar__list .events {
     position: relative; }
     #usc_fb_events_fullcalendar__list .events .eo-fb-event-list {
       float: right;
       display: inline-block;
       font-size: 1.05em;
-      padding: 10px;
+      padding: 12px;
       border-top: 1px solid #f5f5f5;
       padding-left: 30%;
       width: 100%;
       box-sizing: border-box; }
-      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:hover {
-        background-color: #f9f9f9; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:first-of-type {
         border-top: 1px solid #eee; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .etmodules {
+        padding-right: 12px; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .etmodules:before {
+          font-family: 'ETmodules';
+          font-size: 0.75em;
+          position: absolute;
+          right: -6px; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__info {
-        display: block; }
+        display: block;
+        padding: 6px 0; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__title {
-        font-size: 1.2em; }
+        font-size: 1.2em;
+        padding-bottom: 12px;
+        padding-right: 12px;
+        border-bottom: 1px dashed #f2f2f2;
+        position: relative; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__title:before {
+          content: "\43"; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__title.clicked:before {
+          content: "\42"; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__start {
         position: absolute;
         width: 24%;
         left: 0;
         text-align: left;
-        padding-left: 10px;
+        padding-left: 12px;
+        /*padding-top:  ($padding_units * 2) + px;*/
         text-transform: lowercase;
         font-style: italic; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules {
+        position: relative;
+        padding-right: 6px; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules:before {
+          content: "\45";
+          -webkit-transition-property: right;
+          -moz-transition-property: right;
+          -o-transition-property: right;
+          transition-property: right;
+          -webkit-transition-delay: 0s;
+          -moz-transition-delay: 0s;
+          -o-transition-delay: 0s;
+          transition-delay: 0s; }
+          #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules:before:hover {
+            right: 10px; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .facebookUrl {
+        padding-right: 18px; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .facebookUrl:before {
+          content: "\e0c1";
+          font-size: 1em;
+          right: 0;
+          transition: none; }
 
 @media only screen and (max-width: 959px) {
   .eo-fullcalendar.eo-fullcalendar-shortcode .fc-content {

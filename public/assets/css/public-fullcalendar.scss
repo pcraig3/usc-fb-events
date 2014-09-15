@@ -71,6 +71,17 @@ background-color: rgb(203, 135, 205);
   }
 }
 
+$padding_units: 6;
+
+.fade_on_hover {
+
+  cursor: pointer;
+
+  &:hover {
+    opacity: .8;
+  }
+}
+
 #usc_fb_events_fullcalendar__list {
 
   display: none;
@@ -99,13 +110,20 @@ background-color: rgb(203, 135, 205);
 
       float: right;
       display: inline-block;
-      border-top:    1px solid #f5f5f5;
+      border-top:    1px solid #eee;
       width: 100%;
       box-sizing: border-box;
       cursor: pointer;
       text-align: left;
-      padding: 10px;
+      padding: ($padding_units * 2) + px;
       font-size: 2em;
+      line-height: inherit;
+
+    }
+
+    .date-today .date__title {
+
+      background-color: #ffffe0;
     }
 
   }
@@ -119,30 +137,53 @@ background-color: rgb(203, 135, 205);
       float: right;
       display: inline-block;
       font-size: 1.05em;
-      padding: 10px;
+      padding: ($padding_units * 2) + px;
       border-top:    1px solid #f5f5f5;
       padding-left: 30%;
       width: 100%;
       box-sizing: border-box;
-
-      &:hover {
-
-        background-color: #f9f9f9;
-      }
 
       &:first-of-type {
 
         border-top: 1px solid #eee;
       }
 
+      .etmodules {
+
+        padding-right: ($padding_units * 2) + px;
+
+        &:before {
+
+          font-family: 'ETmodules';
+          font-size: 0.75em;
+          position: absolute;
+          right: -$padding_units + px;
+        }
+      }
+
       .event__info {
 
         display: block;
+        padding: $padding_units + px 0;
       }
 
       .event__title {
 
         font-size: 1.2em;
+        padding-bottom: ($padding_units * 2) + px;
+        padding-right: ($padding_units * 2) + px;
+        border-bottom: 1px dashed #f2f2f2;
+        position: relative;
+
+        &:before {
+
+          content: "\43";
+        }
+
+        &.clicked:before {
+
+          content: "\42";
+        }
       }
 
       .event__start {
@@ -151,9 +192,45 @@ background-color: rgb(203, 135, 205);
         width: 24%;
         left: 0;
         text-align: left;
-        padding-left: 10px;
+        padding-left: ($padding_units * 2) + px;
+        /*padding-top:  ($padding_units * 2) + px;*/
         text-transform: lowercase;
         font-style: italic;
+      }
+
+      .event__url .etmodules {
+
+        position: relative;
+        padding-right: $padding_units + px;
+
+          &:before {
+            content: "\45";
+            //right: 0px;
+            -webkit-transition-property: right;
+            -moz-transition-property: right;
+            -o-transition-property: right;
+            transition-property: right;
+            -webkit-transition-delay: 0s;
+            -moz-transition-delay: 0s;
+            -o-transition-delay: 0s;
+            transition-delay: 0s;
+
+            &:hover {
+              right: 10px;
+            }
+          }
+        }
+
+      .event__url .facebookUrl {
+
+        padding-right: 18px;
+
+        &:before {
+          content: "\e0c1";
+          font-size: 1em;
+          right: 0;
+          transition: none;
+        }
       }
 
     }

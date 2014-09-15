@@ -365,6 +365,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var __end_date = new Date( event.end );
         var __end_of_month = new Date( view.end );
 
+        if( !event.fbDescription )
+            event.fbDescription = event.description;
+
         //http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
 
         __list_item.className = event.className.join(' ');
@@ -420,8 +423,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             //because the max value is the total number of days
             var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
-            item_to_add.addEventListener('click', _toggle_hidden_div_onclick );
-            _add_category_color_class_to_classes( item_to_add, [ '.event__title' ] );
+            item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick );
+            _format_event_urls( item_to_add, '.event__url' );
+            _add_classes_to_classes_in_list_item( item_to_add, [ '.event__title', '.event__url a' ], [ 'category__color', 'fade_on_hover', 'etmodules' ] );
             __event_list_array[i].appendChild( item_to_add );
 
             //reveal the node. *wink*
@@ -446,7 +450,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         else if( index === number_of_days ) {
 
             //time_date_string = "Ends at " + _return_12_hour_AMPM_time_string( end_date ) + " | Final Day";
-            time_string = "Until " +  _return_12_hour_AMPM_time_string( end_date );
+            time_string = "Until </br>" +  _return_12_hour_AMPM_time_string( end_date );
             day_string = 'Final Day';
         }
         else {
@@ -479,17 +483,53 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
+    var _format_event_urls = (function( list_item, class_to_format ) {
+
+        //we want them to say 'View Event' with an optional facebook class.
+        var to_format = list_item.querySelector(class_to_format);
+
+        if( !to_format )
+            return list_item;
+
+        var link = document.createElement('a');
+        link.target="_blank";
+        link.href = to_format.innerHTML;
+
+        var if_facebook = list_item.classList.contains('eo-fb-event');
+
+        link.title = 'Learn more about this event';
+        link.innerHTML = 'View Event';
+
+        if( if_facebook ) {
+            link.title += ' on Facebook';
+            link.innerHTML += ' on Facebook';
+            link.classList.add('facebookUrl');
+        }
+
+        link.title += '.';
+
+        to_format.innerHTML = '';
+        to_format.appendChild(link);
+
+        return list_item;
+    });
 
 
-    var _add_category_color_class_to_classes = (function( list_item, classes_for_which_to_add_the_category_color ) {
 
-        var max = classes_for_which_to_add_the_category_color.length;
+    var _add_classes_to_classes_in_list_item = (function( list_item, classes_for_which_to_add_more_classes, additional_classes ) {
 
-        for(var i = 0; i < max; i++) {
+        var max_classes_to_add_to = classes_for_which_to_add_more_classes.length;
+
+        for(var i = 0; i < max_classes_to_add_to; i++) {
             //so this selects only ONE element in the list node.  More logic would be needed to one or more elements
-            var temp = list_item.querySelector(classes_for_which_to_add_the_category_color[i]);
-            if ( temp )
-                temp.classList.add('category__color');
+            var temp = list_item.querySelector(classes_for_which_to_add_more_classes[i]);
+            if ( temp ) {
+
+                var max_additional_classes = additional_classes.length;
+
+                for(var j = 0; j < max_additional_classes; j++)
+                    temp.classList.add(additional_classes[j]);
+            }
         }
 
         return list_item;
@@ -606,9 +646,32 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     var _toggle_hidden_div_onclick = (function() {
 
-        var meta_div = this.querySelector('.meta');
+        var el = this;
 
-        (meta_div.classList.contains('hidden')) ? meta_div.classList.remove("hidden") : meta_div.classList.add("hidden");
+        while( !el.classList.contains('eo-fb-event-list') && el !== null )
+            el = el.parentNode;
+
+        if( !el ) {
+            console.err('Yikes!  Couldn\'t find the list item in question.  Sorry!');
+            return false;
+        }
+
+
+        var meta_div = el.querySelector('.meta');
+
+        var is_hidden = meta_div.classList.contains('hidden');
+
+        if( is_hidden ) {
+
+            this.classList.add('clicked');
+            meta_div.classList.remove('hidden');
+        }
+
+        else {
+
+            this.classList.remove('clicked');
+            meta_div.classList.add('hidden');
+        }
     });
 
     var run_once_per_calendar = (function( view ) {
