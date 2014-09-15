@@ -184,6 +184,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     var _eventorganiser = eventorganiser;
     var _locale = EOAjaxFront.locale;
 
+    var _reset_calendar = true;
+
 
     /**
      * Function inserts a newNode after another node.  This isn't a native JS function, but thankfully a guy on
@@ -435,7 +437,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return event;
     });
 
-        var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
+    var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
 
         var start_span = list_item.querySelector('.event__start');
         var start_date = new Date( parseInt( list_item.getAttribute( 'data-timestamp_start' ) ) );
@@ -457,7 +459,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             //get the time if it starts today //start at one because we incremented index when it was passed in
             if( index === 1 )
-                //time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
+            //time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
                 time_string = _return_12_hour_AMPM_time_string( start_date );
 
 
@@ -676,15 +678,46 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
                 buttons[i].addEventListener('click', function(event) {
 
-                    //remove existing list items when calendar is pressed.
-                    _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
-                    _calendar_name = "";
-                    while( _ids.length )
-                        _ids.pop();
-
+                    _reset_events_list();
                 });
         }
+
+        var filters = document.querySelectorAll(".eo-cal-filter");
+
+        for (var j in filters) {
+            if ( filters.hasOwnProperty(j) && filters[j].nodeType == 1 ) {
+
+                /*
+                 our change event listener doesn't fire quickly enough
+                 (it only shows up AFTER the events have come through again)
+                 so I've come up with a 'delayed' updating method.
+
+                 Basically, set a flag to reset the calendar, and then the next time
+                 the calendar receives events, clear out the ones that already exist.
+                filters[j].addEventListener('change', function(event) {
+
+                });
+                */
+
+                filters[j].addEventListener('click', function(event) {
+
+                    _reset_calendar = true;
+                });
+            }
+        }
+
     };
+
+    var _reset_events_list = (function() {
+
+        //remove existing list items when calendar is pressed.
+        _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
+        _calendar_name = "";
+        while( _ids.length )
+            _ids.pop();
+
+        _reset_calendar = false;
+    });
 
     var _toggle_hidden_div_onclick = (function() {
 
@@ -718,6 +751,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     var run_once_per_calendar = (function( view ) {
 
+        if( _reset_calendar )
+            _reset_events_list();
+
         if( _calendar_name !== view.title ) {
 
             _eo_fullcalendar = document.querySelector('.eo-fullcalendar');
@@ -727,6 +763,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             _calendar_name = view.title;
 
             _ajax_update_wordpress_transient_cache();
+
         }
     });
 
@@ -780,15 +817,15 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
             categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
     }
 
-     head = document.head || document.getElementsByTagName('head')[0];
-     style = document.createElement('style');
+    head = document.head || document.getElementsByTagName('head')[0];
+    style = document.createElement('style');
 
-     style.type = 'text/css';
-     if (style.styleSheet){
-     style.styleSheet.cssText = categories_css_string;
-     } else {
-     style.appendChild(document.createTextNode(categories_css_string));
-     }
+    style.type = 'text/css';
+    if (style.styleSheet){
+        style.styleSheet.cssText = categories_css_string;
+    } else {
+        style.appendChild(document.createTextNode(categories_css_string));
+    }
 
-     head.appendChild(style);
+    head.appendChild(style);
 })( eventorganiser );
