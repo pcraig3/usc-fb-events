@@ -423,8 +423,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //because the max value is the total number of days
             var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
             item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick );
-            _format_event_urls( item_to_add, '.event__url' );
-            _add_classes_to_classes_in_list_item( item_to_add, [ '.event__title', '.event__url a' ], [ 'category__color', 'fade_on_hover', 'etmodules' ] );
+            _format_event_urls( item_to_add, '.event__url', 'view' );
+            _format_event_urls( item_to_add, '.event__ticket_uri', 'ticket' );
+            _add_classes_to_classes_in_list_item( item_to_add, [ '.event__title', '.event__url a', '.event__ticket_uri a' ], [ 'category__color', 'fade_on_hover', 'etmodules' ] );
             __event_list_array[i].appendChild( item_to_add );
 
             //reveal the node. *wink*
@@ -486,7 +487,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
-    var _format_event_urls = (function( list_item, class_to_format ) {
+    var _format_event_urls = (function( list_item, class_to_format, link_type ) {
 
         //we want them to say 'View Event' with an optional facebook class.
         var to_format = list_item.querySelector(class_to_format);
@@ -498,6 +499,30 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         link.target="_blank";
         link.href = to_format.innerHTML;
 
+        switch(link_type){
+            case 'view':
+
+                link = _view_format_event_urls( list_item, link );
+                break;
+
+            case 'ticket':
+
+                link = _ticket_format_event_urls( list_item, link );
+                break;
+
+            default:
+
+                link = _default_format_event_urls( list_item, link );
+        }
+
+        to_format.innerHTML = '';
+        to_format.appendChild(link);
+
+        return list_item;
+    });
+
+    var _view_format_event_urls = (function( list_item, link ) {
+
         var if_facebook = list_item.classList.contains('eo-fb-event');
 
         link.title = 'Learn more about this event';
@@ -506,17 +531,31 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         if( if_facebook ) {
             link.title += ' on Facebook';
             link.innerHTML += ' on Facebook';
-            link.classList.add('facebookUrl');
+            link.classList.add('social_facebook_square');
         }
 
         link.title += '.';
 
-        to_format.innerHTML = '';
-        to_format.appendChild(link);
+        return link;
 
-        return list_item;
     });
 
+
+    var _ticket_format_event_urls = (function( list_item, link ) {
+
+        link.title = 'Buy tickets for this event.';
+        link.innerHTML = 'Buy tickets';
+        link.classList.add('icon_link_alt');
+
+        return link;
+    });
+
+    var _default_format_event_urls = (function( list_item, link ) {
+
+        link.innerHTML = 'View Event Link';
+
+        return link;
+    });
 
 
     var _add_classes_to_classes_in_list_item = (function( list_item, classes_for_which_to_add_more_classes, additional_classes ) {

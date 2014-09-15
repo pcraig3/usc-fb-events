@@ -118,28 +118,24 @@ background-color: rgb(203, 135, 205);
         /*padding-top:  ($padding_units * 2) + px;*/
         text-transform: lowercase;
         font-style: italic; }
-      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules {
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .etmodules {
         position: relative;
         padding-right: 6px; }
-        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules:before {
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules:before, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .etmodules:before {
           content: "\45";
-          -webkit-transition-property: right;
-          -moz-transition-property: right;
-          -o-transition-property: right;
-          transition-property: right;
-          -webkit-transition-delay: 0s;
-          -moz-transition-delay: 0s;
-          -o-transition-delay: 0s;
-          transition-delay: 0s; }
-          #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .etmodules:before:hover {
-            right: 10px; }
-      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .facebookUrl {
+          transition: none; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .social_facebook_square, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .social_facebook_square {
         padding-right: 18px; }
-        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .facebookUrl:before {
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .social_facebook_square:before, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .social_facebook_square:before {
           content: "\e0c1";
           font-size: 1em;
-          right: 0;
-          transition: none; }
+          right: 0; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .icon_link_alt, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .icon_link_alt {
+        padding-right: 18px; }
+        #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .icon_link_alt:before, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .icon_link_alt:before {
+          content: "\e02b";
+          font-size: 1em;
+          right: 0; }
 
 @media only screen and (max-width: 959px) {
   .eo-fullcalendar.eo-fullcalendar-shortcode .fc-content {

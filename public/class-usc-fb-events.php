@@ -255,9 +255,11 @@ class USC_FB_Events {
             $host = ( !empty($event['host']) ) ? '<strong>' . esc_html($event['host']) . '</strong>' : '' ;
 
             //set a location for the event description
-            $location = ( !empty($event['location']) ) ? '@ ' . esc_html($event['location']) : '' ;
+            $location = ( !empty($event['location']) ) ? esc_html($event['location']) : '' ;
+            $locationDescription = ( !empty($location) ) ? '@ ' . $location : '' ;
 
-            $tickets = ( !empty($event['ticket_uri']) ) ? '</br></br><a href="' . esc_url( $event['ticket_uri']) . '" target="_blank">Get Tickets!</a>' : '' ;
+            $ticket_uri = ( !empty($event['ticket_uri']) ) ? esc_url( $event['ticket_uri']) : '' ;
+            $ticketDescription = ( !empty($ticket_uri) ) ? '</br></br><a href="' . $ticket_uri . '" target="_blank">Get Tickets!</a>' : '' ;
 
 
             //set a description or an error message
@@ -365,7 +367,7 @@ class USC_FB_Events {
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
                 'end'		=> $fb_end->format('Y-m-d\TH:i:s\Z'),
-                'description' => $date . '</br></br>' . $host . '</br></br>' . $location . $tickets
+                'description' => $date . '</br></br>' . $host . '</br></br>' . $locationDescription . $ticketDescription
                     . '</br></br>' . $fb_event_description,
 
                 //'venue'		=> $event['venue']['id'],  this is basically useless
@@ -380,9 +382,10 @@ class USC_FB_Events {
                 'textColor'	=> '#ffffff',
 
                 //extra
-                'eid'               => $event['eid'],
+                //'eid'               => $event['eid'],
                 'location'          => $location,
                 'fbDescription'     => $fb_event_description,
+                'ticket_uri'        => $ticket_uri,
 
             );
 

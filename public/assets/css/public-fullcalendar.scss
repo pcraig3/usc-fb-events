@@ -198,41 +198,44 @@ $padding_units: 6;
         font-style: italic;
       }
 
-      .event__url .etmodules {
+      .event__url, .event__ticket_uri {
 
-        position: relative;
-        padding-right: $padding_units + px;
+        .etmodules {
+
+          position: relative;
+          padding-right: $padding_units + px;
 
           &:before {
-            content: "\45";
-            //right: 0px;
-            -webkit-transition-property: right;
-            -moz-transition-property: right;
-            -o-transition-property: right;
-            transition-property: right;
-            -webkit-transition-delay: 0s;
-            -moz-transition-delay: 0s;
-            -o-transition-delay: 0s;
-            transition-delay: 0s;
 
-            &:hover {
-              right: 10px;
-            }
+            content: "\45";
+            transition: none;
           }
         }
 
-      .event__url .facebookUrl {
+        .social_facebook_square {
 
-        padding-right: 18px;
+          padding-right: 18px;
 
-        &:before {
-          content: "\e0c1";
-          font-size: 1em;
-          right: 0;
-          transition: none;
+          &:before {
+
+            content: "\e0c1";
+            font-size: 1em;
+            right: 0;
+          }
+        }
+
+        .icon_link_alt {
+
+          padding-right: 18px;
+
+          &:before {
+
+            content: "\e02b";
+            font-size: 1em;
+            right: 0;
+          }
         }
       }
-
     }
   }
 }
