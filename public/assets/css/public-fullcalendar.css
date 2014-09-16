@@ -143,3 +143,12 @@ background-color: rgb(203, 135, 205);
 
   #usc_fb_events_fullcalendar__list {
     display: block; } }
+@media screen and (max-width: 750px) {
+  .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td {
+    display: inline-block;
+    border-top: none; } }
+/*
+@media screen and (max-width: 480px) {
+
+}
+*/
