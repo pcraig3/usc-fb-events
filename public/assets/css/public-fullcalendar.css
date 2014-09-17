@@ -137,6 +137,9 @@ background-color: rgb(203, 135, 205);
           font-size: 1em;
           right: 0; }
 
+#usc_fb_events_fullcalendar__list__header {
+  display: none; }
+
 @media only screen and (max-width: 959px) {
   .eo-fullcalendar.eo-fullcalendar-shortcode .fc-content {
     display: none; }

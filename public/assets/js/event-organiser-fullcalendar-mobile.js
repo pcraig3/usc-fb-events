@@ -178,6 +178,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     var _list_div;
     var _list_id = options.plugin_prefix + options.id;
 
+    var _mobile_header_div;
+    var _mobile_header_id = options.plugin_prefix + 'fullcalendar__list__header';
+
     var _calendar_name = '';
 
     var _AjaxEvents =  AjaxEvents;
@@ -233,6 +236,40 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @type {Function}
      * @private
      */
+    var _create_mobile_header = (function ( view ) {
+
+        //remove existing mobile header(s).
+        _remove( _mobile_header_div );
+
+        var __fragment = document.createDocumentFragment();
+
+        _mobile_header_div = document.createElement("tr");
+        _mobile_header_div.id = _mobile_header_id;
+
+        var _mobile_header_title = document.createElement("td");
+        _mobile_header_title.id = _mobile_header_id + '__title';
+        _mobile_header_title.innerHTML = _calendar_name;
+
+        //_mobile_header_div.appendChild( _create_date_list_items( view ) );
+        _mobile_header_div.appendChild(_mobile_header_title);
+        __fragment.appendChild(_mobile_header_div);
+
+        var table_body = _eo_fullcalendar.querySelector('.fc-header tbody');
+        var first_table_row = table_body.querySelector('tr');
+
+        console.log(first_table_row);
+        console.log("ROW");
+
+        table_body.insertBefore(__fragment, first_table_row);
+    });
+
+    /**
+     * function clears away any previous lists that may exist, and then creates a new list container <div>
+     * and fills it with a new <ul> element.
+     *
+     * @type {Function}
+     * @private
+     */
     var _create_date_list = (function ( view ) {
 
         //remove existing list(s).
@@ -273,7 +310,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
             __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
             __date_list_item.classList.add( 'clearfix' );
-            __date_list_item.classList.add( 'hidden' );
+            //never hide today's date in the mobile listing
+            if( __past_upcoming_or_today !== 'today' )
+                __date_list_item.classList.add( 'hidden' );
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
             __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );
@@ -761,6 +800,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             _create_date_list( view );
 
             _calendar_name = view.title;
+
+            _create_mobile_header( view );
 
             _ajax_update_wordpress_transient_cache();
 
