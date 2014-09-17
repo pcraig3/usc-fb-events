@@ -219,7 +219,11 @@ class USC_FB_Events_Admin {
             wp_enqueue_script( 'jquery-ui-datepicker' );
 
             // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-            wp_localize_script( 'admin_filterjs', "ajax", array( 'url' => admin_url( 'admin-ajax.php' ) ) );
+            wp_localize_script( 'admin_filterjs', "ajax", array(
+                    'url'       =>  admin_url( 'admin-ajax.php' ),
+                    'calendars' =>  USC_FB_Events::get_instance()->return_wordpress_taxonomy_name_as_a_string( 'event-category', 'name' ),
+                )
+            );
         }
     }
 

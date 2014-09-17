@@ -20,6 +20,8 @@ jQuery(function ($) {
      */
     function ajax_get_events() {
 
+        ajax.calendars = ajax.calendars || '';
+
         // Assign handlers immediately after making the request,
         // and remember the jqxhr object for this request
         var jqxhr = $.post(
@@ -27,7 +29,7 @@ jQuery(function ($) {
             {
                 action:         "get_events",
                 attr_id:        "event_list",
-                calendars:      "usc,faculty%20councils,clubs,western",
+                calendars:      ajax.calendars,
                 nonce:          $("#event_list").data("nonce"),
                 remove_events:  0,
                 whitelist:      1

@@ -242,7 +242,7 @@ class USC_FB_Events {
                 //Not all day, include time
                 $date = eo_format_datetime($fb_start,'F j '.$time_format).' - '.eo_format_datetime($fb_end,'F j '.$time_format);
 
-            }else{
+            } else{
                 //Start and end on the same day
 
                 //if( !eo_is_all_day() ){  forget about all_day events
@@ -461,6 +461,34 @@ class USC_FB_Events {
 
         //else, collapse whitespace and slap a "-0400" on the end (2014-08-30T22:00:00-0400)
         return str_replace(' ', 'T', $start_time) . $offset;
+    }
+
+    public function return_wordpress_taxonomy_name_as_a_string( $taxonomy_name, $to_return ) {
+
+        $args = array(
+            'hide_empty'        => false,
+        );
+
+        $calendar_string = '';
+        $calendar_array = array();
+
+        //get the wordpress terms for the event-category taxonomy
+        $wp_taxonomy_terms = get_terms( $taxonomy_name, $args );
+
+        if( !empty( $wp_taxonomy_terms ) ) {
+
+            foreach( $wp_taxonomy_terms as $wp_taxonomy_term ) {
+
+                array_push( $calendar_array, trim( $wp_taxonomy_term->$to_return ) );
+            }
+        }
+
+        //now return a string.
+
+        if( !empty( $calendar_array ) )
+            $calendar_string = str_replace( ' ', '%20', implode( ',', $calendar_array ) );
+
+        return $calendar_string;
     }
 
     /**
