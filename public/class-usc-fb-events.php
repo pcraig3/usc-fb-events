@@ -299,6 +299,11 @@ class USC_FB_Events {
             else
                 array_push($classNames, 'eo-future-event');
 
+            //add a multi-day class to events that are longer than one day.
+            if( $fb_start->format('Y-m-d') != $fb_end->format('Y-m-d') ){
+                array_push($classNames, 'eo-multi-day');
+            }
+
             /*
              * Set a default bg color for the event
              * If this event has a category color (very likely), then this value will be overwritten
