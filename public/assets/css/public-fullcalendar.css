@@ -13,6 +13,15 @@ top: 448px;
 background-color: rgb(203, 135, 205);
 }
 */
+/* Hide the loading graphic until we've got our horse into it. */
+#eo_fullcalendar_1_loading {
+  /* @see event-organiser.js for the css rules applied by javascript */
+  display: inline-block;
+  visibility: hidden; }
+  #eo_fullcalendar_1_loading img {
+    height: inherit;
+    box-sizing: border-box; }
+
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
   font-family: inherit !important;
   /* Matches the font to the rest of the site */ }
