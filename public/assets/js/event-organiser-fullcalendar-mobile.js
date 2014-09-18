@@ -746,10 +746,10 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
                  Basically, set a flag to reset the calendar, and then the next time
                  the calendar receives events, clear out the ones that already exist.
-                filters[j].addEventListener('change', function(event) {
+                 filters[j].addEventListener('change', function(event) {
 
-                });
-                */
+                 });
+                 */
 
                 filters[j].addEventListener('click', function(event) {
 
@@ -801,6 +801,14 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         }
     });
 
+    var _add_jquery_sticky_element_to_head = (function() {
+
+        jQuery("#usc_fb_events_fullcalendar__list__header").unstick();
+        jQuery("#usc_fb_events_fullcalendar__list__header").sticky({topSpacing:0});
+
+    });
+
+
     var run_once_per_calendar = (function( view ) {
 
         if( _reset_calendar )
@@ -815,6 +823,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             _calendar_name = view.title;
 
             _create_mobile_header( view );
+
+            /*_add_jquery_sticky_element_to_head();*/
 
             _ajax_update_wordpress_transient_cache();
 
@@ -859,7 +869,7 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     return bool;
 }, 4 );
 
-(function add_category_css_to_head( eventorganiser ) {
+function add_category_css_to_head( head, eventorganiser ) {
 
     //all of the categories that we know about
     var all_categories = eventorganiser.fullcal.categories;
@@ -871,8 +881,7 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
             categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
     }
 
-    head = document.head || document.getElementsByTagName('head')[0];
-    style = document.createElement('style');
+    var style = document.createElement('style');
 
     style.type = 'text/css';
     if (style.styleSheet){
@@ -882,4 +891,11 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     }
 
     head.appendChild(style);
-})( eventorganiser );
+};
+
+window.onload = function() {
+
+    var head = document.head || document.getElementsByTagName('head')[0];
+
+    add_category_css_to_head( head, eventorganiser);
+}
