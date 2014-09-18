@@ -60,15 +60,17 @@ background-color: rgb(203, 135, 205);
     line-height: inherit; }
   #usc_fb_events_fullcalendar__list .dates {
     width: 100%;
-    border-left: 1px solid #eee;
-    border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee; }
+    border: 1px solid #eee;
+    /* grey out past events */ }
     #usc_fb_events_fullcalendar__list .dates .date {
       position: relative; }
+    #usc_fb_events_fullcalendar__list .dates .date.date-past .date__title {
+      opacity: .6; }
+    #usc_fb_events_fullcalendar__list .dates .date.date-past .events .event__info {
+      opacity: .75; }
     #usc_fb_events_fullcalendar__list .dates .date__title {
       float: right;
       display: inline-block;
-      border-top: 1px solid #eee;
       width: 100%;
       box-sizing: border-box;
       cursor: pointer;
@@ -92,6 +94,8 @@ background-color: rgb(203, 135, 205);
       box-sizing: border-box; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:first-of-type {
         border-top: 1px solid #eee; }
+      #usc_fb_events_fullcalendar__list .events .eo-fb-event-list:last-of-type {
+        border-bottom: 1px solid #eee; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .etmodules {
         padding-right: 12px; }
         #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .etmodules:before {
@@ -159,7 +163,7 @@ background-color: rgb(203, 135, 205);
       border-top: none;
       padding: 6px 36px 0px 12px; }
       .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td:last-of-type {
-        padding-bottom: 1px; }
+        padding-bottom: 12px; }
     .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header .fc-header-title {
       display: none; }
 
@@ -173,7 +177,9 @@ background-color: rgb(203, 135, 205);
     border-bottom: none; }
     #usc_fb_events_fullcalendar__list__header .usc_fb_events_header__title {
       display: inline-block;
-      padding: 6px 36px 0px 12px; }
+      padding: 6px 36px 0px 12px;
+      padding-top: 8px;
+      padding-bottom: 4px; }
 
   .is-sticky #usc_fb_events_fullcalendar__list__header {
     background-color: white;
