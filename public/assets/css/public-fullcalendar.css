@@ -20,7 +20,8 @@ background-color: rgb(203, 135, 205);
   visibility: hidden; }
   #eo_fullcalendar_1_loading img {
     height: inherit;
-    box-sizing: border-box; }
+    box-sizing: border-box;
+    max-height: 46px; }
 
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
   font-family: inherit !important;

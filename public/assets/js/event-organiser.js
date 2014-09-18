@@ -53,9 +53,11 @@
                 console.log('CLICK!');
                 var height_sticky_title = $('#usc_fb_events_fullcalendar__list__header').height();
 
-                var height_header = $eo_fullcalendar.find('.fc-header').height();
+                //some weird bug keeps giving me the wrong height
+                var height_header = $eo_fullcalendar.find('.fc-header').height() + 2; 
 
                 $loading.css('height', height_header + height_sticky_title + 'px');
+                $loading.css('padding-top', ( ( height_header + height_sticky_title - 46 ) / 2) + 'px');
         });
 
     }
