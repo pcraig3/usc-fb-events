@@ -137,6 +137,7 @@ background-color: rgb(203, 135, 205);
           font-size: 1em;
           right: 0; }
 
+/* hide the generated header until the layout breaks down at 750 picks */
 #usc_fb_events_fullcalendar__list__header {
   display: none; }
 
@@ -147,9 +148,24 @@ background-color: rgb(203, 135, 205);
   #usc_fb_events_fullcalendar__list {
     display: block; } }
 @media screen and (max-width: 750px) {
-  .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td {
-    display: inline-block;
-    border-top: none; } }
+  .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header {
+    border-top: none;
+    /* hide the title cell */ }
+    .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td {
+      display: inline-block;
+      border-top: none; }
+    .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header .fc-header-title {
+      display: none; }
+
+  /* show our header on the top */
+  #usc_fb_events_fullcalendar__list__header {
+    display: block;
+    box-sizing: border-box;
+    border: 1px solid #eee;
+    border-bottom: none; }
+    #usc_fb_events_fullcalendar__list__header .usc_fb_events_header__title {
+      display: inline-block;
+      padding: 6px 24px; } }
 /*
 @media screen and (max-width: 480px) {
 

@@ -243,24 +243,36 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         var __fragment = document.createDocumentFragment();
 
-        _mobile_header_div = document.createElement("tr");
+        _mobile_header_div = document.createElement("div");
         _mobile_header_div.id = _mobile_header_id;
 
-        var _mobile_header_title = document.createElement("td");
-        _mobile_header_title.id = _mobile_header_id + '__title';
-        _mobile_header_title.innerHTML = _calendar_name;
-
-        //_mobile_header_div.appendChild( _create_date_list_items( view ) );
-        _mobile_header_div.appendChild(_mobile_header_title);
+        _mobile_header_div = _add_or_update_mobile_header_title( _mobile_header_div );
         __fragment.appendChild(_mobile_header_div);
 
-        var table_body = _eo_fullcalendar.querySelector('.fc-header tbody');
-        var first_table_row = table_body.querySelector('tr');
+        _eo_fullcalendar.parentNode.insertBefore(__fragment, _eo_fullcalendar);
+    });
 
-        console.log(first_table_row);
-        console.log("ROW");
+    var _add_or_update_mobile_header_title = (function ( _mobile_header_div ) {
 
-        table_body.insertBefore(__fragment, first_table_row);
+        _remove( _mobile_header_div.querySelector('.usc_fb_events_header__title') );
+
+        var _mobile_header_title_inner_HTML = '';
+        var _header_title_element = document.querySelector('.fc-header-title');
+        if( _header_title_element )
+            if( _header_title_element.innerHTML )
+                _mobile_header_title_inner_HTML = _header_title_element.innerHTML;
+
+        var _mobile_header_title = document.createElement("span");
+
+        //maybe isolate this if you want some more control over the header class
+        _mobile_header_title.classList.add('usc_fb_events_header__title');
+
+        //might be some weird shit going on here.
+        _mobile_header_title.innerHTML = ( _mobile_header_title_inner_HTML ) ? _mobile_header_title_inner_HTML : _calendar_name;
+
+        _mobile_header_div.appendChild(_mobile_header_title);
+
+        return _mobile_header_div;
     });
 
     /**
@@ -717,6 +729,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
                 buttons[i].addEventListener('click', function(event) {
 
+                    _mobile_header_div = _add_or_update_mobile_header_title( _mobile_header_div );
                     _reset_events_list();
                 });
         }

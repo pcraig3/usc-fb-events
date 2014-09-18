@@ -349,17 +349,14 @@ class USC_FB_Events {
                 foreach( $fb_event_categories_slugs as $fb_event_category_slug )
                     array_push( $classNames, 'category-' . $fb_event_category_slug );
 
-
             /*
             array_push($classNames, 'fb-month-start-' . $start);
             array_push($classNames, 'fb-month-end-' . $end);
             array_push($classNames, 'fb-calendars-' . $calendar_string);
-
             array_push($classNames, 'fb-transient-' . $transient_name);
             */
             $if_cached = ( $response['events_stored_in_cache'] ) ? '' : 'not-' ;
             array_push($classNames, 'fb-' . $if_cached . 'cached');
-
 
             //okay, so now it's time to actually create the event
             $fb_event = array(
