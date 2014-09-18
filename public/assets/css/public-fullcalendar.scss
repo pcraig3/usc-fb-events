@@ -87,6 +87,11 @@ $padding_units: 6;
   display: none;
   text-align: right;
 
+  * {
+
+    box-sizing: border-box;
+  }
+
   ul {
 
     list-style-type: none;
@@ -100,7 +105,6 @@ $padding_units: 6;
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
     border-bottom: 1px solid #eee;
-    box-sizing: border-box;
 
     .date {
 
@@ -117,7 +121,7 @@ $padding_units: 6;
       cursor: pointer;
       text-align: left;
       padding: ($padding_units * 2) + px;
-      font-size: 2em;
+      font-size: 1.858em; /* We're matching 26 px, but I don't like using px */
       line-height: inherit;
 
     }
@@ -242,7 +246,7 @@ $padding_units: 6;
 }
 
 /* hide the generated header until the layout breaks down at 750 picks */
-#usc_fb_events_fullcalendar__list__header {
+.sticky-wrapper, #usc_fb_events_fullcalendar__list__header {
 
   display: none;
 }
@@ -265,6 +269,8 @@ $padding_units: 6;
 
 @media screen and (max-width: 750px) {
 
+  $padding_for_header_elements: 6px 36px 0px 12px;
+
   .eo-fullcalendar.eo-fullcalendar-shortcode {
 
     .fc-header {
@@ -275,6 +281,12 @@ $padding_units: 6;
 
         display: inline-block;
         border-top: none;
+        padding: $padding_for_header_elements;
+
+        &:last-of-type {
+          
+          padding-bottom: 6px;
+        }
       }
 
       /* hide the title cell */
@@ -286,9 +298,13 @@ $padding_units: 6;
   }
 
   /* show our header on the top */
+  .sticky-wrapper, #usc_fb_events_fullcalendar__list__header {
+
+    display: block;
+  }
+
   #usc_fb_events_fullcalendar__list__header {
 
-    display:        block;
     box-sizing:     border-box;
     border:         1px solid #eee;
     border-bottom:  none;
@@ -296,7 +312,7 @@ $padding_units: 6;
     .usc_fb_events_header__title {
 
       display: inline-block;
-      padding: 6px 24px;
+      padding: $padding_for_header_elements;
     }
   }
 
@@ -305,7 +321,11 @@ $padding_units: 6;
     #usc_fb_events_fullcalendar__list__header {
 
       background-color: white;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #eee;
+
+      -webkit-box-shadow: 0px 4px 6px -3px rgba(238, 238, 238, 1);
+      -moz-box-shadow:    0px 4px 6px -3px rgba(238, 238, 238, 1);
+      box-shadow:         0px 4px 6px -3px rgba(238, 238, 238, 1);
       z-index: 100;
       width: 100%;
     }

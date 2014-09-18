@@ -52,6 +52,8 @@ background-color: rgb(203, 135, 205);
 #usc_fb_events_fullcalendar__list {
   display: none;
   text-align: right; }
+  #usc_fb_events_fullcalendar__list * {
+    box-sizing: border-box; }
   #usc_fb_events_fullcalendar__list ul {
     list-style-type: none;
     padding: 0;
@@ -60,8 +62,7 @@ background-color: rgb(203, 135, 205);
     width: 100%;
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    box-sizing: border-box; }
+    border-bottom: 1px solid #eee; }
     #usc_fb_events_fullcalendar__list .dates .date {
       position: relative; }
     #usc_fb_events_fullcalendar__list .dates .date__title {
@@ -73,7 +74,8 @@ background-color: rgb(203, 135, 205);
       cursor: pointer;
       text-align: left;
       padding: 12px;
-      font-size: 2em;
+      font-size: 1.858em;
+      /* We're matching 26 px, but I don't like using px */
       line-height: inherit; }
     #usc_fb_events_fullcalendar__list .dates .date-today .date__title {
       background-color: #ffffe0; }
@@ -139,7 +141,7 @@ background-color: rgb(203, 135, 205);
           right: 0; }
 
 /* hide the generated header until the layout breaks down at 750 picks */
-#usc_fb_events_fullcalendar__list__header {
+.sticky-wrapper, #usc_fb_events_fullcalendar__list__header {
   display: none; }
 
 @media only screen and (max-width: 959px) {
@@ -154,23 +156,31 @@ background-color: rgb(203, 135, 205);
     /* hide the title cell */ }
     .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td {
       display: inline-block;
-      border-top: none; }
+      border-top: none;
+      padding: 6px 36px 0px 12px; }
+      .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header tr td:last-of-type {
+        padding-bottom: 6px; }
     .eo-fullcalendar.eo-fullcalendar-shortcode .fc-header .fc-header-title {
       display: none; }
 
   /* show our header on the top */
+  .sticky-wrapper, #usc_fb_events_fullcalendar__list__header {
+    display: block; }
+
   #usc_fb_events_fullcalendar__list__header {
-    display: block;
     box-sizing: border-box;
     border: 1px solid #eee;
     border-bottom: none; }
     #usc_fb_events_fullcalendar__list__header .usc_fb_events_header__title {
       display: inline-block;
-      padding: 6px 24px; }
+      padding: 6px 36px 0px 12px; }
 
   .is-sticky #usc_fb_events_fullcalendar__list__header {
     background-color: white;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid #eee;
+    -webkit-box-shadow: 0px 4px 6px -3px #eeeeee;
+    -moz-box-shadow: 0px 4px 6px -3px #eeeeee;
+    box-shadow: 0px 4px 6px -3px #eeeeee;
     z-index: 100;
     width: 100%; } }
 /*

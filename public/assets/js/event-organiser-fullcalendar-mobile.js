@@ -801,19 +801,62 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         }
     });
 
+    /**
+     * This is actually super inefficient code and I hope it dies.
+     *
+     * @type {Function}
+     * @private
+     */
     var _add_jquery_sticky_element_to_head = (function() {
 
-        $header_title = jQuery("#usc_fb_events_fullcalendar__list__header");
-        $eo_fullcalendar = jQuery('.eo-fullcalendar');
+        header_title = document.getElementById('usc_fb_events_fullcalendar__list__header');
+        $header_title = jQuery( header_title );
+
+        eo_list = document.getElementById(_list_id);
+        $eo_list = jQuery( eo_list );
+
         $header_title.unstick();
         $header_title.sticky({topSpacing:0});
 
-        $header_title.on('sticky-start', function() { $header_title.css("width", $eo_fullcalendar.width() ); });
+        $header_title.on('sticky-start', function() { $header_title.css("width", $eo_list.width() ); });
         $header_title.on('sticky-end', function() { $header_title.css("width", '' ); });
 
-        /* TODO: Work this on window resize */
+        //basically, we need to check when the window resizes if the thing is visible, and, if so, adjust its size.
 
-        /* TODO: If it's possible to check window height first, then do that. */
+        jQuery( window ).resize(function() {
+
+            if( $header_title.is(':visible') )
+                $header_title.css("width", $eo_list.width() );
+
+        });
+
+        jQuery( window ).scroll(function() {
+
+            if( header_title.parentNode.classList.contains('is-sticky') ) {
+
+                var eo_list_bottom = eo_list.getBoundingClientRect().bottom;
+                var header_title_height = $header_title.height();
+
+                //if we have scrolled pas the list, hide the header entirely
+                if( eo_list_bottom < 0 )
+                    $header_title.css('top', - header_title_height - 2 + "px" );
+
+                //if we have not scrolled past the list and it's still higher than the hieght of the header, top = 0;
+                else if( eo_list_bottom >= header_title_height )
+                    $header_title.css('top', '0' );
+
+                /*
+                 for everything in between (like there's 40px left before the bottom of the list and our header is 50 px high),
+                 then set the top equal to its height minus how many pixels left between the bottom of the list and the
+                 top of the window. (ie, 50 - 40 = top : 10px)
+                 */
+                else
+                    $header_title.css('top', ( eo_list_bottom - header_title_height ) + "px" );
+
+            }
+
+        });
+
     });
 
 
