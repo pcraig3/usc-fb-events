@@ -145,7 +145,7 @@ background-color: rgb(203, 135, 205);
           right: 0; }
 
 /* hide the generated header until the layout breaks down at 750 picks */
-.sticky-wrapper, #usc_fb_events_fullcalendar__list__header {
+.sticky-wrapper, #usc_fb_events_fullcalendar__list__header, .fc-button.usc_fc_events_header__button__top {
   display: none; }
 
 @media only screen and (max-width: 959px) {
@@ -177,9 +177,7 @@ background-color: rgb(203, 135, 205);
     border-bottom: none; }
     #usc_fb_events_fullcalendar__list__header .usc_fb_events_header__title {
       display: inline-block;
-      padding: 6px 36px 0px 12px;
-      padding-top: 8px;
-      padding-bottom: 4px; }
+      padding: 8px 0px 4px 12px; }
 
   .is-sticky #usc_fb_events_fullcalendar__list__header {
     background-color: white;
@@ -190,6 +188,12 @@ background-color: rgb(203, 135, 205);
     box-shadow:         0px 4px 6px -3px rgba(238, 238, 238, 1);*/
     z-index: 100;
     width: 100%; } }
+@media screen and (max-width: 600px) {
+  .is-sticky #usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__top {
+    float: right;
+    top: 10px;
+    right: 12px;
+    display: inline-block; } }
 /*
 @media screen and (max-width: 480px) {
 

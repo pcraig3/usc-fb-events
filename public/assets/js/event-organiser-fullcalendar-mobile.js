@@ -257,6 +257,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _mobile_header_div.id = _mobile_header_id;
 
         _mobile_header_div = _add_or_update_mobile_header_title( _mobile_header_div );
+        _mobile_header_div = _add_button_top( _mobile_header_div );
         __fragment.appendChild(_mobile_header_div);
 
         _eo_fullcalendar.parentNode.insertBefore(__fragment, _eo_fullcalendar);
@@ -282,7 +283,55 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         _mobile_header_div.appendChild(_mobile_header_title);
 
+        //exploiting the fact that inserting an element already on the DOM removes it from its current location.
+        _mobile_header_div.insertBefore(_mobile_header_title, _mobile_header_div.firstChild);
+
         return _mobile_header_div;
+    });
+
+    var _add_button_top = (function ( _mobile_header_div ) {
+
+        _remove( _mobile_header_div.querySelector('.usc_fc_events_button-top') );
+
+        var _mobile_header_button_top = document.createElement("a");
+        //main-content
+
+        var button_href = '#fb_usc_events_fullcalendar__back_to_top';
+
+        _mobile_header_button_top.href = button_href;
+        _mobile_header_button_top.title = 'Back to top.';
+        _mobile_header_button_top.className = 'fc-button ui-state-default ui-state-disabled';
+        _mobile_header_button_top.classList.add('usc_fc_events_header__button__top');
+        _add_jquery_event_handlers_to_button( _mobile_header_button_top );
+
+        //creates a button with an icon pointing 'up';
+        _mobile_header_button_top.innerHTML = '<span class="fc-button-content"><span class="fc-icon-wrap"><span class="ui-icon ui-icon-circle-triangle-n"></span></span></span>';
+
+        _mobile_header_div.appendChild( _mobile_header_button_top );
+
+        return _mobile_header_div;
+    });
+
+    var _add_jquery_event_handlers_to_button = (function( _mobile_header_button_top ) {
+
+        _mobile_header_button_top.addEventListener('click', function( event ) {
+
+            if( this.classList.contains('ui-state-disabled') )
+                event.preventDefault();
+
+        });
+
+        jQuery( window ).scroll(function() {
+            //if the header
+
+            var _list = document.querySelector('#' + _list_id );
+
+            if( _list.getBoundingClientRect().top < 0 )
+                _mobile_header_button_top.classList.remove('ui-state-disabled');
+
+            else
+                _mobile_header_button_top.classList.add('ui-state-disabled');
+        });
     });
 
     /**
@@ -734,7 +783,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      */
     window.onload = function() {
         //whenever you click the calendar buttons, remove existing list events
-        var buttons = document.querySelectorAll('.fc-button:not( .fc-button-today )');
+        var buttons = document.querySelectorAll('.fc-button-prev, .fc-button-next');
         for (var i in buttons) {
             if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
                 buttons[i].addEventListener('click', function(event) {
@@ -864,7 +913,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 if( eo_list_bottom < 0 )
                     $header_title.css('top', - header_title_height - 2 + "px" );
 
-                //if we have not scrolled past the list and it's still higher than the hieght of the header, top = 0;
+                //if we have not scrolled past the list and it's still higher than the height of the header, top = 0;
                 else if( eo_list_bottom >= header_title_height )
                     $header_title.css('top', '0' );
 
