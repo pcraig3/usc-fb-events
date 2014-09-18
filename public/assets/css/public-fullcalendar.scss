@@ -284,8 +284,8 @@ $padding_units: 6;
         padding: $padding_for_header_elements;
 
         &:last-of-type {
-          
-          padding-bottom: 6px;
+
+          padding-bottom: 12px;
         }
       }
 
@@ -323,9 +323,10 @@ $padding_units: 6;
       background-color: white;
       border-bottom: 1px solid #eee;
 
+      /* Not flat design enough
       -webkit-box-shadow: 0px 4px 6px -3px rgba(238, 238, 238, 1);
       -moz-box-shadow:    0px 4px 6px -3px rgba(238, 238, 238, 1);
-      box-shadow:         0px 4px 6px -3px rgba(238, 238, 238, 1);
+      box-shadow:         0px 4px 6px -3px rgba(238, 238, 238, 1);*/
       z-index: 100;
       width: 100%;
     }

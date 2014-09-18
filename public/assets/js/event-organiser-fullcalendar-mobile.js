@@ -238,6 +238,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      */
     var _create_mobile_header = (function ( view ) {
 
+        var if_sticky = false;
+
+        if( _mobile_header_div )
+            if( _mobile_header_div.parentNode )
+                if( _mobile_header_div.parentNode.classList.contains('sticky-wrapper') )
+                    if_sticky = true;
+
+        if( if_sticky )
+            jQuery( _mobile_header_div ).unstick();
+
         //remove existing mobile header(s).
         _remove( _mobile_header_div );
 
@@ -809,11 +819,11 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      */
     var _add_jquery_sticky_element_to_head = (function() {
 
-        header_title = document.getElementById('usc_fb_events_fullcalendar__list__header');
-        $header_title = jQuery( header_title );
+        var header_title = document.getElementById('usc_fb_events_fullcalendar__list__header');
+        var $header_title = jQuery( header_title );
 
-        eo_list = document.getElementById(_list_id);
-        $eo_list = jQuery( eo_list );
+        var eo_list = document.getElementById(_list_id);
+        var $eo_list = jQuery( eo_list );
 
         $header_title.unstick();
         $header_title.sticky({topSpacing:0});
@@ -822,15 +832,28 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         $header_title.on('sticky-end', function() { $header_title.css("width", '' ); });
 
         //basically, we need to check when the window resizes if the thing is visible, and, if so, adjust its size.
-
         jQuery( window ).resize(function() {
 
-            if( $header_title.is(':visible') )
+            var header_title = document.getElementById('usc_fb_events_fullcalendar__list__header');
+            var $header_title = jQuery( header_title );
+
+            var eo_list = document.getElementById( _list_id );
+            var $eo_list = jQuery( eo_list );
+
+            if( header_title.parentNode.classList.contains('is-sticky') )
                 $header_title.css("width", $eo_list.width() );
+
+            if( $header_title.height() > 0 )
+                $header_title.parent().css( "height" , $header_title.height() );
 
         });
 
         jQuery( window ).scroll(function() {
+
+            var header_title = document.getElementById('usc_fb_events_fullcalendar__list__header');
+            var $header_title = jQuery( header_title );
+
+            var eo_list = document.getElementById( _list_id );
 
             if( header_title.parentNode.classList.contains('is-sticky') ) {
 
@@ -920,7 +943,7 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     return bool;
 }, 4 );
 
-function add_category_css_to_head( head, eventorganiser ) {
+(function add_category_css_to_head( eventorganiser ) {
 
     //all of the categories that we know about
     var all_categories = eventorganiser.fullcal.categories;
@@ -932,6 +955,7 @@ function add_category_css_to_head( head, eventorganiser ) {
             categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
     }
 
+    var head = document.head || document.getElementsByTagName('head')[0];
     var style = document.createElement('style');
 
     style.type = 'text/css';
@@ -942,11 +966,4 @@ function add_category_css_to_head( head, eventorganiser ) {
     }
 
     head.appendChild(style);
-};
-
-window.onload = function() {
-
-    var head = document.head || document.getElementsByTagName('head')[0];
-
-    add_category_css_to_head( head, eventorganiser);
-}
+})( eventorganiser );
