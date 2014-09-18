@@ -100,6 +100,7 @@ $padding_units: 6;
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
     border-bottom: 1px solid #eee;
+    box-sizing: border-box;
 
     .date {
 
@@ -296,6 +297,17 @@ $padding_units: 6;
 
       display: inline-block;
       padding: 6px 24px;
+    }
+  }
+
+  .is-sticky {
+
+    #usc_fb_events_fullcalendar__list__header {
+
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      width: 100%;
     }
   }
 }

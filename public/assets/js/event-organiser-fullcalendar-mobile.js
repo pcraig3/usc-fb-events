@@ -803,9 +803,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     var _add_jquery_sticky_element_to_head = (function() {
 
-        jQuery("#usc_fb_events_fullcalendar__list__header").unstick();
-        jQuery("#usc_fb_events_fullcalendar__list__header").sticky({topSpacing:0});
+        $header_title = jQuery("#usc_fb_events_fullcalendar__list__header");
+        $eo_fullcalendar = jQuery('.eo-fullcalendar');
+        $header_title.unstick();
+        $header_title.sticky({topSpacing:0});
 
+        $header_title.on('sticky-start', function() { $header_title.css("width", $eo_fullcalendar.width() ); });
+        $header_title.on('sticky-end', function() { $header_title.css("width", '' ); });
+
+        /* TODO: Work this on window resize */
+
+        /* TODO: If it's possible to check window height first, then do that. */
     });
 
 
@@ -824,7 +832,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             _create_mobile_header( view );
 
-            /*_add_jquery_sticky_element_to_head();*/
+            _add_jquery_sticky_element_to_head();
 
             _ajax_update_wordpress_transient_cache();
 
