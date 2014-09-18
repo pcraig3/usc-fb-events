@@ -563,6 +563,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             //because the max value is the total number of days
             var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
+            item_to_add = _format_location_return_list_item( item_to_add );
             item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick );
             _format_event_urls( item_to_add, '.event__url', 'view' );
             _format_event_urls( item_to_add, '.event__ticket_uri', 'ticket' );
@@ -627,6 +628,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         title_span.innerHTML = title_span.innerHTML + ' (' + day_string + ')';
         return list_item;
     });
+
+    var _format_location_return_list_item = (function( list_item ) {
+
+        var location_span = list_item.querySelector('.event__location');
+        if( location_span )
+            location_span.innerHTML = '@ ' + location_span.innerHTML;
+
+        return list_item;
+    });
+
 
     var _format_event_urls = (function( list_item, class_to_format, link_type ) {
 
