@@ -257,7 +257,13 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _mobile_header_div.id = _mobile_header_id;
 
         _mobile_header_div = _add_or_update_mobile_header_title( _mobile_header_div );
-        _mobile_header_div = _add_button_top( _mobile_header_div );
+
+        var class_button_top = 'usc_fc_events_header__button__top';
+        _mobile_header_div = _add_button_top( _mobile_header_div, class_button_top );
+        var class_button_date_today = 'usc_fc_events_header__button__date_today';
+        _mobile_header_div = _add_button_todays_date( _mobile_header_div, class_button_date_today );
+        _add_jquery_event_handlers_to_buttons( _mobile_header_div, class_button_top, class_button_date_today );
+
         __fragment.appendChild(_mobile_header_div);
 
         _eo_fullcalendar.parentNode.insertBefore(__fragment, _eo_fullcalendar);
@@ -289,9 +295,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return _mobile_header_div;
     });
 
-    var _add_button_top = (function ( _mobile_header_div ) {
+    var _add_button_top = (function ( _mobile_header_div, button_class ) {
 
-        _remove( _mobile_header_div.querySelector('.usc_fc_events_button-top') );
+        _remove( _mobile_header_div.querySelector('.' + button_class ) );
 
         var _mobile_header_button_top = document.createElement("a");
         //main-content
@@ -300,37 +306,57 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         _mobile_header_button_top.href = button_href;
         _mobile_header_button_top.title = 'Back to top.';
-        _mobile_header_button_top.className = 'fc-button ui-state-default ui-state-disabled';
-        _mobile_header_button_top.classList.add('usc_fc_events_header__button__top');
-        _add_jquery_event_handlers_to_button( _mobile_header_button_top );
+        _mobile_header_button_top.className = 'fc-button ui-state-default hidden'; // ui-state-disabled';
+        _mobile_header_button_top.classList.add(button_class);
 
         //creates a button with an icon pointing 'up';
-        _mobile_header_button_top.innerHTML = '<span class="fc-button-content"><span class="fc-icon-wrap"><span class="ui-icon ui-icon-circle-triangle-n"></span></span></span>';
+        _mobile_header_button_top.innerHTML = '<span class="fc-button-content"><span class="fc-icon-wrap"><span class="ui-icon .ui-icon-arrow-1-s"></span></span></span>';
 
         _mobile_header_div.appendChild( _mobile_header_button_top );
 
         return _mobile_header_div;
     });
 
-    var _add_jquery_event_handlers_to_button = (function( _mobile_header_button_top ) {
+    var _add_button_todays_date = (function ( _mobile_header_div, button_class ) {
 
-        _mobile_header_button_top.addEventListener('click', function( event ) {
+        _remove( _mobile_header_div.querySelector('.' + button_class ) );
 
-            if( this.classList.contains('ui-state-disabled') )
-                event.preventDefault();
+        var _mobile_header_button_date_today = document.createElement("a");
+        //main-content
 
-        });
+        var button_href = '#usc_fb_events_fullcalendar__date__today';
+
+        _mobile_header_button_date_today.href = button_href;
+        _mobile_header_button_date_today.title = 'Jump to today\'s date.';
+        _mobile_header_button_date_today.className = 'fc-button ui-state-highlight';// ui-state-disabled';
+        _mobile_header_button_date_today.classList.add( button_class );
+
+        //creates a button with an icon pointing 'up';
+        _mobile_header_button_date_today.innerHTML = '<span class="fc-button-content"><span class="fc-icon-wrap"><span class="ui-icon ui-icon-circle-triangle-s"></span></span></span>';
+
+        _mobile_header_div.appendChild( _mobile_header_button_date_today );
+
+        return _mobile_header_div;
+    });
+
+    var _add_jquery_event_handlers_to_buttons = (function( _mobile_header_div, class_button_top, class_button_date_today ) {
+
+        var button_top = _mobile_header_div.querySelector('.' + class_button_top);
+        var button_date_today = _mobile_header_div.querySelector('.' + class_button_date_today);
 
         jQuery( window ).scroll(function() {
             //if the header
 
             var _list = document.querySelector('#' + _list_id );
 
-            if( _list.getBoundingClientRect().top < 0 )
-                _mobile_header_button_top.classList.remove('ui-state-disabled');
-
-            else
-                _mobile_header_button_top.classList.add('ui-state-disabled');
+            if( _list.getBoundingClientRect().top < 0 ) {
+                button_top.classList.remove('hidden');
+                button_date_today.classList.add('hidden');
+            }
+            else {
+                button_top.classList.add('hidden');
+                button_date_today.classList.remove('hidden');
+            }
         });
     });
 
@@ -384,6 +410,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //never hide today's date in the mobile listing
             if( __past_upcoming_or_today !== 'today' )
                 __date_list_item.classList.add( 'hidden' );
+
+            else
+                __date_list_item.id = 'usc_fb_events_fullcalendar__date__today';
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
             __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );

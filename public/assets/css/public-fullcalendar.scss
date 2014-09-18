@@ -261,7 +261,8 @@ $padding_units: 6;
 }
 
 /* hide the generated header until the layout breaks down at 750 picks */
-.sticky-wrapper, #usc_fb_events_fullcalendar__list__header, .fc-button.usc_fc_events_header__button__top {
+.sticky-wrapper, #usc_fb_events_fullcalendar__list__header,
+#usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__date_today {
 
   display: none;
 }
@@ -349,20 +350,14 @@ $padding_units: 6;
 
 @media screen and (max-width: 600px) {
 
-  .is-sticky {
-
-    #usc_fb_events_fullcalendar__list__header {
-
-      .usc_fc_events_header__button__top {
+  .is-sticky #usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__top,
+  #usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__date_today {
 
         float: right;
         top: 10px;
         right: 12px;
         display: inline-block;
       }
-    }
-  }
-
 }
 
 
