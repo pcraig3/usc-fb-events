@@ -16,7 +16,6 @@
         loading_horse( $eo_fullcalendar );
 
 
-
         //if you click one of the fc-put-in-by-me buttons, slide to them instead of jumping.
         var $html_body = $( 'html, body' );
 
@@ -60,6 +59,18 @@
                 }
             } );
         } );
+
+        /** What would it need to do? **/
+        /**
+         * So, click a button, start a countdown.
+         * Click again, restart the countdown.
+         * Check for the loading thing.  If you haven't seen the loading thing and the time
+         * runs out, then print a 'no events found' notice.
+         * If you have seen the loading thing, wait a bit longer.
+         * If you have seen the loading thing and then an event list appears, then stop everything.
+         * If you have seen the loading thing and NO event list appears, then print a 'no events found' message
+         * ** At any point this can be interrupted by another button press.  Reset everything on another button press **
+         */
 
     });
 

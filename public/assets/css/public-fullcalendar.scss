@@ -155,6 +155,11 @@ $padding_units: 6;
       background-color: #ffffe0;
     }
 
+    .bottom-border .date__title {
+
+      border-bottom: 1px solid #eee;
+    }
+
   }
 
   .events {

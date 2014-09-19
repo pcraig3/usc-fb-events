@@ -91,6 +91,8 @@ background-color: rgb(203, 135, 205);
       line-height: inherit; }
     #usc_fb_events_fullcalendar__list .dates .date-today .date__title {
       background-color: #ffffe0; }
+    #usc_fb_events_fullcalendar__list .dates .bottom-border .date__title {
+      border-bottom: 1px solid #eee; }
   #usc_fb_events_fullcalendar__list .events {
     position: relative; }
     #usc_fb_events_fullcalendar__list .events .eo-fb-event-list {

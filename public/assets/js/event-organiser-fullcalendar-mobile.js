@@ -251,7 +251,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //remove existing mobile header(s).
         _remove( _mobile_header_div );
 
-        var __fragment = document.createDocumentFragment();
+        var __start     = new Date( view.start );
+        var __today     = new Date();
+        var __fragment  = document.createDocumentFragment();
 
         _mobile_header_div = document.createElement("div");
         _mobile_header_div.id = _mobile_header_id;
@@ -260,9 +262,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         var class_button_top = 'usc_fc_events_header__button__top';
         _mobile_header_div = _add_button_top( _mobile_header_div, class_button_top );
-        var class_button_date_today = 'usc_fc_events_header__button__date_today';
-        _mobile_header_div = _add_button_todays_date( _mobile_header_div, class_button_date_today );
-        _add_jquery_event_handlers_to_buttons( _mobile_header_div, class_button_top, class_button_date_today );
+        _event_handler_reveal_button_when_list_touches_top_of_browser( _mobile_header_div, class_button_top );
+
+        //only show the 'jump to today button if it's the current month
+        if(     __start.getFullYear() === __today.getFullYear()
+            &&  __start.getMonth() === __today.getMonth() ) {
+
+            var class_button_date_today = 'usc_fc_events_header__button__date_today';
+            _mobile_header_div = _add_button_todays_date( _mobile_header_div, class_button_date_today );
+            _event_handler_hide_button_when_list_touches_top_of_browser( _mobile_header_div, class_button_date_today );
+        }
 
         __fragment.appendChild(_mobile_header_div);
 
@@ -339,24 +348,37 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return _mobile_header_div;
     });
 
-    var _add_jquery_event_handlers_to_buttons = (function( _mobile_header_div, class_button_top, class_button_date_today ) {
+    var _event_handler_reveal_button_when_list_touches_top_of_browser
+        = (function( _mobile_header_div, class_button ) {
 
-        var button_top = _mobile_header_div.querySelector('.' + class_button_top);
-        var button_date_today = _mobile_header_div.querySelector('.' + class_button_date_today);
+        var button = _mobile_header_div.querySelector('.' + class_button);
 
         jQuery( window ).scroll(function() {
             //if the header
 
             var _list = document.querySelector('#' + _list_id );
 
-            if( _list.getBoundingClientRect().top < 0 ) {
-                button_top.classList.remove('hidden');
-                button_date_today.classList.add('hidden');
-            }
-            else {
-                button_top.classList.add('hidden');
-                button_date_today.classList.remove('hidden');
-            }
+            ( _list.getBoundingClientRect().top < 0 )
+                ?   button.classList.remove('hidden')
+                :   button.classList.add('hidden');
+
+        });
+    });
+
+    var _event_handler_hide_button_when_list_touches_top_of_browser
+        = (function( _mobile_header_div, class_button ) {
+
+        var button = _mobile_header_div.querySelector('.' + class_button);
+
+        jQuery( window ).scroll(function() {
+            //if the header
+
+            var _list = document.querySelector('#' + _list_id );
+
+            ( _list.getBoundingClientRect().top < 0 )
+                ?   button.classList.add('hidden')
+                :   button.classList.remove('hidden');
+
         });
     });
 
@@ -402,8 +424,19 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             var __date_list_item = document.createElement('li');
             __date_list_item.classList.add('date');
 
-            var __past_upcoming_or_today = ( __current.getDate() < __today.getDate() ) ? 'past' :
-                ( __current.getDate() > __today.getDate() ) ? 'upcoming' : 'today';
+            var __past_upcoming_or_today = 'today';
+
+            if(     __current.getFullYear() < __today.getFullYear()
+                ||  __current.getMonth() < __today.getMonth()
+                ||  __current.getDate() < __today.getDate() )
+                __past_upcoming_or_today = 'past';
+
+            else if(    __current.getFullYear() > __today.getFullYear()
+                ||      __current.getMonth() > __today.getMonth()
+                ||      __current.getDate() > __today.getDate() )
+                __past_upcoming_or_today = 'upcoming';
+
+            //Need to check months and years before we can be sure.
             __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
             __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
             __date_list_item.classList.add( 'clearfix' );
@@ -411,8 +444,10 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             if( __past_upcoming_or_today !== 'today' )
                 __date_list_item.classList.add( 'hidden' );
 
-            else
+            else {
                 __date_list_item.id = 'usc_fb_events_fullcalendar__date__today';
+                __date_list_item.classList.add('bottom-border')
+            }
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
             __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );
@@ -573,6 +608,11 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             //reveal the node. *wink*
             __event_list_array[i].parentNode.classList.remove( 'hidden' );
+
+            //this is more obscure, but basically, if our 'today' date has no events under it, it needs a bottom border
+            //if this is today's node and we're giving it an event, we can remove the bottom border pretty safely (or
+            //the class that applies it).  If we remove a class that's not there, no problems.
+            __event_list_array[i].parentNode.classList.remove( 'bottom-border' );
         }
 
         return event;
