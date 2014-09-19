@@ -156,7 +156,8 @@ background-color: rgb(203, 135, 205);
 
 /* hide the generated header until the layout breaks down at 750 picks */
 .sticky-wrapper, #usc_fb_events_fullcalendar__list__header,
-#usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__date_today {
+#usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__date_today,
+#usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__top {
   display: none; }
 
 @media only screen and (max-width: 959px) {

@@ -523,7 +523,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         //keep the description, location, link and tickets (if any) in here.
         var __hidden_div = document.createElement('div');
-        __hidden_div.className = "meta hidden"
+        __hidden_div.className = "meta event-meta-closed";
+        __hidden_div.style.display = 'none';
 
         var __event_atts = {
             'start':            __visible_div,
@@ -564,7 +565,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //because the max value is the total number of days
             var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
             item_to_add = _format_location_return_list_item( item_to_add );
-            item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick );
+            /* item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick ); */
             _format_event_urls( item_to_add, '.event__url', 'view' );
             _format_event_urls( item_to_add, '.event__ticket_uri', 'ticket' );
             _add_classes_to_classes_in_list_item( item_to_add, [ '.event__title', '.event__url a', '.event__ticket_uri a' ], [ 'category__color', 'fade_on_hover', 'etmodules' ] );

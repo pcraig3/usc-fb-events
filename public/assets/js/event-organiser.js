@@ -15,6 +15,52 @@
 
         loading_horse( $eo_fullcalendar );
 
+
+
+        //if you click one of the fc-put-in-by-me buttons, slide to them instead of jumping.
+        var $html_body = $( 'html, body' );
+
+        $html_body
+            .on( 'click', '#usc_fb_events_fullcalendar__list__header .fc-button', function(e) {
+
+                //hrefs are ids of elements on the same page -- not external links
+                var href = $( this ).attr( 'href' );
+                var height_of_sticky_header = $( this).parents( '#usc_fb_events_fullcalendar__list__header' ).height();
+
+                $html_body.animate( { scrollTop : $( href ).offset().top - height_of_sticky_header }, 800 );
+                e.preventDefault();
+            } );
+
+        //finally, get it so that the events slide open like every other accordion on the site.
+
+        /**
+         * Don't want to usc Divi theme's toggle function (because of the styling and how animations have to be
+         * 700 ms, but I think it's probably a good idea to be using similar code.
+         * So I've taken their code and I'm working it for me.
+         */
+        $html_body
+            .on( 'click', '.event__title', function() {
+
+            var $this_heading = $(this),
+                $list_item = $this_heading.parents( '.eo-fb-event-list' ),
+                $meta_div = $list_item.find('.meta');
+
+            if ( $meta_div.is( ':animated' ) ) {
+                return;
+            }
+
+            $meta_div.slideToggle( 200, function() {
+                if ( $meta_div.hasClass('event-meta-closed') ) {
+                    $this_heading.addClass('clicked');
+                    $meta_div.removeClass('event-meta-closed').addClass( 'event-meta-open' );
+                }
+                else {
+                    $this_heading.removeClass('clicked');
+                    $meta_div.removeClass( 'event-meta-open' ).addClass( 'event-meta-closed' );
+                }
+            } );
+        } );
+
     });
 
     function loading_horse( $eo_fullcalendar ) {
@@ -47,14 +93,15 @@
         $loading.css( loading_gif_styling );
 
         //basically, click on any of the buttons and get a new height
+        //just to note, this won't be triggered if you click the 'back to top' or 'jump to today' buttons (
+        //in the header beside the month on mobile) because they're not contained in the $eo_fullcalendar object
         $eo_fullcalendar
             .on( 'click', '.fc-button', function(){
                 //set a new height for the loading div
-                console.log('CLICK!');
                 var height_sticky_title = $('#usc_fb_events_fullcalendar__list__header').height();
 
                 //some weird bug keeps giving me the wrong height
-                var height_header = $eo_fullcalendar.find('.fc-header').height() + 2; 
+                var height_header = $eo_fullcalendar.find('.fc-header').height() + 2;
 
                 $loading.css('height', height_header + height_sticky_title + 'px');
                 $loading.css('padding-top', ( ( height_header + height_sticky_title - 46 ) / 2) + 'px');
