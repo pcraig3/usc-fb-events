@@ -1,10 +1,3 @@
-// Production steps of ECMA-262, Edition 5, 15.4.4.14
-// Reference: http://es5.github.io/#x15.4.4.14
-
-//(function ($) {
-
-//})(jQuery);
-
 /*
  var EOAjaxFront = {
  "adminajax":"http:\/\/westernusc.org\/wp-admin\/admin-ajax.php",
@@ -169,24 +162,42 @@ var AjaxEvents = AjaxEvents || {};
 console.log(eventorganiser);
 console.log(EOAjaxFront);
 
+/**
+ * Big arse bloody JS module almost totally responsible for the mobile event list under the fullcalendar
+ * as well as the written almost in pure JavaScript.
+ *
+ * The AjaxFullCalendarList object creates a listing of dates, fills it with events, and builds its own header
+ * for the fullcalendar view on mobile screens
+ *
+ * @param options       localised variables defined in class-usc-fb-events.php in USC_FB_EVENTS::event_organiser_mobile_view_for_fullcalender()
+ * @param AjaxEvents    JS module defined in init-filter.js.  Has a method lets us cache the response from Facebook
+ */
 var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAjaxFront ) {
 
-    //var $ = jQuery;
+    //variable containing the .eo-fullcalendar html object
     var _eo_fullcalendar;
+    //array of event ids already put on the mobile event list.  starts empty
     var _ids = [];
 
+    //div containing the mobile events list.  Starts empty.
     var _list_div;
+    //id for the div containing the mobile events list
     var _list_id = options.plugin_prefix + options.id;
 
+    //div containing the mobile header
     var _mobile_header_div;
+    //id for the div containing the mobile header
     var _mobile_header_id = options.plugin_prefix + 'fullcalendar__list__header';
 
+    //name of the current calendar (for example, "September 2014")
     var _calendar_name = '';
 
     var _AjaxEvents =  AjaxEvents;
     var _eventorganiser = eventorganiser;
+    //this would use useful if we wanted month names or something, which we never did.
     var _locale = EOAjaxFront.locale;
 
+    //variable that lets us know if we should reset the calendar the next time we get an event
     var _reset_calendar = true;
 
 
@@ -230,9 +241,10 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     /**
-     * function clears away any previous lists that may exist, and then creates a new list container <div>
-     * and fills it with a new <ul> element.
+     * function clears away any previous mobile header divs that may exist, and then creates a mobile header
+     * container <div> and fills it with a title and some buttons
      *
+     * @param view      the current view object for the calendar.  has the start and end times for the month.
      * @type {Function}
      * @private
      */
@@ -240,11 +252,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
         var if_sticky = false;
 
+        /*
+        basically, if we find a sticky-wrapper on the mobile_header, it's been stuck using the jquery-sticky
+        plugin, so we have to unstick it to remove the .sticky-wrapper element inserted by the plugin
+         */
         if( _mobile_header_div )
             if( _mobile_header_div.parentNode )
                 if( _mobile_header_div.parentNode.classList.contains('sticky-wrapper') )
                     if_sticky = true;
 
+        //rare use of jQuery
         if( if_sticky )
             jQuery( _mobile_header_div ).unstick();
 
@@ -258,8 +275,10 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _mobile_header_div = document.createElement("div");
         _mobile_header_div.id = _mobile_header_id;
 
+        //method sets title of mobile header to current month and year (or whatever else your title is)
         _mobile_header_div = _add_or_update_mobile_header_title( _mobile_header_div );
 
+        //add a 'back to top' button to the sticky header.  Only revealed on smaller screens after the user has started scrolling.
         var class_button_top = 'usc_fc_events_header__button__top';
         _mobile_header_div = _add_button_top( _mobile_header_div, class_button_top );
         _event_handler_reveal_button_when_list_touches_top_of_browser( _mobile_header_div, class_button_top );
@@ -278,8 +297,18 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _eo_fullcalendar.parentNode.insertBefore(__fragment, _eo_fullcalendar);
     });
 
+    /**
+     * function that sets the calendar title for the mobile event listing based on the title on the
+     * real (vanilla) fullcalendar.  Takes the innerHTML of the div containing the title, so it includes
+     * the header tags.  For example, we've been taking a string like '<h2>September 2014</h2>' for our title
+     *
+     * @param _mobile_header_div  node the mobile header where we need to append our new title div
+     * @type {Function}
+     * @private
+     */
     var _add_or_update_mobile_header_title = (function ( _mobile_header_div ) {
 
+        //remove existing title whether it exists or not
         _remove( _mobile_header_div.querySelector('.usc_fb_events_header__title') );
 
         var _mobile_header_title_inner_HTML = '';
@@ -304,6 +333,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return _mobile_header_div;
     });
 
+    /**
+     * function adds a 'back to top' button to the header.  Button is initially hidden, meant only to be
+     * revealed on smaller screens.  Uses the event-organiser classes and icons so that it looks similar to the
+     * other navigation buttons.
+     *
+     * @param _mobile_header_div    node the mobile_header_div where to attach our new button
+     * @param button_class          string the className of our new button
+     *
+     * @type {Function}
+     * @private
+     */
     var _add_button_top = (function ( _mobile_header_div, button_class ) {
 
         _remove( _mobile_header_div.querySelector('.' + button_class ) );
@@ -311,6 +351,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var _mobile_header_button_top = document.createElement("a");
         //main-content
 
+        //I've hardcoded this because of a lack of reliable element ids in the eo-calendar
         var button_href = '#fb_usc_events_fullcalendar__back_to_top';
 
         _mobile_header_button_top.href = button_href;
@@ -326,6 +367,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return _mobile_header_div;
     });
 
+    /**
+     * function adds a 'jump to today' button to the header.  Button is initially hidden, meant only to be
+     * revealed on smaller screens.  Uses the event-organiser classes and icons so that it looks similar to the
+     * other navigation buttons.
+     *
+     * @param _mobile_header_div    node the mobile_header_div where to attach our new button
+     * @param button_class          string the className of our new button
+     *
+     * @type {Function}
+     * @private
+     */
     var _add_button_todays_date = (function ( _mobile_header_div, button_class ) {
 
         _remove( _mobile_header_div.querySelector('.' + button_class ) );
@@ -340,7 +392,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _mobile_header_button_date_today.className = 'fc-button ui-state-highlight';// ui-state-disabled';
         _mobile_header_button_date_today.classList.add( button_class );
 
-        //creates a button with an icon pointing 'up';
+        //creates a button with a downward-pointing triangle in a circle
         _mobile_header_button_date_today.innerHTML = '<span class="fc-button-content"><span class="fc-icon-wrap"><span class="ui-icon ui-icon-circle-triangle-s"></span></span></span>';
 
         _mobile_header_div.appendChild( _mobile_header_button_date_today );
@@ -348,6 +400,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return _mobile_header_div;
     });
 
+    /**
+     * Small method creates a window.scroll event that tracks where the top of the event list is in relation to the top
+     * of the viewport.  Our button will be reveale when the list touches the top of or moves up
+     * under the top of the viewport
+     *
+     * @param _mobile_header_div    the mobile header div which contains our buttons
+     * @param class_button          the class on the element (ie, button) to reveal
+     *
+     * @type {Function}
+     * @private
+     */
     var _event_handler_reveal_button_when_list_touches_top_of_browser
         = (function( _mobile_header_div, class_button ) {
 
@@ -365,6 +428,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         });
     });
 
+    /**
+     * Small method creates a window.scroll event that tracks where the top of the event list is in relation to the top
+     * of the viewport.  Our button will be HIDDEN when the list touches or
+     * moves up under the top of the viewport
+     *
+     * @param _mobile_header_div    the mobile header div which contains our buttons
+     * @param class_button          the class on the element (ie, button) to HIDE
+     *
+     * @type {Function}
+     * @private
+     */
     var _event_handler_hide_button_when_list_touches_top_of_browser
         = (function( _mobile_header_div, class_button ) {
 
@@ -399,7 +473,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _list_div = document.createElement("div");
         _list_div.id = _list_id;
 
-        //the nonce will always be the same, right?  so no reason to keep the <div> and only remove the <li>s
+        //our nonce is generated in class-usc-fb-events.php and then passed in as a localised variable
         _list_div.setAttribute( "data-nonce", options.nonce );
 
         _list_div.appendChild( _create_date_list_items( view ) );
@@ -408,17 +482,32 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         _insert_after(__fragment, _eo_fullcalendar);
     });
 
+    /**
+     * This function is pretty fun.
+     * Okay, so basically, we never know how many events are coming -- we only get notified once per event.
+     * So it doesn't make sense to build try and build a list of events based on how many events there are.
+     * Rather, the first time through we just build a list of all dates in a month and hide them all.
+     * Then, when we get events, we can use their start times and end times to find the appropriate list
+     * items to slot themselves under.
+     * A 'date' item is an <li> element with a <h3> date_title element and an empty <ul> events element
+     *
+     * @param view  object what knows the start and end of the month
+     *
+     * @type {Function}
+     * @private
+     */
     var _create_date_list_items = (function ( view ) {
 
-        var __date_list =  document.createElement("ul");
+        var __date_list =  document.createElement('ul');
         __date_list.classList.add('dates');
 
         //okay, so now find the start and the end dates
-        var __start     = new Date( view.start );
+        //var __start     = new Date( view.start );  //didn't need this, I guess
         var __end       = new Date( view.end );
         var __current   = new Date( view.start );
         var __today     = new Date();
 
+        //while the current time is past the end of the month
         while( __current.getTime() < __end.getTime() ) {
 
             var __date_list_item = document.createElement('li');
@@ -426,17 +515,18 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             var __past_upcoming_or_today = 'today';
 
+            //if last year, or last month, or before today's date
             if(     __current.getFullYear() < __today.getFullYear()
                 ||  __current.getMonth() < __today.getMonth()
                 ||  __current.getDate() < __today.getDate() )
                 __past_upcoming_or_today = 'past';
 
+            //if next year, or next month, or after today's date
             else if(    __current.getFullYear() > __today.getFullYear()
                 ||      __current.getMonth() > __today.getMonth()
                 ||      __current.getDate() > __today.getDate() )
                 __past_upcoming_or_today = 'upcoming';
 
-            //Need to check months and years before we can be sure.
             __date_list_item.classList.add( 'date-' + __past_upcoming_or_today );
             __date_list_item.classList.add( 'date-' + _return_ATOM_date_string_without_time( __current ) );
             __date_list_item.classList.add( 'clearfix' );
@@ -445,19 +535,20 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 __date_list_item.classList.add( 'hidden' );
 
             else {
+                //add an ID that our 'jump-to-today' button can latch onto
                 __date_list_item.id = 'usc_fb_events_fullcalendar__date__today';
+                //if this item has no events under it, it needs a bottom border
                 __date_list_item.classList.add('bottom-border')
             }
 
             //data-date like the event-calendar uses: YYYY-mm-dd format
             __date_list_item.setAttribute( 'data-date', _return_ATOM_date_string_without_time( __current ) );
             __date_list_item.setAttribute( 'data-timestamp_start', __current.getTime().toString() );
-            //set the data-timestamp_end below, after the date has been incremented
 
             //now create the title and the unordered list container
             var __date_title = document.createElement('h3');
             __date_title.classList.add("date__title");
-            __date_title.innerHTML =  _return_day_name_day_of_month( __current );
+            __date_title.innerHTML =  _return_day_of_month( __current );
 
             //no events as of yet.  We only get events once at a time
             var __event_list_container = document.createElement('ul');
@@ -469,6 +560,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
             __date_list.appendChild(__date_list_item);
 
+            //increment the current date by 1 day's worth
             __current.setDate(__current.getDate() + 1);
 
             //set data-timestamp_end after the date has been incremented
@@ -478,9 +570,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return __date_list;
     });
 
-    //DATE_ATOM http://php.net/manual/en/class.datetime.php#datetime.constants.types
-    var _return_day_name_day_of_month = (function( start ) {
+    /**
+     * Super-simple function returns the day of the month as a number
+     *
+     * @param start     date the date for which we just want the day number
+     * @type {Function}
+     * @private
+     */
+    var _return_day_of_month = (function( start ) {
 
+        //we want to return 6
         return start.getDate();
         //we want to return Monday 6
         //return _locale.dayNames[start.getDay()] + ' ' + start.getDate();
@@ -488,6 +587,14 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     //DATE_ATOM http://php.net/manual/en/class.datetime.php#datetime.constants.types
+    /**
+     * Still pretty-simple function returns the date as YYYY-mm-dd, or 'Y-m-d' in phpspeak
+     *
+     * @param start     date the date for which we want the formatted date
+     *
+     * @type {Function}
+     * @private
+     */
     var _return_ATOM_date_string_without_time = (function( start ) {
 
         //we want to return YYYY-mm-dd
@@ -499,6 +606,18 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return __date.join('-');
     });
 
+    /**
+     * Function takes a JS date object and returns '10:00 pm' or '3:00 am' or whatever.
+     * Spoiler alert: I didn't write it.
+     *
+     * @author bbrame
+     * @see http://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+     *
+     * @param start     date the date for which we want the 12-hour formatted time
+     *
+     * @type {Function}
+     * @private
+     */
     var _return_12_hour_AMPM_time_string = (function(date) {
         var hours = date.getHours();
         var minutes = date.getMinutes();
@@ -510,15 +629,19 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     /**
-     * Nothing too glamourous.  Function creates a list item for our mobile events list.
+     * Heart and soul of our whole mobile event list.  Function creates an event item for each event,
+     * and formats them and handles multi-day events and all that fun stuff
+     *
+     * @param event     the event to add to the mobile events list
+     * @param view      the view information, with the start/end dates and tons of other stuff we don't use
      *
      * @type {Function}
      * @private
      */
     var _create_event_item = (function( event, view ) {
 
-        //first, make sure we don't have any duplicates by pushing facebook events into an array.
-        //if not a facebook event, then who cares.
+        //first, make sure we don't have any duplicates by pushing events into an array. because we used to
+        //id is auto generated by the fullcalendar or something: both facebook events and EO events will have one
         if( typeof( event._id ) !== "undefined" ) {
 
             if( _ids.indexOf( event._id) >= 0 )
@@ -527,30 +650,26 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             _ids.push( event._id );
         }
 
-        //basically, create a list item with the event name and attach it to the corresponding list
-
-        //okay, so get the midnight date.
-
         var __list_item = document.createElement('li');
 
         var __start_date = new Date( event.start );
+
+        //okay, so get the midnight date.
         var __start_date_midnight = new Date( event.start );
         __start_date_midnight.setHours( 0, 0, 0, 0 );
 
         var __end_date = new Date( event.end );
         var __end_of_month = new Date( view.end );
 
+        //non-facebook events won't have this.  EO events will.
         if( !event.fbDescription )
             event.fbDescription = event.description;
-
-        //http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
 
         __list_item.className = event.className.join(' ');
         __list_item.className += " eo-fb-eid-" + event.eid + " eo-fb-event-list";//fb-four-fifth";
         __list_item.setAttribute( 'data-timestamp_start', __start_date.getTime().toString() );
         __list_item.setAttribute( 'data-timestamp_end', __end_date.getTime().toString() );
 
-        //now we fill the list item with stuff
         var __prefix = "event__info event__";
 
         //keep the name, host, and time in here
@@ -559,6 +678,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //keep the description, location, link and tickets (if any) in here.
         var __hidden_div = document.createElement('div');
         __hidden_div.className = "meta event-meta-closed";
+        //initially hide this event with the style tag so that we can use jQuery slideToggle to reveal it
         __hidden_div.style.display = 'none';
 
         var __event_atts = {
@@ -571,6 +691,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             'ticket_uri':       __hidden_div
         };
 
+        //this little method quickly fills our events with spans with classnames and whatever content.
+        //a little further down we have a lot of other methods that have to fix much of the innerHTML.
+        //as seen in http://stackoverflow.com/questions/17264182/javascript-efficiently-insert-multiple-html-elements
         for (var key in __event_atts) {
             if (__event_atts.hasOwnProperty(key)) {
                 _create_event_info_span_and_append_to_element( event, key, __prefix, __event_atts[key] );
@@ -583,6 +706,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //__start_string_midnight.
         var __event_list_classes = [];
 
+        //this loop is super cool.  Find all of the classnames of the dates we're going to have to push our event into.
+        //normal events will just need the one date, but multi-day events span several days.
         do {
 
             //first day is a freebie because it's the start_date
@@ -597,7 +722,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var max = __event_list_array.length;
         for (var i = 0; i < max; i++) {
 
-            //because the max value is the total number of days
+            /* basically all of these functions modify some span's innerHTML because of the crude way we filled them up before */
+
+             //because the max value is the total number of days
             var item_to_add = _format_start_date_return_list_item( __list_item.cloneNode(true), (i + 1), max );
             item_to_add = _format_location_return_list_item( item_to_add );
             /* item_to_add.querySelector('.event__title').addEventListener('click', _toggle_hidden_div_onclick ); */
@@ -607,6 +734,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             __event_list_array[i].appendChild( item_to_add );
 
             //reveal the node. *wink*
+            //date nodes are hidden until they have at least one event
             __event_list_array[i].parentNode.classList.remove( 'hidden' );
 
             //this is more obscure, but basically, if our 'today' date has no events under it, it needs a bottom border
@@ -618,6 +746,44 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return event;
     });
 
+    /**
+     * utility function to quickly populate events with event__info spans.
+     * for each attribute (if this event has this attribute), an span will be created with the attribute in its
+     * classname, content of the event attribute, and be appended to an input element
+     *
+     * @param event     object the event returned from the fullcalendar
+     * @param attribute string the key for a value in an event object. if this key isn't set, the function returns false
+     * @param __prefix  string to prefix the classname with.  As we're setting the className directly,
+     *                  we can actually include other classes in the prefix
+     * @param to_append node to append our new span to
+     *
+     * @type {Function}
+     * @private
+     */
+    var _create_event_info_span_and_append_to_element = (function( event, attribute, __prefix, to_append ) {
+
+        if( event[attribute] ) {
+            var temp = document.createElement('span');
+            temp.className = __prefix + attribute;
+            temp.innerHTML = event[attribute];
+            to_append.appendChild( temp.cloneNode( true ) );
+            return temp;
+        }
+
+        return false;
+    });
+
+    /**
+     * This function does tons of work because JS date formatting is generally sucky and because it
+     * has to both set the time string and the number of days, for multi-day events
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param index             int the index of this event item (out of a maximum number_of_days items)
+     * @param number_of_days    int the number of event items to be added to the list (ie, for a 3-day event, this number is '3')
+     *
+     * @type {Function}
+     * @private
+     */
     var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
 
         var start_span = list_item.querySelector('.event__start');
@@ -626,39 +792,52 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         var time_string = '';
         var day_string = '';
 
+        //if this is just a one-day event, just set the time string
         if(number_of_days === 1) {
 
             time_string = _return_12_hour_AMPM_time_string( start_date );
         }
+        //else, if this is the last day of a multi-day event
         else if( index === number_of_days ) {
 
-            //time_date_string = "Ends at " + _return_12_hour_AMPM_time_string( end_date ) + " | Final Day";
             time_string = "Until </br>" +  _return_12_hour_AMPM_time_string( end_date );
             day_string = 'Final Day';
         }
+        //this is the first up to second-last day of a multi-day event
         else {
 
-            //get the time if it starts today //start at one because we incremented index when it was passed in
+            //get the time if it starts today
+            //start at one because we incremented index when it was passed in
             if( index === 1 )
-            //time_date_string = "Starts at " + _return_12_hour_AMPM_time_string( start_date ) + " | ";
                 time_string = _return_12_hour_AMPM_time_string( start_date );
 
-
+            //if the time string is not set, it means this is not the first day.  Thus, there is no 'time' for today
             if( time_string === '' )
                 time_string = 'Ongoing';
 
+            //set the day number we're on
             day_string =  'Day ' + index;
-            //time_date_string += "Day " + index + " of " + number_of_days;
         }
 
+        //some EO events can be set as as 'All Day' events.  It's unlikely, but there it is.
         if( list_item.classList.contains('eo-all-day') )
             start_span.innerHTML = 'All Day';
         else
             start_span.innerHTML = time_string;
 
+        //return the list item after adding the date string to the event title
         return _add_days_to_title_for_ongoing_events_and_return_list_item( list_item, day_string );
     });
 
+    /**
+     * Function receives an event list item and a date string and appends the date string to the title if not empty
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param day_string        day string indication day number for multi-day events
+     *
+     * @type {Function}
+     * @private
+     */
     var _add_days_to_title_for_ongoing_events_and_return_list_item = (function( list_item, day_string ) {
 
         if( !day_string )
@@ -670,6 +849,14 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
+    /**
+     * Simple-as-you-like function that appends a '@' symbol to whatever is in the location span (if a location span)
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     *
+     * @type {Function}
+     * @private
+     */
     var _format_location_return_list_item = (function( list_item ) {
 
         var location_span = list_item.querySelector('.event__location');
@@ -680,6 +867,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
 
+    /**
+     * This is a bit of a weird one, but basically it takes a list item, the className of the span where we'd like
+     * to add an event-name url, and then a final string parameter so that we call the right url-formatting method.
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param class_to_format   the class containing the href information into which we inject a link
+     * @param link_type         call another function based on what type of link this is
+     *
+     * @type {Function}
+     * @private
+     */
     var _format_event_urls = (function( list_item, class_to_format, link_type ) {
 
         //we want them to say 'View Event' with an optional facebook class.
@@ -714,6 +912,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
+    /**
+     * Format an event link.
+     * If it has a .eo-fb-event class, then add a Facebook icon and modify the link text to reference facebook.
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param link              the link node which we've just created and are formatting
+     *
+     * @type {Function}
+     * @private
+     */
     var _view_format_event_urls = (function( list_item, link ) {
 
         var if_facebook = list_item.classList.contains('eo-fb-event');
@@ -733,7 +941,15 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     });
 
-
+    /**
+     * Format a ticket link.  Add an 'external link' icon and explicitly reference tickets in the link text
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param link              the link node which we've just created and are formatting
+     *
+     * @type {Function}
+     * @private
+     */
     var _ticket_format_event_urls = (function( list_item, link ) {
 
         link.title = 'Buy tickets for this event.';
@@ -743,6 +959,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return link;
     });
 
+    /**
+     * Format an generic link.
+     * We're not using this method, but whenever you have a switch statement, you should have a fallback
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param link              the link node which we've just created and are formatting
+     *
+     * @type {Function}
+     * @private
+     */
     var _default_format_event_urls = (function( list_item, link ) {
 
         link.innerHTML = 'View Event Link';
@@ -750,7 +976,20 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return link;
     });
 
-
+    /**
+     * Sort of a funny method adds classes to html elements.
+     * Basically, takes an array of classNames and accepts an array of classNames
+     * and add the latter array to all elements found using the former array
+     *
+     * @param list_item         node the event list item just before it is added to the list
+     * @param classes_for_which_to_add_more_classes
+     *                          array of classNames.  Elements found with these will have the second array of classNames added to them
+     * @param additional_classes
+     *                          array of classNames.  Add these classNames to elements foudn using former array
+     *
+     * @type {Function}
+     * @private
+     */
     var _add_classes_to_classes_in_list_item = (function( list_item, classes_for_which_to_add_more_classes, additional_classes ) {
 
         var max_classes_to_add_to = classes_for_which_to_add_more_classes.length;
@@ -770,24 +1009,16 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
-    var _create_event_info_span_and_append_to_element = (function( event, attribute, __prefix, to_append ) {
 
-        if( event[attribute] ) {
-            var temp = document.createElement('span');
-            temp.className = __prefix + attribute;
-            temp.innerHTML = event[attribute];
-            to_append.appendChild( temp.cloneNode( true ) );
-            return temp;
-        }
-
-        return false;
-    });
 
     /**
      * function collects the values that AjaxEvents needs to run its
      * ajax_update_wordpress_transient_cache method and then calls it.
      *
      * If all goes well, we'll update our WP cache and everything will go FASTER.
+     * Long story short: all went well.
+     *
+     * For more context, check out init-filter.js
      *
      * @type {Function}
      * @private
@@ -822,7 +1053,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         ajax_options.calendars = _get_calendars_as_string();
         ajax_options.limit = 0;
 
-        console.log(ajax_options);
+        /*console.log(ajax_options);*/
 
         _AjaxEvents.ajax_update_wordpress_transient_cache( ajax_options );
 
@@ -863,7 +1094,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      http://jsperf.com/jquery-click-event-vs-pure-javascript/2
      */
     window.onload = function() {
-        //whenever you click the calendar buttons, remove existing list events
+
+        //whenever you click the calendar buttons, remove existing list events and update the mobile header
         var buttons = document.querySelectorAll('.fc-button-prev, .fc-button-next');
         for (var i in buttons) {
             if ( buttons.hasOwnProperty(i) && buttons[i].nodeType == 1 )
@@ -874,22 +1106,20 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
                 });
         }
 
-        var filters = document.querySelectorAll(".eo-cal-filter");
+        /*
+         our change event listener doesn't fire quickly enough
+         (it only shows up AFTER the events have come through again)
+         so I've come up with a 'delayed' updating method.
 
+         Basically, set a flag to reset the calendar, and then the next time
+         the calendar receives events, clear out the ones that already exist.
+         filters[j].addEventListener('change', function(event) {
+
+         });
+         */
+        var filters = document.querySelectorAll(".eo-cal-filter");
         for (var j in filters) {
             if ( filters.hasOwnProperty(j) && filters[j].nodeType == 1 ) {
-
-                /*
-                 our change event listener doesn't fire quickly enough
-                 (it only shows up AFTER the events have come through again)
-                 so I've come up with a 'delayed' updating method.
-
-                 Basically, set a flag to reset the calendar, and then the next time
-                 the calendar receives events, clear out the ones that already exist.
-                 filters[j].addEventListener('change', function(event) {
-
-                 });
-                 */
 
                 filters[j].addEventListener('click', function(event) {
 
@@ -900,17 +1130,34 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     };
 
+    /**
+     * utility function wipes clear the events list and clears the _calendar_name variable so that
+     * the ::run_once_per_calendar method can rebuild it
+     *
+     * @type {Function}
+     * @private
+     */
     var _reset_events_list = (function() {
 
         //remove existing list items when calendar is pressed.
         _remove( document.querySelectorAll( '#' + _list_id + ' li' ) );
         _calendar_name = "";
+        //clear array of ids of events already on list
         while( _ids.length )
             _ids.pop();
 
         _reset_calendar = false;
     });
 
+    /**
+     * Function that we're not using anymore.
+     *
+     * Would add and remove the 'hidden' div from our events so that we could open and close them.
+     * Instead, we went with some prettier jQuery stuff in event-organiser.js
+     *
+     * @type {Function}
+     * @private
+     */
     var _toggle_hidden_div_onclick = (function() {
 
         var el = this;
@@ -942,7 +1189,17 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     /**
-     * This is actually super inefficient code and I hope it dies.
+     * Horrible jQuery-dependant function that adds a sticky-element to our mobile header.
+     * * Unsticks the mobile_header if it's already stuck
+     * * Sets the sticky element on the mobile_header
+     * * Sets the width to the same size as the fc-header (because its wont to go fullscreen)
+     * * Sets up an event listener on window resize so that the header is the same(ish) width as the event
+     *      listing event if the window is resized.
+     * * Sets up an event listener on scroll so that the header is pushed above the viewport when the
+     *      end of the list has been past and returns afterwards.
+     *
+     *  It seems like potentially pretty inefficient stuff (especially the scroll method), but it
+     *  works and looks totally awesome, especially in a destop browser.
      *
      * @type {Function}
      * @private
@@ -1012,7 +1269,24 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 
     });
 
-
+    /**
+     * function to run once per calendar.
+     * Since we don't know how many events are coming, we run this on the first event and then don't run it again
+     * unless the calendar_name variable changes (or is reset).
+     *
+     * function looks for the _reset_calendar flag, and, if true, resets the events list
+     * (removes the list and clear the calendar name)
+     *
+     * If the calendar_name is different to what we've stored, function:
+     *  * sets the _eo_fullcalendar variable
+     *  * creates the initial date list (all the dates without events)
+     *  * creates a mobile-friendly header to augment the existing header
+     *  * adds a sticky element to the new header_title, so as to make it mobile friendlier
+     *  * _updates the TRANSIENT CACHE.  YES!  https://www.youtube.com/watch?v=fXW02XmBGQw
+     *
+     * @param view      the view information, with the start/end dates and tons of other stuff we don't use
+     * @type {Function}
+     */
     var run_once_per_calendar = (function( view ) {
 
         if( _reset_calendar )
@@ -1035,11 +1309,23 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         }
     });
 
+    /**
+     * function to run each event.  takes an event and appends it onto the scaffolding created by the
+     * run_once_per_calendar method (ie, an empty events list).
+     *
+     * @param event     the event to add to the mobile events list
+     * @param view      the view information, with the start/end dates and tons of other stuff we don't use
+     *
+     * @type {Function}
+     */
     var run_each_event = (function( event, view ) {
 
         _create_event_item( event, view );
     });
 
+    /**
+     * These are the only public functions from our module
+     */
     return {
         run_once_per_calendar: run_once_per_calendar,
         run_each_event: run_each_event
@@ -1048,32 +1334,43 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
 })(options, AjaxEvents, eventorganiser, EOAjaxFront );
 
 
-//var AjaxEvents;// =
-
-/*
- jQuery('.eo-fullcalendar').on('click', function() {
-
- jQuery(this).hide();
- });
+/**
+ * filter that saved our butt.
+ * Basically, the Event Organiser plugin has some internal filters, and one of them is this echo whenever
+ * an event is rendered on the calendar.
+ * We don't know if NO events are returned and we don't know how many events will be returned.
+ *
+ * In any case, the first event that is returned will trigger building the list (and adding itself to it),
+ * and any subsequent events will be added onto the list as well.
+ *
+ * @see: http://wp-event-organiser.com/forums/topic/callback-hook-for-events-returned-by-ajax/
+ *
+ * @param bool      bool not really sure what this does, but if you return false, the events don't load on the calendar
+ * @param event     object containing information for a single event
+ * @param element   object but I dunno what
+ * @param view      object containing a bunch of methods as well as start and end dates for this particular month.
  */
-
 window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function( bool, event, element, view ){
 
-    console.log(bool);
-    console.log(event);
-    //console.log(element);
-    console.log(view);
-
-    //okay, so we have the time.  And, if this makes a difference, the time difference is off.
-
-    //pass in the title of the calendar. if it changes, we update.
+    //pass in the view, which contains the start and end dates of the calendar. if it changes, we update.
     AjaxFullCalendarList.run_once_per_calendar( view );
     AjaxFullCalendarList.run_each_event( event, view );
 
     return bool;
 }, 4 );
 
-(function add_category_css_to_head( eventorganiser ) {
+/**
+ * Function that adds the colors for our event categories to the head of the HTML document.
+ * Colors are available as to the .category-{name} .category__color class, so any elements with this
+ * class hierarchy can inherit the color.
+ *
+ * NOTE** as this is appended to the head, these override all of the other CSS files, so just be aware
+ *
+ * @see: http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
+ *
+ * @param eventorganiser      object containing all of our categories, venues, calendars. It's just full of stuff
+ */
+(function add_category_color_css_to_head( eventorganiser ) {
 
     //all of the categories that we know about
     var all_categories = eventorganiser.fullcal.categories;

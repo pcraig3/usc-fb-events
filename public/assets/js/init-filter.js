@@ -118,12 +118,13 @@
 
                 function( data ) {
 
+                    /*
                     if(! data['success']) {
                         console.log('WordPress transient DB has NOT been updated.');
                     }
                     else
                         console.log('Yay! WordPress transient DB has been updated.');
-
+                    */
 
                 }, "json");
             /*.fail(function() {
