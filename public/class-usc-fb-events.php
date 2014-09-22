@@ -264,8 +264,8 @@ class USC_FB_Events {
 
             //set a description or an error message
             $fb_event_description = ( !empty( $event['description'] ) ) ? $event['description']
-                : 'This event has not provided a description.  Maybe you can message the host directly on '
-                .' <a href="http://facebook.com/' . $event['eid'] .'/">Facebook.</a>';
+                : 'This event has not provided a description.  If you want more information, maybe you can '
+                . '<a href="' . esc_url( trailingslashit( 'http://facebook.com/' . $event['creator'] ) ) . '">message '. esc_html( $event['host'] ) .' on Facebook</a>.';
 
             //@TODO: add a filter
             if( strlen( $fb_event_description ) > 200 ) {

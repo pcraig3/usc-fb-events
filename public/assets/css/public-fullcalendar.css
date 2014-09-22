@@ -144,13 +144,15 @@ background-color: rgb(203, 135, 205);
           content: "\45";
           transition: none; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .social_facebook_square, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .social_facebook_square {
-        padding-right: 18px; }
+        padding-right: 18px;
+        white-space: nowrap; }
         #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .social_facebook_square:before, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .social_facebook_square:before {
           content: "\e0c1";
           font-size: 1em;
           right: 0; }
       #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .icon_link_alt, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .icon_link_alt {
-        padding-right: 18px; }
+        padding-right: 18px;
+        white-space: nowrap; }
         #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__url .icon_link_alt:before, #usc_fb_events_fullcalendar__list .events .eo-fb-event-list .event__ticket_uri .icon_link_alt:before {
           content: "\e02b";
           font-size: 1em;
