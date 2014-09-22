@@ -15,7 +15,6 @@
         change_buttons();
         ajax_loading(true);
 
-
         $( ".dismiss_notice" ).bind( "click", function( event ) {
             event.preventDefault();
             $(this).parent().removeClass("updated error").empty();

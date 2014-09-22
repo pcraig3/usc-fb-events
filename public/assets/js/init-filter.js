@@ -13,6 +13,10 @@
         var ajax_get_events =  function( options, ajax_events_gotten ) {
 
             options.limit = options.limit || 0;
+            options.calendars = options.calendars || '';
+
+            options.remove_events = options.remove_events || 1;
+            options.whitelist = options.whitelist || 0;
 
             // Assign handlers immediately after making the request,
             // and remember the jqxhr object for this request
@@ -23,15 +27,14 @@
                     //this exists for the wp_nonce check
                     attr_id:        "event_list",
                     nonce:          jQuery("#event_list").data("nonce"),
-                    remove_events:  1,
+                    remove_events:  options.remove_events,
                     transient_name: options.transient_name,
 
                     start:          options.start,
                     end:            options.end,
                     calendars:      options.calendars,
-                    limit:          options.limit
-                    //we don't need this column because it defaults to false.
-                    //whitelist: 0
+                    limit:          options.limit,
+                    whitelist:      options.whitelist
                 },
 
                 function( data ) {

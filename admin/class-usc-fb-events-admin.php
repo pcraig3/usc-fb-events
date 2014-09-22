@@ -215,15 +215,20 @@ class USC_FB_Events_Admin {
             wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'admin_filterjs' ), USC_FB_Events::VERSION );
             wp_enqueue_script( 'tinysort', plugins_url( 'assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), USC_FB_Events::VERSION );
             wp_enqueue_script( 'filterjs', plugins_url( 'assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), USC_FB_Events::VERSION );
-            wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), USC_FB_Events::VERSION );
             wp_enqueue_script( 'jquery-ui-datepicker' );
+            wp_enqueue_script( 'init_filterjs', plugins_url( '../public/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), USC_FB_Events::VERSION );
 
-            // declare the URL to the file that handles the AJAX request (wp-admin/admin-ajax.php)
-            wp_localize_script( 'admin_filterjs', "ajax", array(
-                    'url'       =>  admin_url( 'admin-ajax.php' ),
-                    'calendars' =>  USC_FB_Events::get_instance()->return_wordpress_taxonomy_name_as_a_string( 'event-category', 'name' ),
+            wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs', 'init_filterjs' ), USC_FB_Events::VERSION );
+            //wp_enqueue_script( 'admin_filterjs', plugins_url( 'assets/js/admin-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), USC_FB_Events::VERSION );
+
+            wp_localize_script( 'admin_filterjs', 'options', array(
+                    'ajax_url'      =>  admin_url( 'admin-ajax.php' ),
+                    'calendars'     =>  USC_FB_Events::get_instance()->return_wordpress_taxonomy_name_as_a_string( 'event-category', 'name' ),
+                    'remove_events' => 0,
+                    'whitelist'     => 1,
                 )
             );
+
         }
     }
 
