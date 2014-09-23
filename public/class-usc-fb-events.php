@@ -419,10 +419,10 @@ class USC_FB_Events {
         $ret = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
         $p2 = -1;
         for(;;) {
-            $p = strpos($ret, '&#', $p2+1);
+            $p = @strpos($ret, '&#', $p2+1);
             if ($p === FALSE)
                 break;
-            $p2 = strpos($ret, ';', $p);
+            $p2 = @strpos($ret, ';', $p);
             if ($p2 === FALSE)
                 break;
 

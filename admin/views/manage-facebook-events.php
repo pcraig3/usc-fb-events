@@ -266,7 +266,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
 
         <?php
         $date_year = date('Y');
-        
+
         //start and end for the current year
         $start = strtotime( $date_year . '-01-01');
         $end = $start + YEAR_IN_SECONDS - 1;
@@ -287,8 +287,8 @@ class Manage_Facebook_Events extends AdminPageFramework {
             </h3>
             <div class="title__navigation_buttons">
                 <?php
-                $this->echo_button("<< Prev Year", "prev_year_button", 05, '', array('data-start' => $start_prev, 'data-end' => $end_prev));
-                $this->echo_button("Next Year >>", "next_year_button", 10, '', array('data-start' => $start_next, 'data-end' => $end_next));
+                $this->echo_button("<< Prev Year", "prev_year_button", 05, '', array( 'data-direction' => -1 ) );
+                $this->echo_button("Next Year >>", "next_year_button", 10, '', array( 'data-direction' => +1 ) );
                 ?>
             </div>
         </div>

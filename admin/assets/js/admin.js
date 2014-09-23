@@ -1,5 +1,5 @@
 (function ( $ ) {
-	"use strict";
+    "use strict";
 
     /*
      http://stackoverflow.com/questions/280634/endswith-in-javascript
@@ -20,7 +20,7 @@
             $(this).parent().removeClass("updated error").empty();
         });
 
-		// Place your administration-specific JavaScript here
+        // Place your administration-specific JavaScript here
         var $event_container = $('#event_list');
         var $event_rows = $('[id^="fjs_"]');
 
@@ -30,21 +30,22 @@
 
             $(this).find('[id^="fjs_"]')
                 .on("click", function() {
-                click_row($(this));
-            })
+                    click_row($(this));
+                })
                 .on("dblclick", modify_event_setup
-            );
+                );
+                //basically, anything that is constant shouldn't be assigned more event listeners.
 
-            $('#remove_event_button, #display_event_button')
-                .on("click", ajax_return_to_or_remove_from_calendar);
+                $('#remove_event_button, #display_event_button').unbind('click')
+                    .on("click", ajax_return_to_or_remove_from_calendar);
 
-            $('#modify_event_button').on("click", modify_event_setup);
+                $('#modify_event_button').unbind('click').on('click', modify_event_setup);
 
-            $(this).unbind( "change" );
+                //$(this).unbind( "change" );
 
-            $(this).on("mouseenter", function() {
-                $(this).focus();
-            });
+                $(this).unbind('mouseenter').on('mouseenter', function() {
+                    $(this).focus();
+                });
         })
 
     });
@@ -140,14 +141,14 @@
                 //this code looks for "remove" as a prefix
                 if ( button_id.lastIndexOf("remove", 0) === 0 ) {
                     //in in here, event has been removed.
-                   $selected_row.addClass("removed");
-                   $selected_row.find(".removed").text("removed");
-                   update_msg += "has been removed from ";
+                    $selected_row.addClass("removed");
+                    $selected_row.find(".removed").text("removed");
+                    update_msg += "has been removed from ";
                 }
                 else {
-                   $selected_row.removeClass("removed");
-                   $selected_row.find(".removed").text("display");
-                   update_msg += "will once again be displayed on ";
+                    $selected_row.removeClass("removed");
+                    $selected_row.find(".removed").text("display");
+                    update_msg += "will once again be displayed on ";
                 }
 
                 update_msg += "the calendar.";
@@ -226,7 +227,7 @@
                 $('.modify_' + key).trigger( 'update' );  //can hook into this if necessary
             }
         }
-
+        $( 'html, body' ).animate( { scrollTop : $( '#section-modify__0' ).offset().top - 60 }, 800 );
     }
 
 }(jQuery));

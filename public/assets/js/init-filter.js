@@ -39,8 +39,6 @@
 
                 function( data ) {
 
-                    ///.log(data);
-
                     if(! data['success'] || typeof( ajax_events_gotten ) !== "function" ) {
                         alert("Ack! Problems getting your removed events back from the database.")
                     }

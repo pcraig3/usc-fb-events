@@ -217,7 +217,6 @@ class WP_AJAX {
 
         $this->make_sure_the_nonce_checks_out( $_POST['attr_id'], $_POST['nonce'] );
 
-
         $whitelist      = ( isset($_POST['whitelist'] ) )       ? $_POST['whitelist']       : false;
         $remove_events  = ( isset($_POST['remove_events']) )    ? $_POST['remove_events']   : false;
         $start          = ( isset($_POST['start'] ) )           ? $_POST['start']           : $this->start;
@@ -415,6 +414,9 @@ class WP_AJAX {
      */
     public function merge_fb_and_db_events( array $event_array ) {
 
+        if( empty( $event_array['events'] ) )
+            return $event_array;
+
         $all_db_events_mysql = DB_API::get_fb_events();
 
         if( ! empty($all_db_events_mysql) ) {
@@ -487,6 +489,9 @@ class WP_AJAX {
      * @return array mixed  an array of events wherein those flagged for removal are removed
      */
     public function remove_removed_events( array $event_array ) {
+
+        if( empty( $event_array['events'] ))
+            return $event_array;
 
         $total = $event_array['total'];
         $events = $event_array['events'];
