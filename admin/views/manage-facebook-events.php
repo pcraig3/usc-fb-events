@@ -264,7 +264,18 @@ class Manage_Facebook_Events extends AdminPageFramework {
 
         <div id='filterjs__notice'></div>
 
-        <h3 class="title">List of Facebook Events</h3>
+        <?php
+        $date_year = date('Y');
+        $start = strtotime( $date_year . '-01-01');
+        $end = $start + YEAR_IN_SECONDS - 1;
+        ?>
+        <h3 class="title">All Facebook Events for
+            <span id="ajax_year" data-start="<?php echo $start; ?>" data-end="<?php echo $end; ?>"
+                  data-year_in_seconds="<?php echo YEAR_IN_SECONDS; ?>">
+                <?php echo $date_year; ?></span>
+        </h3>
+
+        <div class="nav_button_row"></div>
 
         <div class="filterjs">
         <div class="filterjs__filter">
@@ -289,8 +300,9 @@ class Manage_Facebook_Events extends AdminPageFramework {
                     </li>
                 </ul>
             </div>
+            <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
         </div>
-        <div class="filterjs__list__wrapper">
+            <div class="filterjs__list__wrapper">
             <div class="filterjs__loading filterjs__loading--list">
                 <img class="filterjs__loading__img" title="go mustangs!"
                     src="/wp-content/plugins/usc-fb-events/assets/horse.gif" alt="Loading" height="91" width="160">
@@ -300,6 +312,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
             </div>
         </div>
         <div class="clearfix cf"></div>
+            <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
         </div>
 
         <?php

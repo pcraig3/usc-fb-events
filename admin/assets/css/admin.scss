@@ -1,4 +1,12 @@
+.filterjs {
+
+  position: relative;
+  padding-bottom: 1.2em; /* mostly for the event count item, so it has somewhere to sit */
+}
+
 .filterjs__filter {
+
+  position: relative;
 
   > div {
 
@@ -136,6 +144,16 @@ span {
       border-bottom: 1px solid #AAA;
     }
   }
+}
 
+.event_list__counter__container {
 
+  font-style: italic;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+
+  .event_list__counter {
+
+  }
 }
