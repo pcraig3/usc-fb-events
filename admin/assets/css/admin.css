@@ -1,37 +1,22 @@
 .filterjs {
   position: relative;
   padding-bottom: 1.2em;
-  /* mostly for the event count item, so it has somewhere to sit */ }
+  /* mostly so that event counter item has somewhere to sit */ }
 
 .filterjs__filter {
   position: relative; }
   .filterjs__filter > div {
     display: inline-block;
     vertical-align: top;
-    padding: 0px 15px; }
-  .filterjs__filter:first-child {
-    padding-left: 0; }
+    padding: 0 15px; }
+    .filterjs__filter > div:first-child {
+      padding-left: 0; }
+  .filterjs__filter .filterjs__filter__checkbox__wrapper ul li {
+    display: inline-block;
+    padding: 5px 10px 0 0; }
 
 .filterjs__list__wrapper {
-  position: relative;
-  /*
-  .filterjs__loading {
-
-    position:         absolute;
-    width:            100%;
-    height:           100%;
-    background-color: rgba(255, 255, 255, 0.5);
-    box-sizing:       border-box;
-    z-index:          10;
-
-    .filterjs__loading__img {
-
-      position: absolute;
-      left:     45%;
-      bottom:   40%;
-    }
-  }
-  */ }
+  position: relative; }
   .filterjs__list__wrapper .hidden {
     display: none; }
   .filterjs__list__wrapper .filterjs__list__crop {

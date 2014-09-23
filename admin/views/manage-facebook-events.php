@@ -280,7 +280,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
         $end_next = $start_next + YEAR_IN_SECONDS - 1;
         ?>
         <div class="title_row clearfix cf">
-            <h3 class="title">All Facebook Events for
+            <h3 class="title">Facebook Events for
                 <span id="ajax__year" class="title__year" data-start="<?php echo $start; ?>" data-end="<?php echo $end; ?>"
                       data-year_in_seconds="<?php echo YEAR_IN_SECONDS; ?>">
                     <?php echo $date_year; ?></span>
@@ -316,7 +316,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                         </li>
                     </ul>
                 </div>
-                <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
+                <span class="event_list__counter__container"><span class="event_list__counter">no events</span></span>
             </div>
             <div class="filterjs__list__wrapper">
                 <div class="filterjs__loading filterjs__loading--list">
@@ -328,7 +328,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                 </div>
             </div>
             <div class="clearfix cf"></div>
-            <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
+            <span class="event_list__counter__container"><span class="event_list__counter">no events</span></span>
         </div>
 
         <?php

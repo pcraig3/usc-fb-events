@@ -104,7 +104,7 @@ jQuery(function ($) {
 
             var num_events = _$event_list.find('.row:visible').length;
 
-            num_events = ( num_events > 0 ) ? num_events : 'no';
+            num_events = ( num_events === 0 ) ? 'no events' : ( num_events === 1 ) ? num_events + ' event' : num_events + ' events' ;
 
             _$filterjs.find('.event_list__counter').text(num_events.toString());
         });
