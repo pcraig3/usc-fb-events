@@ -52,7 +52,8 @@
   width: 100%;
   display: table; }
   .filterjs__list .row {
-    display: table-row; }
+    display: table-row;
+    cursor: pointer; }
     .filterjs__list .row:hover {
       background: #E9E9E9; }
     .filterjs__list .row.removed {
@@ -85,6 +86,17 @@
       text-align: left;
       padding: 5px 10px;
       border-bottom: 1px solid #AAA; }
+
+.title_row .title {
+  float: left;
+  padding: 6px 0;
+  /* this is to match the padding on the buttons */ }
+.title_row .title__navigation_buttons {
+  float: right;
+  margin: 1em 0;
+  /* this is to match the margin on the title */ }
+  .title_row .title__navigation_buttons input {
+    margin-left: 1px; }
 
 .event_list__counter__container {
   font-style: italic;

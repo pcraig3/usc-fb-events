@@ -102,10 +102,9 @@
     function ajax_return_to_or_remove_from_calendar() {
 
         //in_progress(true);
-
         var $selected_row = $("#event_list").find(".selected");
         var name = $selected_row.find(".name").text();
-        var $button = $('input.button:enabled').first(); //hacky, but it works.
+        var $button = $(this); //rights right button even though it's not as clear as with an anonymous function
         var button_id = $button.attr("id");
 
         ajax_loading(true);

@@ -143,7 +143,7 @@ jQuery(function ($) {
     $(document).ready(function($) {
 
         //set the start and end options here
-        $ajax_year = $('#ajax_year');
+        $ajax_year = $('#ajax__year');
 
         options.start = $ajax_year.data('start');
         options.end = $ajax_year.data('end');

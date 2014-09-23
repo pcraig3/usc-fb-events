@@ -78,6 +78,7 @@
   .row {
 
     display: table-row;
+    cursor: pointer;
 
     &:hover {
 
@@ -142,6 +143,26 @@ span {
       text-align: left;
       padding:    5px 10px;
       border-bottom: 1px solid #AAA;
+    }
+  }
+}
+
+
+.title_row {
+
+  .title {
+    float: left;
+    padding: 6px 0; /* this is to match the padding on the buttons */
+  }
+
+  .title__navigation_buttons {
+
+    float: right;
+    margin: 1em 0; /* this is to match the margin on the title */
+
+    input {
+
+      margin-left: 1px;
     }
   }
 }

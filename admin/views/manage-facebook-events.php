@@ -266,52 +266,68 @@ class Manage_Facebook_Events extends AdminPageFramework {
 
         <?php
         $date_year = date('Y');
+        
+        //start and end for the current year
         $start = strtotime( $date_year . '-01-01');
         $end = $start + YEAR_IN_SECONDS - 1;
-        ?>
-        <h3 class="title">All Facebook Events for
-            <span id="ajax_year" data-start="<?php echo $start; ?>" data-end="<?php echo $end; ?>"
-                  data-year_in_seconds="<?php echo YEAR_IN_SECONDS; ?>">
-                <?php echo $date_year; ?></span>
-        </h3>
 
-        <div class="nav_button_row"></div>
+        //start and end for previous year
+        $start_prev = $start - YEAR_IN_SECONDS;
+        $end_prev = $start - 1;
+
+        //start and end for next year
+        $start_next = $start + YEAR_IN_SECONDS;
+        $end_next = $start_next + YEAR_IN_SECONDS - 1;
+        ?>
+        <div class="title_row clearfix cf">
+            <h3 class="title">All Facebook Events for
+                <span id="ajax__year" class="title__year" data-start="<?php echo $start; ?>" data-end="<?php echo $end; ?>"
+                      data-year_in_seconds="<?php echo YEAR_IN_SECONDS; ?>">
+                    <?php echo $date_year; ?></span>
+            </h3>
+            <div class="title__navigation_buttons">
+                <?php
+                $this->echo_button("<< Prev Year", "prev_year_button", 05, '', array('data-start' => $start_prev, 'data-end' => $end_prev));
+                $this->echo_button("Next Year >>", "next_year_button", 10, '', array('data-start' => $start_next, 'data-end' => $end_next));
+                ?>
+            </div>
+        </div>
 
         <div class="filterjs">
-        <div class="filterjs__filter">
-            <div class="filterjs__filter__search__wrapper">
-                <h4>Search with filter.js</h4>
-                <input type="text" id="search_box" class="searchbox" placeholder="Type here...."/>
+            <div class="filterjs__filter">
+                <div class="filterjs__filter__search__wrapper">
+                    <h4>Search with filter.js</h4>
+                    <input type="text" id="search_box" class="searchbox" placeholder="Type here...."/>
+                </div>
+                <div class="filterjs__filter__checkbox__wrapper">
+                    <h4>Filter by Status</h4>
+                    <ul id="removed">
+                        <li>
+                            <input id="display" value="display" type="checkbox">
+                            <span>Display</span>
+                        </li>
+                        <li>
+                            <input id="modified" value="modified" type="checkbox">
+                            <span>Modified</span>
+                        </li>
+                        <li>
+                            <input id="removed" value="removed" type="checkbox">
+                            <span>Removed</span>
+                        </li>
+                    </ul>
+                </div>
+                <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
             </div>
-            <div class="filterjs__filter__checkbox__wrapper">
-                <h4>Filter by Status</h4>
-                <ul id="removed">
-                    <li>
-                        <input id="display" value="display" type="checkbox">
-                        <span>Display</span>
-                    </li>
-                    <li>
-                        <input id="modified" value="modified" type="checkbox">
-                        <span>Modified</span>
-                    </li>
-                    <li>
-                        <input id="removed" value="removed" type="checkbox">
-                        <span>Removed</span>
-                    </li>
-                </ul>
-            </div>
-            <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
-        </div>
             <div class="filterjs__list__wrapper">
-            <div class="filterjs__loading filterjs__loading--list">
-                <img class="filterjs__loading__img" title="go mustangs!"
-                    src="/wp-content/plugins/usc-fb-events/assets/horse.gif" alt="Loading" height="91" width="160">
+                <div class="filterjs__loading filterjs__loading--list">
+                    <img class="filterjs__loading__img" title="go mustangs!"
+                         src="/wp-content/plugins/usc-fb-events/assets/horse.gif" alt="Loading" height="91" width="160">
+                </div>
+                <div class="filterjs__list__crop">
+                    <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
+                </div>
             </div>
-            <div class="filterjs__list__crop">
-                <div class="filterjs__list" id="event_list" data-nonce="<?php echo wp_create_nonce("event_list_nonce"); ?>"></div>
-            </div>
-        </div>
-        <div class="clearfix cf"></div>
+            <div class="clearfix cf"></div>
             <span class="event_list__counter__container"><span class="event_list__counter">no</span> events</span>
         </div>
 
@@ -336,14 +352,14 @@ class Manage_Facebook_Events extends AdminPageFramework {
      *
     public function do_manage_facebook_events_page() {
 
-        //this is the end of the form defined in ::addSettingFields
-        ?>
+    //this is the end of the form defined in ::addSettingFields
+    ?>
 
-        <h3 class="title">Values saved</h3>
+    <h3 class="title">Values saved</h3>
 
     <?php
 
-        echo $this->oDebug->getArray( get_option( 'Manage Facebook_Events' ) );
+    echo $this->oDebug->getArray( get_option( 'Manage Facebook_Events' ) );
 
     }
 
@@ -550,21 +566,37 @@ class Manage_Facebook_Events extends AdminPageFramework {
      * @param string $id            a unique id for the button
      * @param int $tab_index        order in the tab index
      * @param string $classes       additional classes (as strings)
+     * @param array $data_array     additional data attributes
      *
      * @since    0.9.0
      */
-    private function echo_button( $button_text, $id, $tab_index, $classes = "" ) {
+    private function echo_button( $button_text, $id, $tab_index, $classes = "", array $data_array = array() ) {
 
         $button_text = esc_html( $button_text );
         $id = esc_attr( $id );
         $tab_index = ( is_numeric( $tab_index ) ) ? $tab_index : -1;
+        $atts = array(
+            'tabindex' 		=> $tab_index,
+            'data-nonce' 	=> wp_create_nonce($id . "_nonce"),
+            'class'			 => 'button ' . $classes,
+        );
 
-        submit_button( $button_text, 'large', $id, false,
-            array(
-                'tabindex' 		=> $tab_index,
-                'data-nonce' 	=> wp_create_nonce($id . "_nonce"),
-                'class'			 => 'button ' . $classes,
-        ));
+        if( !empty( $data_array ) ) {
+
+            $prefix = 'data-';
+
+            foreach( $data_array as $key => $val ) {
+
+                //if the string starts with 'data-' (or some other prefix)
+                $has_prefix = ( strpos($key, $prefix) === 0 );
+
+                ( $has_prefix )
+                    ? $atts[$key] = $val
+                    : $atts[$prefix . $key] = $val;
+            }
+        }
+
+        submit_button( $button_text, 'large', $id, false, $atts );
     }
 
 
