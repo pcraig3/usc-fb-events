@@ -2,7 +2,7 @@
 Contributors: pcraig3
 Requires at least: 3.5.1
 Tested up to: 3.6
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,16 @@ It almost works.
 
 
 == Changelog ==
+
+= 1.1.0 =
+* PRETTY WELL DONE NOW.  LIKE, ACTUALLY.
+* * Used JS hook to update WordPress transient cache with our Facebook events in a way I'm really proud of.
+* * Created a whole mobile events list thing that took forever.  Hint: this is really impressive.
+* * Got the loading horse into the calendar: moo.
+* * Did proper loads of commenting
+* * Updated the CSS for the fullcalendar.  Sharpened all of the edges.
+* * Now possible to page through years of backend events
+* * Also possible to count backend events
 
 = 1.0.0 =
 * ALMOST DONE

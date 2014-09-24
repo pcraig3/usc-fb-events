@@ -20,11 +20,11 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   1.0.0
+     * @since   1.1.0
      *
      * @var     string
      */
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.0';
 
     /**
      * Unique identifier for your plugin.
@@ -410,7 +410,7 @@ class USC_FB_Events {
      *
      * @param $str      string with horrible HTML codes to decode
      *
-     * @since     1.0.0
+     * @since     1.1.0
      *
      * @return string   returns your string with the html codes swapped for sane characters
      */
@@ -557,9 +557,7 @@ class USC_FB_Events {
     }
 
     /**
-     * @TODO: Work it good.
-     *
-     * @since     1.0.0
+     * @since     1.1.0
      */
     public function event_organiser_mobile_view_for_fullcalender() {
 

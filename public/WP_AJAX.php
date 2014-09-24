@@ -251,7 +251,6 @@ class WP_AJAX {
 
         echo json_encode($result);
         die();
-
     }
 
     /**
@@ -263,8 +262,7 @@ class WP_AJAX {
      * JS, then this method will be called next (via AJAX), and the next time get_events is called, it quickly returns the
      * cached value.
      *
-     * @since    0.9.9
-     *
+     * @since     1.1.0
      */
     public function update_wordpress_transient_cache() {
 
@@ -335,6 +333,8 @@ class WP_AJAX {
     /**
      * small utility function takes a string and, if it doesn't consist purely of numbers, converts it to a timestamp
      * I mean, the assumption is that we're passing in a date string
+     *
+     * @since     1.1.0
      *
      * @param $time     string|int a date string or timestamp
      * @param $interval string to be used for a DateInterval constructor
@@ -665,7 +665,7 @@ class WP_AJAX {
     /**
      * Function checks for the existence of a specific cached object.
      *
-     * @since    0.9.9
+     * @since     1.1.0
      *
      * @param $transient_name   string looks for a cached object with this name
      * @return bool|mixed       returns 'false' if no object, or a json decoded array if found

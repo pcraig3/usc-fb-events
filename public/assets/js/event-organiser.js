@@ -1,6 +1,9 @@
 (function ( $ ) {
     "use strict";
 
+    /**
+     * @since     1.1.0
+     */
     $(function () {
 
         // JavaScript here will only be included on pages with an Event-Organiser fullcalendar
@@ -102,6 +105,8 @@
      * 4. Set an event handler that sets the loading container to the size of the header when a month button is clicked
      *
      * @param $eo_fullcalendar
+     *
+     * @since     1.1.0
      */
     function loading_horse( $eo_fullcalendar ) {
 

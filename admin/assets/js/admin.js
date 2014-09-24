@@ -32,6 +32,8 @@
      *          3. Add the ajax_return_to_or_remove_from_calendar function to appropriate buttons
      *          4. Add modify_event_setup method to 'modify event' button
      *          5. Add focus to event_list if it's moused-over.
+     *
+     * @since     1.1.0
      */
     $(document).ready(function($) {
 
@@ -78,6 +80,8 @@
      * Basically, removes or applies the appropriate class and updates the buttons.
      *
      * @param $row  the event row which was clicked
+     *
+     * @since     1.0.0
      */
     function click_row($row) {
 
@@ -99,6 +103,8 @@
      * If no row is currently selected, all buttons are disabled.
      * If a row denoting a removed element is selected, enable the 'return to calendar' button
      * Else, if a row has not been removed, enable both the 'remove' and 'modify' buttons
+     *
+     * @since     1.0.0
      */
     function change_buttons() {
 
@@ -121,6 +127,8 @@
      * function disables all buttons and then returns them
      *
      * @returns {*|HTMLElement}     the event removal/modification buttons
+     *
+     * @since     1.0.0
      */
     function disable_buttons() {
         var $event_buttons = $('[id$="_event_button"]');
@@ -134,6 +142,8 @@
      * function which either hides or reveals the ajax_loading horse depending on the passed-in parameter.
      *
      * @param loading   boolean true if we are loading something and want the horse visible. false to hide him.
+     *
+     * @since     1.0.0
      */
     function ajax_loading(loading) {
 
@@ -152,6 +162,8 @@
      * WordPress notification will be displayed above the event list.
      *
      * If the response indicates a failure, some sort of error message will be displayed as an alert.
+     *
+     * @since     1.0.0
      */
     function ajax_return_to_or_remove_from_calendar() {
 
@@ -238,6 +250,8 @@
      * or restored.
      *
      * function uses the tons of meta-data on each event row to fill up the fields under the event.
+     *
+     * @since     1.0.0
      */
     function modify_event_setup() {
 

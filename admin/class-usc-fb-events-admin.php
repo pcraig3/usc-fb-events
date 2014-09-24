@@ -191,7 +191,7 @@ class USC_FB_Events_Admin {
     /**
      * Register and enqueue specific JavaScript files only if this page is one we created.
      *
-     * @since     0.9.3
+     * @since     1.1.0
      *
      * @return    null    Return early if no custom pages are registered.
      */

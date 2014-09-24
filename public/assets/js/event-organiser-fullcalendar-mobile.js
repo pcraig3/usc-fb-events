@@ -171,6 +171,8 @@ console.log(EOAjaxFront);
  *
  * @param options       localised variables defined in class-usc-fb-events.php in USC_FB_EVENTS::event_organiser_mobile_view_for_fullcalender()
  * @param AjaxEvents    JS module defined in init-filter.js.  Has a method lets us cache the response from Facebook
+ *
+ * @since     1.1.0
  */
 var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAjaxFront ) {
 
@@ -211,6 +213,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @param newNode           HTML node ready to insert
      * @param referenceNode     DOM node to insert the new node after
      * @private
+     *
+     * @since     1.1.0
      */
     var _insert_after = function (newNode, referenceNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -247,6 +251,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @param view      the current view object for the calendar.  has the start and end times for the month.
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _create_mobile_header = (function ( view ) {
 
@@ -305,6 +311,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @param _mobile_header_div  node the mobile header where we need to append our new title div
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_or_update_mobile_header_title = (function ( _mobile_header_div ) {
 
@@ -343,6 +351,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_button_top = (function ( _mobile_header_div, button_class ) {
 
@@ -377,6 +387,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_button_todays_date = (function ( _mobile_header_div, button_class ) {
 
@@ -410,6 +422,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _event_handler_reveal_button_when_list_touches_top_of_browser
         = (function( _mobile_header_div, class_button ) {
@@ -438,6 +452,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _event_handler_hide_button_when_list_touches_top_of_browser
         = (function( _mobile_header_div, class_button ) {
@@ -462,6 +478,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _create_date_list = (function ( view ) {
 
@@ -495,6 +513,9 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     *
+     * @since     1.1.0
      */
     var _create_date_list_items = (function ( view ) {
 
@@ -576,6 +597,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @param start     date the date for which we just want the day number
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _return_day_of_month = (function( start ) {
 
@@ -594,6 +617,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _return_ATOM_date_string_without_time = (function( start ) {
 
@@ -617,6 +642,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _return_12_hour_AMPM_time_string = (function(date) {
         var hours = date.getHours();
@@ -637,6 +664,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _create_event_item = (function( event, view ) {
 
@@ -759,6 +788,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _create_event_info_span_and_append_to_element = (function( event, attribute, __prefix, to_append ) {
 
@@ -783,6 +814,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
 
@@ -837,6 +870,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_days_to_title_for_ongoing_events_and_return_list_item = (function( list_item, day_string ) {
 
@@ -856,6 +891,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _format_location_return_list_item = (function( list_item ) {
 
@@ -877,6 +914,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _format_event_urls = (function( list_item, class_to_format, link_type ) {
 
@@ -921,6 +960,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _view_format_event_urls = (function( list_item, link ) {
 
@@ -949,6 +990,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _ticket_format_event_urls = (function( list_item, link ) {
 
@@ -968,6 +1011,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _default_format_event_urls = (function( list_item, link ) {
 
@@ -989,6 +1034,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_classes_to_classes_in_list_item = (function( list_item, classes_for_which_to_add_more_classes, additional_classes ) {
 
@@ -1009,8 +1056,6 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         return list_item;
     });
 
-
-
     /**
      * function collects the values that AjaxEvents needs to run its
      * ajax_update_wordpress_transient_cache method and then calls it.
@@ -1022,6 +1067,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _ajax_update_wordpress_transient_cache = (function() {
 
@@ -1067,6 +1114,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @private
      *
      * @return   string comma-separated calendar names
+     *
+     * @since     1.1.0
      */
     var _get_calendars_as_string = (function () {
 
@@ -1136,6 +1185,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _reset_events_list = (function() {
 
@@ -1157,6 +1208,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _toggle_hidden_div_onclick = (function() {
 
@@ -1203,6 +1256,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @type {Function}
      * @private
+     *
+     * @since     1.1.0
      */
     var _add_jquery_sticky_element_to_head = (function() {
 
@@ -1286,6 +1341,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      *
      * @param view      the view information, with the start/end dates and tons of other stuff we don't use
      * @type {Function}
+     *
+     * @since     1.1.0
      */
     var run_once_per_calendar = (function( view ) {
 
@@ -1317,6 +1374,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @param view      the view information, with the start/end dates and tons of other stuff we don't use
      *
      * @type {Function}
+     *
+     * @since     1.1.0
      */
     var run_each_event = (function( event, view ) {
 
@@ -1349,6 +1408,8 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
  * @param event     object containing information for a single event
  * @param element   object but I dunno what
  * @param view      object containing a bunch of methods as well as start and end dates for this particular month.
+ *
+ * @since     1.1.0
  */
 window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function( bool, event, element, view ){
 
@@ -1369,6 +1430,8 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
  * @see: http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
  *
  * @param eventorganiser      object containing all of our categories, venues, calendars. It's just full of stuff
+ *
+ * @since     1.1.0
  */
 (function add_category_color_css_to_head( eventorganiser ) {
 

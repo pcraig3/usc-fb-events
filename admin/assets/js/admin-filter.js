@@ -27,7 +27,7 @@ jQuery(function ($) {
          * 5. Runs a run_once method (so, the body of this method is only executed on initial page load.
          * 6. end_ajax_load_more_events cleans up the interface so that we can use it again.
          *
-         * @since     1.0.0
+         * @since     1.1.0
          * @param events
          */
         var ajax_events_gotten = (function ( events ) {
@@ -51,6 +51,8 @@ jQuery(function ($) {
          * .title and set prev/next year timestamps on the buttons.
          *
          * Runs when the page is first loaded or when the page is updated after getting events for a different year
+         *
+         * @since     1.1.0
          * @type {Function}
          */
         var update_button_start_end_times = (function() {
@@ -70,6 +72,7 @@ jQuery(function ($) {
          * function is only executed once after the first crop of facebook events are loaded. Exclusively attaches
          * event handlers to various UI elements, because before the events are returned they can't be used.
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var run_once = (function () {
@@ -88,6 +91,7 @@ jQuery(function ($) {
          * function sets an event listener on the search box.  Waits fifty milliseconds after keyup events
          * before updating the event count.
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var listen_for_searches = (function () {
@@ -104,6 +108,7 @@ jQuery(function ($) {
         /**
          * function sets an event listener on the checkboxes.  Updates event count when they're clicked.
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var listen_for_checkboxes = (function () {
@@ -123,6 +128,7 @@ jQuery(function ($) {
          *
          * Last line is very similar to line at the bottom of this file.
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var listen_for_buttons = (function () {
@@ -153,6 +159,7 @@ jQuery(function ($) {
          *
          * 'no events', '1 event', '2+ events'
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var update_event_count = (function () {
@@ -170,6 +177,7 @@ jQuery(function ($) {
          * 1. 'next/prev' year event buttons are disabled
          * 2. loading horse is unveiled.
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var start_ajax_load_more_events = (function() {
@@ -190,6 +198,7 @@ jQuery(function ($) {
          * 5. loading horse is hid.
          * 6. event counter is updated
          *
+         * @since     1.1.0
          * @type {Function}
          */
         var end_ajax_load_more_events = (function() {
@@ -270,7 +279,7 @@ jQuery(function ($) {
          *  @see http://stackoverflow.com/questions/2219924/idiomatic-jquery-delayed-event-only-after-a-short-pause-in-typing-e-g-timew
          *  @author CMS
          *
-         * @since    2.0.0
+         * @since     1.1.0
          */
         var typewatch = (function(){
             var timer = 0;
@@ -283,7 +292,7 @@ jQuery(function ($) {
         /**
          * publicly accessible methods.  Everything else is contained in our module.
          *
-         * @since     1.0.0
+         * @since     1.1.0
          */
         return {
             ajax_events_gotten: ajax_events_gotten,
@@ -293,7 +302,7 @@ jQuery(function ($) {
     })(AjaxEvents || {}, options);
 
     /**
-     * @since     1.0.0
+     * @since     1.1.0
      */
     $(document).ready(function($) {
 

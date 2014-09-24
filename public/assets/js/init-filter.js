@@ -5,7 +5,7 @@
 
         //public method
         /**
-         * @since     1.0.0
+         * @since     1.1.0
          *
          * @param options
          * @param ajax_events_gotten
