@@ -26,7 +26,7 @@ class USC_FB_Events {
      */
     const VERSION = '1.0.0';
 
-    /*
+    /**
      * Unique identifier for your plugin.
      *
      * The variable name is used as the text domain when internationalizing strings
@@ -268,8 +268,7 @@ class USC_FB_Events {
                 . '<a href="' . esc_url( trailingslashit( 'http://facebook.com/' . $event['creator'] ) ) . '">message '. esc_html( $event['host'] ) .' on Facebook</a>.';
 
             //@TODO: add a filter
-            if( strlen( $fb_event_description ) > 200 ) {
-
+            if( strlen( $fb_event_description ) > 240 ) {
 
                 $fb_event_description = array_slice( explode( ' ', $fb_event_description ), 0, 30 );
                 //remove punctuation from the end of the last element and add an elipses.

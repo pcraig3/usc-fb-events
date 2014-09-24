@@ -7,18 +7,31 @@
 
         var $eo_fullcalendar = $('.eo-fullcalendar');
 
+        /**
+         * onclick event handler for .fc-events on calendar view.
+         * There seems to be no way to add 'target="_blank" to the events themselves, so this
+         * bit of JavaScript makes sure that events open up in a new tab.
+         *
+         * @author: Stephen Harris
+         * @see: http://wp-event-organiser.com/forums/topic/open-fullcalendar-event-links-in-new-tabwindow/
+         */
         $eo_fullcalendar
             .on( 'click', '.fc-event', function(e){
                 e.preventDefault();
                 window.open( $(this).attr('href'), '_blank' );
         });
 
+        //code concerning the loading symbol.
+        //Basically, sets it tobe a horse and makes the background the same size of the header
         loading_horse( $eo_fullcalendar );
 
 
-        //if you click one of the fc-put-in-by-me buttons, slide to them instead of jumping.
         var $html_body = $( 'html, body' );
 
+        /**
+         * onclick handler for the 'jump-to-today' button and the 'up-to-top' button on the floating mobile header
+         * Animate the whole screen downwards or upwards depending on which button was clicked
+         */
         $html_body
             .on( 'click', '#usc_fb_events_fullcalendar__list__header .fc-button', function(e) {
 
@@ -36,6 +49,8 @@
          * Don't want to usc Divi theme's toggle function (because of the styling and how animations have to be
          * 700 ms, but I think it's probably a good idea to be using similar code.
          * So I've taken their code and I'm working it for me.
+         *
+         * Toggles the events on the mobile list view open or closed
          */
         $html_body
             .on( 'click', '.event__title', function() {
@@ -60,9 +75,10 @@
             } );
         } );
 
-        /** What would it need to do? **/
-        /**
-         * So, click a button, start a countdown.
+        /** IF WE WANTED A FUNCTION THAT WOULD PRINT 'NO EVENTS THIS MONTH' TO THE SCREEN INSTEAD OF NOTHING
+         * THIS IS WHAT IT WOULD HAVE TO DO.
+         *
+         * So, click a button for a new month, start a countdown.
          * Click again, restart the countdown.
          * Check for the loading thing.  If you haven't seen the loading thing and the time
          * runs out, then print a 'no events found' notice.
@@ -71,9 +87,22 @@
          * If you have seen the loading thing and NO event list appears, then print a 'no events found' message
          * ** At any point this can be interrupted by another button press.  Reset everything on another button press **
          */
-
     });
 
+    /**
+     * function sets initial styles for the ajax loading symbol + changes it from the default spinner to our horse.gif
+     *
+     * Since some of the CSS is written to the element itself using JS by default in the EO plugin, I've just
+     * put almost all of my styles here instead of a CSS file (because conflicting styles in a CSS file would not have
+     * precedence).
+     *
+     * 1. Change source of the loading image to our horse gif.
+     * 2. Add styling to loading gif using JS
+     * 3. Remove the "Loading..." phrase
+     * 4. Set an event handler that sets the loading container to the size of the header when a month button is clicked
+     *
+     * @param $eo_fullcalendar
+     */
     function loading_horse( $eo_fullcalendar ) {
 
         var loading = document.getElementById('eo_fullcalendar_1_loading');
@@ -85,8 +114,8 @@
         var loading_gif_styling = {
             //position: absolute; //this is the default
             //z-index: 5;  //this is the default
-            //display: none
-            //background-color: white
+            //display: none  //this will be set by the event-organiser
+            //background-color: white //this is the default
 
             textAlign:      'center',
             width:          '100%',
