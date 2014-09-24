@@ -1,8 +1,16 @@
+/**
+ * Sort of an odd partition of JS code, but there you go.
+ * whereas admin-filter.js deals with getting/returning/displaying/filtering/counting events,
+ * admin.js is concerned modifying the events in the database and setting up the events with the metadata to
+ * make interface with the database
+ */
 (function ( $ ) {
     "use strict";
 
-    /*
-     http://stackoverflow.com/questions/280634/endswith-in-javascript
+    /**
+     * function extends the String class with an endsWith method.
+     *
+     * @see: http://stackoverflow.com/questions/280634/endswith-in-javascript
      */
     if (typeof String.prototype.endsWith !== 'function') {
         String.prototype.endsWith = function(suffix) {
@@ -10,6 +18,21 @@
         };
     }
 
+    /**
+     * $.ready function sets up the backend on pageload and than attaches an event handler to the event list
+     * so that when it changes, some stuff happens
+     *
+     * 1. Disable buttons
+     * 2. Display loading horse
+     * 3. Bind a click event to .dismiss_notice elements to hide generated WordPress notifications
+     * 4. Add change event handler to event_list
+     *      Event listener does the following:
+     *          1. Remove Ajax loading horse when events are returned
+     *          2. Add a click and a dblclick event to rows
+     *          3. Add the ajax_return_to_or_remove_from_calendar function to appropriate buttons
+     *          4. Add modify_event_setup method to 'modify event' button
+     *          5. Add focus to event_list if it's moused-over.
+     */
     $(document).ready(function($) {
 
         change_buttons();
@@ -22,7 +45,7 @@
 
         // Place your administration-specific JavaScript here
         var $event_container = $('#event_list');
-        var $event_rows = $('[id^="fjs_"]');
+        //var $event_rows = $('[id^="fjs_"]');
 
         $event_container.on("change", function() {
 
@@ -50,6 +73,12 @@
 
     });
 
+    /**
+     * function controls what happens when an event row is clicked.
+     * Basically, removes or applies the appropriate class and updates the buttons.
+     *
+     * @param $row  the event row which was clicked
+     */
     function click_row($row) {
 
         var $event_rows = $('[id^="fjs_"]');
@@ -65,6 +94,12 @@
         change_buttons();
     }
 
+    /**
+     * function which decides which buttons should be click-able
+     * If no row is currently selected, all buttons are disabled.
+     * If a row denoting a removed element is selected, enable the 'return to calendar' button
+     * Else, if a row has not been removed, enable both the 'remove' and 'modify' buttons
+     */
     function change_buttons() {
 
         var $selected_row = $("#event_list").find(".selected");
@@ -82,6 +117,11 @@
         }
     }
 
+    /**
+     * function disables all buttons and then returns them
+     *
+     * @returns {*|HTMLElement}     the event removal/modification buttons
+     */
     function disable_buttons() {
         var $event_buttons = $('[id$="_event_button"]');
 
@@ -90,6 +130,11 @@
         return $event_buttons;
     }
 
+    /**
+     * function which either hides or reveals the ajax_loading horse depending on the passed-in parameter.
+     *
+     * @param loading   boolean true if we are loading something and want the horse visible. false to hide him.
+     */
     function ajax_loading(loading) {
 
         var $loading_gif = $(".filterjs__loading");
@@ -100,12 +145,20 @@
             $loading_gif.addClass("hidden");
     }
 
+    /**
+     * function which which either removes an event from the calendar or returns an event to it.
+     *
+     * If the response indicates that the event has been removed/returned successfully, an appropriate
+     * WordPress notification will be displayed above the event list.
+     *
+     * If the response indicates a failure, some sort of error message will be displayed as an alert.
+     */
     function ajax_return_to_or_remove_from_calendar() {
 
         //in_progress(true);
         var $selected_row = $("#event_list").find(".selected");
         var name = $selected_row.find(".name").text();
-        var $button = $(this); //rights right button even though it's not as clear as with an anonymous function
+        var $button = $(this); //find button even though it's not as clear as with an anonymous function
         var button_id = $button.attr("id");
 
         ajax_loading(true);
@@ -158,7 +211,7 @@
 
                 //update_prohibited_event_number($wrap.find('#all_events option.removed').size());
             })
-            .fail(function(data) {
+            .fail(function(){ //data) {
                 alert( "Somehow '" + button_id + "' the event went all wrong.  Try reloading?" );
                 //console.log(data);
                 $("#filterjs__notice").addClass("updated").prepend("<p>Yikes! Maybe you should try reloading the page?</p>");
@@ -177,6 +230,15 @@
             });
     }
 
+    /**
+     * function which sets up the fields under the event list if the user has opted to modify an event.
+     *
+     * If the 'modify event' button is pressed, we need to fill the fields underneath the event list with both
+     * the original values and the updated values (if any) so that original values can be modified, overwritten,
+     * or restored.
+     *
+     * function uses the tons of meta-data on each event row to fill up the fields under the event.
+     */
     function modify_event_setup() {
 
         var $selected_row = $("#event_list").find(".selected");
@@ -201,8 +263,8 @@
         $selected_row.removeClass("selected");
 
         var preserve_empty_values = [
-            "ticket_uri_fb",
-        ]
+            "ticket_uri_fb"
+        ];
 
         //console.log(values);
 
@@ -223,8 +285,9 @@
 
                 //console.log(key);
 
-                $('.modify_' + key).val( values[key] );
-                $('.modify_' + key).trigger( 'update' );  //can hook into this if necessary
+                var $modify_key = $('.modify_' + key);
+                $modify_key.val( values[key] );
+                $modify_key.trigger( 'update' );  //can hook into this if necessary
             }
         }
         $( 'html, body' ).animate( { scrollTop : $( '#section-modify__0' ).offset().top - 60 }, 800 );

@@ -1,5 +1,6 @@
 /**
- * Created by Paul on 22/09/14.
+ * AjaxEventsAdmin is a JS module that uses the AjaxEvents module for getting events and saving transients,
+ * but then adds a bunch of its own methods for templating and controlling the FB event list in the backend.
  */
 
 jQuery(function ($) {
@@ -15,6 +16,17 @@ jQuery(function ($) {
         var _initiated = false;
 
         /**
+         * method to trigger after the facebook events have been received, either initially after first loading
+         * the backend 'Manage Facebook Events' Page or afterwards when getting events for different years.
+         *
+         * Method:
+         * 1. Clears existing events
+         * 2. Checks all checkboxes (otherwise, events will BE there, but won't show up.)
+         * 3. Runs the filterInit method which builds the filter-able event list
+         * 4. Triggers a 'change' event on the event list itself (for admin.js)
+         * 5. Runs a run_once method (so, the body of this method is only executed on initial page load.
+         * 6. end_ajax_load_more_events cleans up the interface so that we can use it again.
+         *
          * @since     1.0.0
          * @param events
          */
@@ -33,6 +45,14 @@ jQuery(function ($) {
             end_ajax_load_more_events();
         });
 
+        /**
+         * okay, so check it out: to get new events, we need to send a new start + new end time.
+         * So, we can just use the number of seconds in a year and the initial timestamp in the span in the
+         * .title and set prev/next year timestamps on the buttons.
+         *
+         * Runs when the page is first loaded or when the page is updated after getting events for a different year
+         * @type {Function}
+         */
         var update_button_start_end_times = (function() {
 
             var year_in_seconds = _$title_row.find('#ajax__year').data('year_in_seconds');
@@ -46,6 +66,12 @@ jQuery(function ($) {
             });
         });
 
+        /**
+         * function is only executed once after the first crop of facebook events are loaded. Exclusively attaches
+         * event handlers to various UI elements, because before the events are returned they can't be used.
+         *
+         * @type {Function}
+         */
         var run_once = (function () {
 
             if( _initiated )
@@ -58,9 +84,15 @@ jQuery(function ($) {
             _initiated = true;
         });
 
+        /**
+         * function sets an event listener on the search box.  Waits fifty milliseconds after keyup events
+         * before updating the event count.
+         *
+         * @type {Function}
+         */
         var listen_for_searches = (function () {
 
-            //keyup event listener updates 'x clubs' string
+            //keyup event listener updates 'x events' string
             _$filterjs.find('#search_box').on('keyup', function() {
 
                 typewatch(function () {
@@ -69,27 +101,42 @@ jQuery(function ($) {
             });
         });
 
+        /**
+         * function sets an event listener on the checkboxes.  Updates event count when they're clicked.
+         *
+         * @type {Function}
+         */
         var listen_for_checkboxes = (function () {
 
-            //keyup event listener updates 'x clubs' string
+            //click event listener updates 'x events' string
             _$filterjs.find('.filterjs__filter__checkbox__wrapper li').on('click', function() {
 
                 update_event_count();
             });
         });
 
-        /*
-         So the algorithm to do past or next events should be to
-         1. get the start time
-         2. get the end time
-         3. update the options start time
-         4. update the options end time
-         5. clear the options transient name
+        /**
+         * function sets a click event to the next/prev year buttons.
+         * Gets a new start time, a new end time, clears the transient name (the one in the
+         * options would be the transient that the last returned events are saved under),
+         * starts the UI signal that more events are being loaded, and then gets the events for real.
+         *
+         * Last line is very similar to line at the bottom of this file.
+         *
+         * @type {Function}
          */
         var listen_for_buttons = (function () {
 
             _$title_row.find('#prev_year_button, #next_year_button').on('click', function() {
 
+                /*
+                 So the algorithm to do past or next events should be to
+                 1. get the start time
+                 2. get the end time
+                 3. update the options start time
+                 4. update the options end time
+                 5. clear the options transient name
+                 */
                 _options.start  = $(this).data('start');
                 _options.end    = $(this).data('end');
                 delete _options.transient_name;
@@ -100,6 +147,14 @@ jQuery(function ($) {
             });
         });
 
+        /**
+         * Pretty basic method that's also a pretty useful method.
+         * Count the number of visible events and update the counter above and below the event list
+         *
+         * 'no events', '1 event', '2+ events'
+         *
+         * @type {Function}
+         */
         var update_event_count = (function () {
 
             var num_events = _$event_list.find('.row:visible').length;
@@ -109,7 +164,14 @@ jQuery(function ($) {
             _$filterjs.find('.event_list__counter').text(num_events.toString());
         });
 
-
+        /**
+         * function makes a couple of UI changes that signal we are loading events.
+         *
+         * 1. 'next/prev' year event buttons are disabled
+         * 2. loading horse is unveiled.
+         *
+         * @type {Function}
+         */
         var start_ajax_load_more_events = (function() {
 
             //disable the buttons
@@ -118,6 +180,18 @@ jQuery(function ($) {
             _$filterjs.find('.filterjs__loading').removeClass('hidden');
         });
 
+        /**
+         * function takes care of the UI after events have been returned to the event list
+         *
+         * 1. start + end times in title are updated
+         * 2. Year in title is updated
+         * 3. start + end times of next/prev buttons are updated
+         * 4. 'next/prev' event buttons are enabled
+         * 5. loading horse is hid.
+         * 6. event counter is updated
+         *
+         * @type {Function}
+         */
         var end_ajax_load_more_events = (function() {
 
             //update date in title and metadata as well
@@ -131,7 +205,7 @@ jQuery(function ($) {
             //update the button metadata
             update_button_start_end_times();
 
-            //disable the buttons
+            //enable the buttons
             _$title_row.find('#prev_year_button, #next_year_button').prop("disabled", false);
             //loading horse
             _$filterjs.find('.filterjs__loading').addClass('hidden');
@@ -144,9 +218,7 @@ jQuery(function ($) {
 
         /**
          * Function sets up all of our filtering.
-         * Works now, but seems a bit brittle.
-         *
-         * @param events    a list of events. Data from FB is merged with information from our database.
+         * Event UI template and filter options are set here.
          *
          * @since   0.4.0
          *
@@ -209,6 +281,8 @@ jQuery(function ($) {
         })();
 
         /**
+         * publicly accessible methods.  Everything else is contained in our module.
+         *
          * @since     1.0.0
          */
         return {
