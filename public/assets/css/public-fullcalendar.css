@@ -44,6 +44,9 @@ background-color: rgb(203, 135, 205);
   .eo-event-toolip.ui-tooltip.qtip .ui-tooltip-content {
     border: none; }
 
+.eo-fullcalendar.eo-fullcalendar-shortcode .fc-header select::-ms-expand {
+  border: none;
+  background-color: transparent; }
 .eo-fullcalendar.eo-fullcalendar-shortcode .fc-view .fc-event {
   border-radius: 0px;
   font-size: .9em;

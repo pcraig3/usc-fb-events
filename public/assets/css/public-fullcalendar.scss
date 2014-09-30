@@ -64,24 +64,35 @@ background-color: rgb(203, 135, 205);
 
 }
 
-.eo-fullcalendar.eo-fullcalendar-shortcode .fc-view {
+.eo-fullcalendar.eo-fullcalendar-shortcode {
 
-  .fc-event {
+  .fc-header {
 
-    border-radius: 0px;
-    font-size: .9em;
-    margin-bottom: 2px;
-
-    &:hover {
-
-      opacity: .9;
+    select::-ms-expand {
+      border: none;
+      background-color: transparent;
     }
   }
 
-  .fc-event-time, .fc-event-title {
+  .fc-view {
 
-    display: block;
-    padding: 0 5px;
+    .fc-event {
+
+      border-radius: 0px;
+      font-size: .9em;
+      margin-bottom: 2px;
+
+      &:hover {
+
+        opacity: .9;
+      }
+    }
+
+    .fc-event-time, .fc-event-title {
+
+      display: block;
+      padding: 0 5px;
+    }
   }
 }
 
@@ -375,11 +386,11 @@ $padding_units: 6;
   .is-sticky #usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__top,
   #usc_fb_events_fullcalendar__list__header .usc_fc_events_header__button__date_today {
 
-        float: right;
-        top: 10px;
-        right: 12px;
-        display: inline-block;
-      }
+    float: right;
+    top: 10px;
+    right: 12px;
+    display: inline-block;
+  }
 }
 
 

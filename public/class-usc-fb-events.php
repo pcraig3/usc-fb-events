@@ -134,6 +134,8 @@ class USC_FB_Events {
 
         $category_array = array();
 
+        //@TODO: If you want a calendar only with tickets, then we want every category. :\
+
         //probably overkill, but preferable to underkill
         if( isset( $query['tax_query'] ) && !empty( $query['tax_query'] )) {
 
@@ -342,11 +344,20 @@ class USC_FB_Events {
                 }
             }
 
+            //put the ticket category in the $fb_event_categories_slugs if this event has a ticket_uri
+            if( !empty( $ticket_uri ) && !empty( $wp_event_categories ) )
+                foreach( $wp_event_categories as $wp_event_category )
+                    //if one (or more) of the EO event-categories contains the word 'ticket', add that event's slug
+                    if( stripos( $wp_event_category->name, 'ticket') !== false )
+                        array_push( $fb_event_categories_slugs, $wp_event_category->slug );
+
             //Just going through the motions.
             //There's currently no way for a FB event to have more than one calendar/category
             if( !empty( $fb_event_categories_slugs ) )
-                foreach( $fb_event_categories_slugs as $fb_event_category_slug )
+                foreach( $fb_event_categories_slugs as $fb_event_category_slug ) {
                     array_push( $classNames, 'category-' . $fb_event_category_slug );
+                    array_push( $classNames, 'eo-event-cat-' . $fb_event_category_slug );
+                }
 
             /*
             array_push($classNames, 'fb-month-start-' . $start);

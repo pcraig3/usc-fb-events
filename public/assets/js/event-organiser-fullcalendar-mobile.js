@@ -1441,8 +1441,12 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
 
     //for each of our categories (if we don't want them all) check if they are in our categories_used array before returning them
     for (var i in all_categories) {
-        if ({}.hasOwnProperty.call(all_categories, i))
+        if ({}.hasOwnProperty.call(all_categories, i)) {
+        if( all_categories[i].slug.indexOf('ticket') < 0 )
             categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
+        else
+            categories_css_string = ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n' + categories_css_string;
+        }
     }
 
     var head = document.head || document.getElementsByTagName('head')[0];
