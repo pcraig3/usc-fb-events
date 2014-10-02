@@ -1,8 +1,8 @@
 === USC FB Events ===
 Contributors: pcraig3
-Requires at least: 3.5.1
-Tested up to: 3.6
-Stable tag: 1.1.0
+Requires at least: 3.6
+Tested up to: 4.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,16 +11,19 @@ Plugin gets events from Facebook and lists them same as clubs.  Backend menu and
 == Description ==
 
 Plugin gets events from Facebook and lists them same as clubs.  Backend menu and super-cool caching.
+Expects the Admin Page Framework Demo plugin is installed.  Doesn't work without it.
 
-List of features we want:
+List of features:
 
-*   Need some api connection to events.
-*   Need page on which events are generated.
-*   Need to create database table.
-*   Need to create backend menu.
-*   Need to overwrite content using backend (adding tickets)
+*   api connection to facebook events.
+*   shortcodes can generate a list of facebook events.
+*   creates a backend menu so that facebook events can be modified or removed from the front-end.
+*   possible to add a ticket link to events
+*   interfaces with Stephen Harris' Event Organiser plugin to display facebook events on the calendar
+*   event-categories and their associated colours carry through to Facebook events
+*   also creates mobile view for event-organiser fullcalendar
 
-**WOULD BE AWESOME TO INTERFACE WITH REAL EVENTS PLUGIN**
+*Note* plugin is (unfortunately) tied to bespoke USC Facebook events API, so not portable.
 
 == Installation ==
 
@@ -31,10 +34,21 @@ Like normal.  I'll send you a ZIP file and everything should work.
 
 = Why doesn't it work yet. =
 
-It almost works.
+It does!
+
+= Really? =
+
+Yes!  It works great.
 
 
 == Changelog ==
+
+= 1.1.1 =
+* Like a million comments
+* Added a small filter for a facebook event description word limit
+* Oh yeah, changed it from a character limit to a word limit because that made more sense
+* Default start timestamp in WP_AJAX is now 6 months ago instead of being a static value
+* Added a link to the Facebook events API (needs to be redone once the server has moved)
 
 = 1.1.0 =
 * PRETTY WELL DONE NOW.  LIKE, ACTUALLY.

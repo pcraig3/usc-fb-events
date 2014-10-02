@@ -1,6 +1,10 @@
 <?php
 /**
- * USC FB Events.
+ * USC FB Events is a wicked-cool plugin that pulls Facebook events into WordPress.
+ * Can generate widgets on its own, but the most useful thing it does is work with
+ * the event-organiser plugin to insert Facebook events into the Event Calendar.
+ *
+ * Also includes a mobile view for the calendar, which was exhausting.
  *
  * @package   USC_FB_Events
  * @author    Paul Craig <pcraig3@uwo.ca>
@@ -79,26 +83,65 @@ class USC_FB_Events {
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-        /* Define custom functionality.
-         * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-         */
-
+        //create a shortcode we can use to create event widgets
         add_shortcode( 'usc_fb_events', array( $this, 'return_usc_fb_events') );
 
+        //register the our custom event table if it doesn't already exist
         add_action( 'init', '\USC_FB_Events\DB_API::register_fb_events_table', '1' );
         add_action( 'switch_blog', '\USC_FB_Events\DB_API::register_fb_events_table' );
 
+        //don't have any events pages that need sidebars at the minute, so...
         /*add_action( 'widgets_init', array( $this, 'usc_fb_events_register_sidebars' ) ); */
 
+        //hooks into a filter in the fullcalendar allows facebook events to be returned.
         add_filter( 'eventorganiser_fullcalendar', array( $this, 'event_organiser_add_fb_events_to_fullcalendar'), 10, 2);
 
+        //creates a mobile view for the fullcalender
         add_action( 'wp_enqueue_scripts', array( $this, 'event_organiser_mobile_view_for_fullcalender' ) );
-
     }
 
     /**
+     * Sorry about the ~300 line behemoth method, but this took bloody ages and is super-necessary.
      *
-     * @since     1.0.0
+     * I'll break it down into chucks.
+     * 1. Gets the eventorganiser timezone, or sets our current timezone to 'America/Toronto'
+     * 2. Gets start and end times of the query (start date on the calendar and end date)
+     *      (Note: start and end dates often include last few days of month before or next few days of month after.
+     *          basically, first day to last day visible on the screen.)
+     * 3. Match the category slugs asked-for (ie, 'usc-2') to their lowercased, hyphenated names ('usc'), which
+     *      should match the calendars known about by the Facebook API.  If no categories are specified (usually
+     *      the case, I would expect), then send all category names to the API call.
+     * 4. Now that we have the start, end, and calendar string (and a hardcoded limit string of 0),
+     *      we can generate a transient name.
+     * 5. Return events from Facebook or transient.  In either case, we get the events.  Now we have to format them.
+     * 6. Small loop records all offsets from facebook events before they're tampered with.  Later, we can re-add the offsets.
+     * 7. Merge FB events and DB events
+     * 8. Remove events we've indicated should be removed.
+     *
+     *  FOREACH EVENT
+     *  9. Set the new event time and keep original offset (for if we've modified the original event time)
+     *  10. Set the dates and times preferences the way Stephen Harris does (@see: https://github.com/stephenharris/Event-Organiser/blob/master/includes/event-organiser-ajax.php )
+     *  11. Set host, location, and ticket_uri for event description
+     *  12. If there is no Facebook event description, put in a filler message.
+     *  13. Trim the event description to whatever number of characters.  240 right now.
+     *  14. Set some basic eo-event classes, set a calendar class, past/upcoming classes, and multi-day classes or not
+     *  15. Set background color to event-category color set by event-organiser based on calendar the FB event originated from
+     *  16. Add any EO event-category with the word 'ticket', if the event has a ticket_uri
+     *  17. Push category classnames into the classNames array
+     *  18. Add a class indicating these Facebook events were cached
+     *  19. Finally, setup the event and add it to the $eventsarray
+     *
+     *  END FOREACH
+     * 20. Return $eventsarray
+     *
+     * @since     1.1.1
+     *
+     * @param array $eventsarray    the events array filled with events created in the WordPress backend using Stephen
+     *                      Harris' plugin the way it's meant to be used (or it could be empty if there aren't any).
+     * @param array $query          the current query for events.  gives us start and end times, and specified categories,
+     *                      if applicable.
+     *
+     * @return array $eventsarray   the events array filled with facebook events formatted to masquerade as normal EO events
      */
     public function event_organiser_add_fb_events_to_fullcalendar( array $eventsarray, $query ) {
 
@@ -134,7 +177,8 @@ class USC_FB_Events {
 
         $category_array = array();
 
-        //@TODO: If you want a calendar only with tickets, then we want every category. :\
+        //Note: If you want to be able to create a calendar exclusively for events with tickets,
+        //then we need to be able to call every category
 
         //probably overkill, but preferable to underkill
         if( isset( $query['tax_query'] ) && !empty( $query['tax_query'] )) {
@@ -217,23 +261,20 @@ class USC_FB_Events {
              * Getting the original start and end dates allows us to figure out the time interval between them
              * This is useful if we want to modify the start_time using our plugin
              */
-            $fb_original_start = new DateTime($event['eventStartDate']);
-            $fb_original_end = new DateTime($event['eventEndDate']);
+            $fb_original_start = new \DateTime($event['eventStartDate']);
+            $fb_original_end = new \DateTime($event['eventEndDate']);
             $fb_original_timediff = $fb_original_start->diff($fb_original_end, true);
             $fb_original_offset = ( isset($fb_event_offsets[$event['eid']]) ) ? $fb_event_offsets[$event['eid']] : '' ;
 
-            $fb_start = new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
+            $fb_start = new \DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
                 $tz);
-            $fb_end =  new DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
+            $fb_end =  new \DateTime($this->reformat_start_time_like_facebook($event['start_time'], $fb_original_offset),
                 $tz);
             $fb_end->add($fb_original_timediff);
-
-            //$fb_end->add(new DateInterval('PT2H'));
 
             /*
              * format the date like Stephen Harris does it in includes/event-organiser-ajax.php
              */
-
             //if there is a preferred time format, use that.  Otherwise, use the default format ("7:30 pm").
             $time_format = ( get_option('time_format') ) ? get_option('time_format') : 'g:i a';
 
@@ -269,17 +310,16 @@ class USC_FB_Events {
                 : 'This event has not provided a description.  If you want more information, maybe you can '
                 . '<a href="' . esc_url( trailingslashit( 'http://facebook.com/' . $event['creator'] ) ) . '">message '. esc_html( $event['host'] ) .' on Facebook</a>.';
 
-            //@TODO: add a filter
-            if( strlen( $fb_event_description ) > 240 ) {
+            $max_number_of_words = 30;
+            $max_number_of_words = apply_filters('usc_fb_events__description_max_words', $max_number_of_words );
 
-                $fb_event_description = array_slice( explode( ' ', $fb_event_description ), 0, 30 );
+            if( !empty( $fb_event_description ) && sizeof( explode( ' ', $fb_event_description ) ) > $max_number_of_words ) {
+
+                $fb_event_description = array_slice( explode( ' ', $fb_event_description ), 0, $max_number_of_words );
                 //remove punctuation from the end of the last element and add an elipses.
                 $fb_event_description[sizeof($fb_event_description) - 1] = trim($fb_event_description[sizeof($fb_event_description) - 1] , '"\'.,:=-?!');
                 $fb_event_description = implode(' ', $fb_event_description) . '...';
             }
-
-
-
 
             /*
              * Start to set the classnames
@@ -294,7 +334,7 @@ class USC_FB_Events {
             /*
              * Set a class on the event to indicate whether or not it has passed. Logic is identical to Stephen Harris'
              */
-            $now = new DateTime(null,$tz);
+            $now = new \DateTime(null,$tz);
             if($fb_start <= $now)
                 array_push($classNames, 'eo-past-event');
             else
@@ -365,6 +405,7 @@ class USC_FB_Events {
             array_push($classNames, 'fb-calendars-' . $calendar_string);
             array_push($classNames, 'fb-transient-' . $transient_name);
             */
+
             $if_cached = ( $response['events_stored_in_cache'] ) ? '' : 'not-' ;
             array_push($classNames, 'fb-' . $if_cached . 'cached');
 
@@ -404,12 +445,8 @@ class USC_FB_Events {
             array_push($eventsarray, $fb_event);
         }
 
-        //return $query;
-
         return $eventsarray;
     }
-
-
 
     /**
      * Function to decode HTML entities that look like &#2423;
@@ -471,7 +508,7 @@ class USC_FB_Events {
 
         $offset = ( empty( $offset ) ) ? '-4000' : $offset;
 
-        //else, collapse whitespace and slap a "-0400" on the end (2014-08-30T22:00:00-0400)
+        //else, replace whitespace with 'T' and slap a "-0400" (or other offset) on the end (2014-08-30T22:00:00-0400)
         return str_replace(' ', 'T', $start_time) . $offset;
     }
 
@@ -520,9 +557,9 @@ class USC_FB_Events {
         $start = $query['event_end_after'];  //start time
         $end = $query['event_start_before'];  //end time
 
-        $fake_start = new DateTime("now", $tz);
-        $fake_end = new DateTime("now", $tz);
-        $fake_end->add(new DateInterval('PT2H'));
+        $fake_start = new \DateTime("now", $tz);
+        $fake_end = new \DateTime("now", $tz);
+        $fake_end->add(new \DateInterval('PT2H'));
 
         $fake_event = array(
 
@@ -533,7 +570,7 @@ class USC_FB_Events {
             'start'		=> $fake_start->format('Y-m-d\TH:i:s\Z'),
             'end'		=> $fake_end->format('Y-m-d\TH:i:s\Z'),
             'description' => $fake_start->format('F j, Y H:i') . ' - ' . $fake_end->format('H:i')
-                . '</br></br>' . 'This event is fake, but hopefully the JS file doesn\'t know.',
+                . '</br></br>' . 'This event is fake, but hopefully the fullcalendar file doesn\'t know.',
             //'venue'		=> 560
             //className = 'venue-university-community-center'
             'category'	=> array(),
@@ -542,24 +579,6 @@ class USC_FB_Events {
             //className = 'tag-tagSlug'
             'color'     => '#16811B',
             'textColor'	=> '#ffffff',
-
-
-            //_end = Date 2014-08-23T03:55:00.000Z
-            //_id = "_fc1"
-            //_start = Date 2014-08-22T23:30:00.000Z
-            //allDay = false
-            //category = array();
-            //classname = array( 'eo-event', 'eo-past-event', 'venue-univeristy-community-centre');
-            //description = 'August 22, 2014 7:30 pm - 11:55 pm</br></br>Western Film is gonna re-open and it's gonna be sweet. Can't even wait for Captain America 2.'
-            //end = Date 2014-08-23T03:55:00.000Z
-            //source = Object (?)
-            //start = Date 2014-08-22T23:30:00.000Z
-            //tags = array();
-            //textColor = "#ffffff";
-            //title = "Western Film Redux"
-            //url = "http://westernusc.org/events/event/western-film-redux/"
-            //venue = 560
-
         );
 
         array_push($eventsarray, $fake_event);
@@ -568,6 +587,11 @@ class USC_FB_Events {
     }
 
     /**
+     * function adds everything we need to com up with the mobile events calendar.  Turns out it's a lot.
+     * We're using init-filter.js because it has the 'ajax_update_wordpress_transient_cache' method, the jquery.sticky
+     * plugin because we want a stick header, an extra js file that builds the calendar, a bunch of options for it,
+     * and a CSS file that styles the mobile calendar as well as the normal calendar.
+     *
      * @since     1.1.0
      */
     public function event_organiser_mobile_view_for_fullcalender() {
@@ -576,8 +600,7 @@ class USC_FB_Events {
 
         if( has_shortcode( $post->post_content, 'eo_fullcalendar' ) ) {
 
-            /* put this in a separate method */
-            /* what we want to do is include the filter-init again because it knows about the caching method */
+            /* what we want to do is include 'init_filterjs' again because it knows about the caching method */
             /*
              * options.ajax_url         = we already have this
              * options.transient_name   = we can generate if we have the right stuff
@@ -588,11 +611,9 @@ class USC_FB_Events {
              */
             wp_enqueue_script( $this->plugin_slug . '-event-organiser', plugins_url( 'assets/js/event-organiser.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
-            wp_enqueue_script( 'tinysort', plugins_url( '../admin/assets/js/jquery.tinysort.min.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-            wp_enqueue_script( 'filterjs', plugins_url( '../admin/assets/js/filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core' ), self::VERSION );
-            wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'tinysort', 'jquery-ui-core', 'filterjs' ), self::VERSION );
+            wp_enqueue_script( 'init_filterjs', plugins_url( '/assets/js/init-filter.js', __FILE__ ), array( 'jquery', 'jquery-ui-core' ), self::VERSION );
 
-            wp_enqueue_script( 'jquery_sticky',  plugins_url( '../bower_components/sticky/jquery.sticky.js', __FILE__ ), array( 'jquery', 'filterjs' ), self::VERSION );
+            wp_enqueue_script( 'jquery_sticky',  plugins_url( '../bower_components/sticky/jquery.sticky.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
             wp_enqueue_script( $this->plugin_slug . '-classList', plugins_url( 'assets/js/util/classList.js', __FILE__ ), array(), self::VERSION, true );
             wp_enqueue_script( $this->plugin_slug . '-indexOf', plugins_url( 'assets/js/util/indexOf.js', __FILE__ ), array(), self::VERSION, true );
@@ -609,12 +630,10 @@ class USC_FB_Events {
                 'id'            => $id,
                 'plugin_prefix' => $plugin_prefix,
                 'nonce'         => wp_create_nonce( $id . '_nonce' ),
-                //'transient_name' => $this->wp_db->transient_name,
             ) );
 
             //last but not least: CSS file
             wp_enqueue_style( $this->plugin_slug . '-public-fullcalendar', plugins_url( 'assets/css/public-fullcalendar.css', __FILE__ ), array(), self::VERSION );
-
         }
     }
 
@@ -633,11 +652,9 @@ class USC_FB_Events {
         //initialize your variables
         $get = $show = $start = $end = $calendars = $limit = $title = $result = false;
 
-        $april_2014 = 1396310401;
         //set a default datetime
         $this->wp_ajax->set_server_to_local_time();
-        $today= new DateTime('now');
-
+        $today= new \DateTime('now');
 
         extract(
             shortcode_atts(
@@ -652,7 +669,6 @@ class USC_FB_Events {
                 ), $atts ),
             EXTR_OVERWRITE);
 
-        //P2Y4DT6H8M  for example
         /*
          * DateInterval format: http://php.net/manual/en/dateinterval.construct.php
          * 'P2Y4DT6H8M', for example, means '2 years, 4 days, 6 hours, 8 minutes.'  P == 'Period' and T == 'Time'
@@ -686,11 +702,10 @@ class USC_FB_Events {
 
         ob_start();
 
-        /* @TODO: Explain yourself. */
+        //calls a function based on the 'get' and 'show' parameters
         echo call_user_func_array( array( $this, $usc_fb_events_function ), $parameters );
 
         $result = ob_get_clean();
-        //}
 
         if( $result ) {
 
@@ -711,7 +726,7 @@ class USC_FB_Events {
      */
     private function events_list( $limit = 0 ) {
 
-        //@TODO:caching
+        //Never did caching here, but also we're not using this for anything -- so forget it.
         $events_array = $this->wp_ajax->call_events_api();
 
         $events_array = $this->wp_ajax->merge_fb_and_db_events($events_array);
@@ -752,6 +767,8 @@ class USC_FB_Events {
     /**
      * Build the Event list brought in by Ajax with filter.js applied to them
      * Queues up the relevant .js files to get it going.
+     *
+     * This one's being used on the front page
      *
      * @since    0.9.8
      */

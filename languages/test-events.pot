@@ -1,8 +1,8 @@
-# Copyright (C) 2013 TODO
-# This file is distributed under the same license as the TODO package.
+# Copyright (C) 2013 pcraig3
+# This file is distributed under the same license as the USC_FB_Events package.
 msgid ""
 msgstr ""
-"Project-Id-Version: TODO 1.1.0\n"
+"Project-Id-Version: 1.1.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/plugins/plugin-name\n"
 "POT-Creation-Date: 2013-05-10 11:23:19+00:00\n"
 "PO-Revision-Date: 2013-05-10 10:37-0500\n"
@@ -17,15 +17,3 @@ msgstr ""
 "X-Poedit-Basepath: ../\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: .\n"
-
-#: class-usc-fb-events-admin.php:170
-msgid "Page Title"
-msgstr ""
-
-#: class-usc-fb-events-admin.php:171
-msgid "Menu Text"
-msgstr ""
-
-#: class-usc-fb-events-admin.php:197
-msgid "Settings"
-msgstr ""

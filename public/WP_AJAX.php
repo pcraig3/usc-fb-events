@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Paul
- * Date: 18/06/14
- * Time: 11:05 AM
+ * WP_AJAX class is meant to be a DB_API-like class, but I'm afraid it became a little messy.
+ * Essentially, it's meant to be the only class that deals with event retrieval, whether from Facebook
+ * or our own custom table.
  */
 
 namespace USC_FB_Events;
@@ -19,18 +18,6 @@ class WP_AJAX {
      */
     protected static $instance  = null;
 
-    /**
-     * today: 1407456001
-     *
-     * Feb, 2014:   1391212801
-     * March, 2014: 1393632001
-     * April, 2014: 1396310401
-     *
-     * 2015: 1420070401
-     * 2014: 1388534401
-     * 2013: 1356998401
-     * 2012: 1325376001
-     */
     //set some default starts and ends, so that we can call our API without parameters
     public $start        = null;
     public $end          = null;
@@ -62,7 +49,9 @@ class WP_AJAX {
         add_action("wp_ajax_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache" ) );
         add_action("wp_ajax_nopriv_update_wordpress_transient_cache", array( $this, "update_wordpress_transient_cache") );
 
-        $this->start = 1396310401;
+        //default start date is six months ago
+        $today= new \DateTime('now');
+        $this->start = $today->getTimestamp() - (YEAR_IN_SECONDS / 2);
 
         //seems like a reasonable limit
         $this->end = $this->start + (YEAR_IN_SECONDS * 2);
@@ -95,6 +84,15 @@ class WP_AJAX {
     }
 
     /**
+     * one of two functions created to get around a bug with the APC backend object-caching plugin
+     * Basically, our APC caching backend plugin was setting $_wp_using_ext_object_cache to true, with the
+     * unintended side-effect that any time we saved a transient, it wouldn't persist through the next pageload.
+     *
+     * So this function sets $wp_using_ext_object_cache_status to false so that setting a transient will work
+     *
+     * More detailed discussion here:
+     * @see: https://github.com/michaeluno/admin-page-framework/issues/118
+     *
      * @since    0.9.9
      */
     public function turn_off_object_cache_so_our_bloody_plugin_works() {
@@ -105,7 +103,18 @@ class WP_AJAX {
 
         $_wp_using_ext_object_cache = false;
     }
+
     /**
+     * one of two functions created to get around a bug with the APC backend object-caching plugin
+     * Basically, our APC caching backend plugin was setting $_wp_using_ext_object_cache to true, with the
+     * unintended side-effect that any time we saved a transient, it wouldn't persist through the next pageload.
+     *
+     * So this function assumes the 'turn_off_object_cache_so_our_bloody_plugin_works' was called first,
+     * sets the $wp_using_ext_object_cache_status back to its original value
+     *
+     * More detailed discussion here:
+     * @see: https://github.com/michaeluno/admin-page-framework/issues/118
+     *
      * @since    0.9.9
      */
     public function turn_object_caching_back_on_for_the_next_poor_sod() {
@@ -116,6 +125,8 @@ class WP_AJAX {
     }
 
     /**
+     * function sets the default timezone to America/Toronto because that's where #westernu is.
+     *
      * @since 0.8.3
      */
     public function set_server_to_local_time() {
@@ -123,12 +134,20 @@ class WP_AJAX {
         date_default_timezone_set("America/Toronto");
     }
     /**
+     * function resets the server timezone back to whatever it was before calling 'set_server_to_local_time'
+     *
      * @since 0.8.3
      */
     public function set_server_back_to_default_time() {
         date_default_timezone_set($this->date_default_timezone_get_status);
     }
 
+    /**
+     * function gets the timezone set in the Event Organiser class.
+     * If the event-organiser does not exist, timezone returned is the 'America/Toronto' timezone
+     *
+     * @return \DateTimeZone
+     */
     public function get_event_organiser_timezone() {
 
         if (function_exists('eo_get_blog_timezone')) {
@@ -144,13 +163,15 @@ class WP_AJAX {
         return $tz;
     }
 
-
     /**
      * This function right here is executed when, in the "manage events" menu, someone
      * clicks the "Remove From/Return To Calendar" buttons.
      * The event is then either removed from or returned to 'usc_fb_events'
+     *
+     * I get that it's sort of bad practice having a method perform two different functions, but there it is
+     *
      * Based on tutorial here:
-     * http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
+     * @see: http://wp.smashingmagazine.com/2011/10/18/how-to-use-ajax-in-wordpress/
      *
      * @since    0.9.7
      *
@@ -165,7 +186,6 @@ class WP_AJAX {
         //we want the id, the name, the host, and the start time
         $eid = 		$_POST['eid'];
         $name = 		$_POST['name'];
-        //$start_time =   date_i18n( 'Y-m-d H:i:s', $_POST['start_time'], true ); //convert the unix timestamp to a string that SQL understands
         $response = 	false;
 
         if($button_id === 'remove_event_button') {
@@ -210,6 +230,9 @@ class WP_AJAX {
     /**
      * Does (a bit more than) what it says on the box.  gets all facebook and db events (and then merges their values)
      * and then returns everything to the javascript function waiting for it.
+     * Hopefully the method names are clear enough.
+     *
+     * This function is at the heart of everything useful that this plugin does.
      *
      * @since    1.0.0
      */
@@ -305,7 +328,7 @@ class WP_AJAX {
      *
      * @since   0.4.0
      *
-     * @return 		echoes a string telling non-logged in users to log in.
+     * @return string   echoes a string telling non-logged in users to log in.
      */
     public function login_please() {
         echo "Log in before you do that, you cheeky monkey.";
@@ -343,7 +366,6 @@ class WP_AJAX {
     public function start_end_dates_to_timestamps( $time, $interval = '' ) {
 
         if( ! ctype_digit( (string) $time ) ) {
-            //        $fake_end->add(new DateInterval('PT2H'));
 
             $tz = $this->get_event_organiser_timezone();
             $temp_date = new \DateTime($time, $tz);
@@ -390,14 +412,6 @@ class WP_AJAX {
 
         $event_array['events'] = $events;
 
-        /*
-        echo "<pre>";
-        var_dump($event_array['events'] );
-        echo "</pre>";
-
-        die();
-         */
-
         return $event_array;
     }
 
@@ -405,6 +419,9 @@ class WP_AJAX {
      * Super handy function merges our DB event data with FB events.
      * Any conflicting values have their keys suffixed with "_fb".
      * ie, Facebook's "host" becomes "host_fb" if I have a "host" of my own.
+     *
+     * Sorry in advance if this breaks down at any point and someone else has to do maintenance on this function
+     * specifically.  It's not super-friendly or anything.
      *
      * @param array $event_array
      *
@@ -480,7 +497,7 @@ class WP_AJAX {
     }
 
     /**
-     * Function takes merged event array and purges if of events flagged "removed"
+     * Function takes merged event array and purges it of events flagged "removed"
      *
      * @param array $event_array  an array of events (from Facebook)
      *
@@ -726,18 +743,12 @@ class WP_AJAX {
         $api_url .= ( !empty( $calendars ) )            ? "&calendars=" . $calendars    : '';
         $api_url .= ( !empty( $limit ) && $limit > 0)   ? "&limit=" . $limit            : '';
 
-        //$api_url = "http://testwestern.com/api/events/events/2014-04-01";
-
         $returned_string = wp_remote_retrieve_body( wp_remote_get( $this->add_http_if_not_exists($api_url) ) );
 
         if( empty( $returned_string ) ) {
 
             return new \WP_Error( 'api_error', __( 'Spot of trouble connecting to the events API', "usc-fb-events" ) );
         }
-
-        /*echo '<pre>';
-        var_dump( json_decode( $returned_string, true ) );
-        echo '</pre>';*/
 
         return json_decode( $returned_string, true );
     }
@@ -761,5 +772,4 @@ class WP_AJAX {
         }
         return $url;
     }
-
 }

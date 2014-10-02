@@ -1,14 +1,25 @@
-
+/**
+ * init-filter.js declares the fJS variable that filterJS needs, as well as the AjaxEvents module that
+ * gets extended in various ways across our plugin.
+ *
+ * Basically, AjaxEvents contains the method to get Facebook events, as well as to update the cache afterwards
+ */
     var fJS;
 
     var AjaxEvents = (function () {
 
-        //public method
         /**
+         * This method, together with 'get_events' in WP_AJAX, are the two methods the make the whole plugin work.
+         * This is the one place where our Javascript calls Facebook events, and future modules that extend this
+         * one can define their own methods for what to do once events have been returned.
+         *
+         * Also calls the 'ajax_update_wordpress_transient_cache' method after events have been returned
+         *
          * @since     1.1.0
          *
-         * @param options
-         * @param ajax_events_gotten
+         * @param options               array a bunch of options passed in from PHP.
+         *                      mostly parameters for which events to get back or how to process them once we have them
+         * @param ajax_events_gotten    function a passed-in method to execute once events have been returned.
          */
         var ajax_get_events =  function( options, ajax_events_gotten ) {
 
@@ -91,8 +102,13 @@
              });*/
         };
 
-        //public method
         /**
+         * This method, called after events have been returned, calls a php method which updates the cache.
+         * Basically, events saved as WordPress transients are returned more quickly but are then stale by definition.
+         * However, once we have the start, end, calendars, and limit, we can locate the transient, delete it,
+         * and then make a new call to Facebook and cache those results right away, all while the unsuspecting user
+         * So this method just passes all those parameters to the PHP method which then does the hard work.
+         *
          * @since     1.0.0
          *
          * @param options

@@ -1442,6 +1442,8 @@ window.wp.hooks.addFilter( 'eventorganiser.fullcalendar_render_event', function(
     //for each of our categories (if we don't want them all) check if they are in our categories_used array before returning them
     for (var i in all_categories) {
         if ({}.hasOwnProperty.call(all_categories, i)) {
+            //make sure any event-category containing the word 'ticket' comes before all of the others (so that it
+            //can be overwritten, because we can only do one colour, and calendar category is more important)
         if( all_categories[i].slug.indexOf('ticket') < 0 )
             categories_css_string += ' .category-' + all_categories[i].slug + ' .category__color { color: ' + all_categories[i].color + ' } \n';
         else

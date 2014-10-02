@@ -67,15 +67,11 @@ class USC_FB_Events_Admin {
         // Add an action link pointing to the options page.
         $plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
         add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+        */
 
-        /*
-         * Define custom functionality.
-         *
-         * Read more about actions and filters:
-         * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-         */
-        //add_action( '@TODO', array( $this, 'action_method_name' ) );
-        //add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+        //add a link to the testevents Facebook API
+        $plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
+        add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_facebook_api_update_link' ) );
 
         $this->plugin_pages = array(
             "manage_facebook_events_page",
@@ -144,6 +140,11 @@ class USC_FB_Events_Admin {
 
     }
 
+    /**
+     * function adds the 'Manage Facebook Events' page into the WordPress backend.
+     *
+     * Assumes the existence of the Event Organiser plugin, and adds in our page under the 'Events' submenu
+     */
     public function add_manage_facebook_events() {
 
         add_action( 'admin_enqueue_scripts', array( $this, 'add_manage_facebook_events_styles' ) );
@@ -230,6 +231,21 @@ class USC_FB_Events_Admin {
             );
 
         }
+    }
+
+    /**
+     * Add settings action link to the plugins page.
+     *
+     * @since    1.1.1
+     */
+    public function add_facebook_api_update_link( $links ) {
+
+        return array_merge(
+            array(
+                'update_api' => '<a href="http://testwestern.com/api" target="_blank">Link to Update Facebook API</a>',
+            ),
+            $links
+        );
     }
 
     /**

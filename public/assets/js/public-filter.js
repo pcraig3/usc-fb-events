@@ -1,9 +1,24 @@
+/**
+ * public-fitler.js contains the AjaxEventsPublic module which expects init-filter.js' AjaxEvents to be loaded beforehand.
+ * It defines the HTML structure for the event template (as a plain string, which isn't really ideal but it's easy),
+ * as well as provides the 'ajax_events_gotten' method that initialises everything once the events have been returned.
+ *
+ * Warning: this file isn't really meant to be used in it's current form.
+ * If there was need of a searchable event list this provides a good base, but in its current form it's woefully unpolished.
+ */
+
 jQuery(function ($) {
     /* You can safely use $ in this code block to reference jQuery */
 
     var AjaxEventsPublic = (function (AjaxEvents) {
 
         /**
+         * What to do once events have been received from Facebook
+         *
+         * 1. Hide loading horse
+         * 2. Build event list using filter.js
+         * 3. Trigger a change event on the list element
+         *
          * @since     1.0.0
          * @param events
          */
@@ -16,16 +31,18 @@ jQuery(function ($) {
         $('#event_list').trigger( "change" );
     };
 
-    /**
-     * Function sets up all of our filtering.
-     * Works now, but seems a bit brittle.
-     *
-     * @param events    a list of events. Data from FB is merged with information from our database.
-     *
-     * @since    1.0.0
-     *
-     * @returns {*} A list of searchable events in the backend.
-     */
+        /**
+         * function pretty much a straightforward copy of the samples given in the filter.js github page
+         * 'view' defines the HTML event template, and 'settings' defines the filtering options, which for the
+         * public events list is a search bar.
+         *
+         * @see: https://github.com/jiren/filter.js/tree/master
+         *
+         * @since     1.0.0
+         *
+         * @param events
+         * @returns {*} a searchable list of events
+         */
     var filterInit = function( events ) {
 
         var view = function( event ){
@@ -98,6 +115,11 @@ jQuery(function ($) {
 
     })(AjaxEvents || {});
 
+    /**
+     * As soon as page is loaded, call the get_events function to request Facebook events.
+     *
+     * @since     1.0.0
+     */
     $(document).ready(function($) {
 
         //$('#removed :checkbox').prop('checked', true);

@@ -1,9 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Paul
- * Date: 11/06/14
- * Time: 10:23 PM
+ * DB_API Class is *heavily* based on a series of Stephen Harris' articles where he talks about setting up an API
+ * Class to handle all interactions with the database.  Was a pretty good idea, I think.
+ *
+ * for article(s) @see: http://code.tutsplus.com/series/custom-database-tables--wp-33839
+ * for code @see: https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
  */
 
 namespace USC_FB_Events;
@@ -15,9 +16,9 @@ class DB_API {
      * Prefix will vary between sites so hook onto switch_blog too
      *
      * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      */
     public static function register_fb_events_table() {
+
         global $wpdb;
         $wpdb->fb_events = $wpdb->prefix . 'usc_fb_events';
     }
@@ -27,7 +28,7 @@ class DB_API {
      * Hooked onto our single_activate function
      * @since 0.2.3
      */
-    public static function create_fb_events_table(){
+    public static function create_fb_events_table() {
 
         global $wpdb;
         global $charset_collate;
@@ -51,8 +52,7 @@ class DB_API {
         KEY name (name)
         ) $charset_collate; ";
 
-        dbDelta($sql_create_table);
-
+        dbDelta( $sql_create_table );
     }
 
     /**
@@ -60,9 +60,8 @@ class DB_API {
      * Hooked onto our single_deactivate function
      *
      * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
      */
-    public static function drop_fb_events_table(){
+    public static function drop_fb_events_table() {
 
         global $wpdb;
 
@@ -73,13 +72,16 @@ class DB_API {
     }
 
     /**
+     *  Return the current names and formats for the columns of our custom database table.
+     *  Mimics the entered values in the create_fb_events_table method, but they're defined here again.
+     *  So make sure they're both the same.
      *
-     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     *  @see: DB_API::create_fb_events_table()
      *
      * @return array and array of columns in our new DB table.  This way we can check queries against them
      */
-    private static function get_fb_events_table_columns(){
+    private static function get_fb_events_table_columns() {
+
         return array(
             'eid'=> '%s',
             'name'=> '%s',
@@ -93,6 +95,13 @@ class DB_API {
         );
     }
 
+    /**
+     * function checks that any input associative array has no column values that aren't in the
+     * custom table.  Keys with values other than the columns in the table will be removed.
+     *
+     * @param array $array  an array with keys to check against the column names in our table
+     * @return array        the input array with any non-matching keys removed
+     */
     public static function whitelist_array_items( array $array ) {
 
         //Initialise column format array
@@ -115,12 +124,12 @@ class DB_API {
      *
      *@param $data array An array of key => value pairs to be inserted
      *
-     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     * @since   0.4.0
      *
      *@return int The eid of the created fbevent. Or WP_Error or false on failure.
      */
-    public static function insert_fbevent( $data=array() ){
+    public static function insert_fbevent( $data = array() ) {
+
         global $wpdb;
 
         //Set default values
@@ -170,12 +179,12 @@ class DB_API {
      *@param $eid  eid of the event to be updated
      *@param $data array An array of column=>value pairs to be updated
      *
-     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     * @since   0.4.0
      *
      *@return bool Whether the event was successfully updated.
      */
-    public static function update_fbevent( $eid, $data=array() ){
+    public static function update_fbevent( $eid, $data = array() ) {
+
         global $wpdb;
 
         //eid must be numeric
@@ -188,12 +197,12 @@ class DB_API {
             $data['start_time'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['start_time'] ), true );
         }
 
-
-        //WHATEVER
+        //Check ticket_uri value is set and is a proper url
         if( isset($data['ticket_uri']) ) {
             $data['ticket_uri'] = esc_url_raw( $data['ticket_uri'] );
         }
 
+        //Check url value is set and is a proper url
         if( isset($data['url']) ) {
             $data['url'] = esc_url_raw( $data['url'] );
         }
@@ -231,13 +240,11 @@ class DB_API {
      *
      *@param array $query Query
      *
-     *
-     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
+     * @since   0.4.0
      *
      *@return array Array of matching logs. False on error.
      */
-    public static function get_fb_events( $query=array() ){
+    public static function get_fb_events( $query = array() ) {
         global $wpdb;
 
         $fields = array();
@@ -356,17 +363,16 @@ class DB_API {
     }
 
     /**
-     * Deletes fbevent from 'usc_fb_events'
+     *  Deletes fbevent from 'usc_fb_events'
      *
-     *@param $eid string (or float) ID of the event to be deleted
+     *  @param $eid string (or float) ID of the event to be deleted
      *
+     *  @since   0.4.0
      *
-     * @since   0.4.0 (Stolen from Stephan Harris' excellent examples)
-     * https://github.com/stephenh1988/wptuts-user-activity-log/blob/master/wptuts-user-log.php
-     *
-     *@return bool Whether the fbevent was successfully deleted.
+     *  @return bool Whether the fbevent was successfully deleted.
      */
     public static function delete_fbevent( $eid ){
+
         global $wpdb;
 
         //eid must be numeric
@@ -387,11 +393,12 @@ class DB_API {
 
      /**
       * Does what it says on the box.  gets removed events (and then applies 'removed' class to list items)
+      * Seems like this method is deprecated.
       *
-      * @since   0.4.0
+      * @since   1.1.1
       *
       * @return array of objects if results. empty array if no results.
-      */
+      *
      public static function get_removed_events_eids() {
 
          return DB_API::get_fb_events( array (
@@ -399,12 +406,12 @@ class DB_API {
             'removed' =>    1
             )
          );
-
      }
+      */
 
     /**
-     * USED BY THE ADMIN CLASS */
-
+     * USED BY THE WP_API CLASS
+     */
     public static function get_event_count_by_eid( $eid ) {
 
         return DB_API::get_fb_events( array(
@@ -413,6 +420,14 @@ class DB_API {
         ));
     }
 
+    /**
+     * Method exists to find out whether or not the $eid of the event entered exists unmodified in the database.
+     * If it does not exist, or it exists as a 'modified' event, this method will return a value we can use as 'false'
+     * in 'if' statements.  Probably just returns 0.
+     *
+     * @param $eid      int the eid of the event to look for as being unmodified in the database
+     * @return array    true or flase whether or not this event exists unmodified in the database
+     */
     public static function get_unmodified_event_count_by_eid( $eid ) {
 
         return DB_API::get_fb_events( array(
@@ -426,6 +441,15 @@ class DB_API {
         ));
     }
 
+    /**
+     * Method first figures out if the event exists at all in the database, and then if it exists as an unmodified event.
+     * If it does exist, it can just be updated and maybe even deleted if it's then unmodified
+     * If it does not exist, it is inserted.
+     *
+     * @param int $eid      eid of event to check for
+     * @param array $data   event values to update or insert
+     * @return bool|int     whether this event was successfully inserted/updated or not
+     */
     public static function insert_on_duplicate_key_update($eid, array $data = array() ) {
 
         if ( DB_API::get_event_count_by_eid( $eid ) ) {
@@ -440,5 +464,4 @@ class DB_API {
         $data['eid'] = $eid;
         return DB_API::insert_fbevent( $data );
     }
-
 }

@@ -1,5 +1,7 @@
 /**
- * Created by Paul on 29/07/14.
+ * public-widget.js contains the AjaxEventsWidget module which expects init-filter.js' AjaxEvents to be loaded beforehand.
+ * It defines the HTML structure for the event template (as a plain string, which isn't really ideal but it's easy),
+ * as well as provides the 'ajax_events_gotten' method that initialises everything once the events have been returned.
  */
 
 jQuery(function ($) {
@@ -8,6 +10,12 @@ jQuery(function ($) {
     var AjaxEventsWidget = (function (AjaxEvents) {
 
         /**
+         * What to do once events have been received from Facebook
+         *
+         * 1. Hide loading horse
+         * 2. Build event list using filter.js
+         * 3. Trigger a change event on the list element
+         *
          * @since     1.0.0
          * @param events
          */
@@ -22,10 +30,16 @@ jQuery(function ($) {
         };
 
         /**
+         * function pretty much a straightforward copy of the samples given in the filter.js github page
+         * 'view' defines the HTML event template, and 'settings' defines the filtering options, which for the
+         * events widget is nothing.
+         *
+         * @see: https://github.com/jiren/filter.js/tree/master
+         *
          * @since     1.0.0
          *
          * @param events
-         * @returns {*}
+         * @returns {*} a list of events
          */
         var filterInit = function( events ) {
 
@@ -111,6 +125,8 @@ jQuery(function ($) {
     })(AjaxEvents || {});
 
     /**
+     * As soon as page is loaded, call the get_events function to request Facebook events.
+     *
      * @since     1.0.0
      */
     $(document).ready(function($) {
