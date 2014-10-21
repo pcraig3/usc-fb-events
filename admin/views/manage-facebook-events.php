@@ -261,7 +261,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
      *
      * @since     1.1.0
      */
-    public function content_foot_manage_facebook_events_page( $sContent ) {
+    public function content_top_manage_facebook_events_page( $sContent ) {
 
         echo $sContent;  //this is the title of the page set in the ::addSubMenuItems method above.
         ?>
