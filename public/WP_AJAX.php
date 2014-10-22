@@ -736,12 +736,12 @@ class WP_AJAX {
         $api_url = 'http://testwestern.com/api/events/events/usc?';
 
         //there HAS to be a start and an end, so we're just going to give the class a start and end time.
-        $api_url .= ( !empty( $start ) )                ? "start=" . number_format( $start , 0 , '', '' )
+        $api_url .= ( !empty( $start ) )                        ? "start=" . number_format( $start , 0 , '', '' )
             : "start=" . number_format( $this->start , 0 , '', '' );
-        $api_url .= ( !empty( $end ) )                  ? "&end=" . number_format( $end , 0 , '', '' )
+        $api_url .= ( !empty( $end ) )                          ? "&end=" . number_format( $end , 0 , '', '' )
             : "&end=" . number_format( $this->end , 0 , '', '' );
-        $api_url .= ( !empty( $calendars ) )            ? "&calendars=" . $calendars    : '';
-        $api_url .= ( !empty( $limit ) && $limit > 0)   ? "&limit=" . $limit            : '';
+        $api_url .= ( !empty( $calendars ) )                    ? "&calendars=" . $calendars    : '';
+        $api_url .= ( !empty( $limit ) && intval( $limit ) > 0) ? "&limit=" . $limit            : '';
 
         $returned_string = wp_remote_retrieve_body( wp_remote_get( $this->add_http_if_not_exists($api_url) ) );
 

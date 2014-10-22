@@ -660,7 +660,7 @@ class USC_FB_Events {
             shortcode_atts(
                 array(
                     'get'       => 'events',
-                    'show'      => 'count',
+                    'show'      => 'widget',
                     'start'     => $today->getTimestamp(),
                     'end'       => $today->getTimestamp() + YEAR_IN_SECONDS,
                     'calendars' => '',
@@ -686,6 +686,10 @@ class USC_FB_Events {
 
         if( !empty($end) )
             $end = strtotime( date('Y-m-d', $end) );
+
+        //convert plus signs in calendars into [%20]'s so that our API knows what to do with them
+        if( !empty($calendars) )
+            $calendars = str_replace('+', '%20', $calendars);
 
         $this->wp_ajax->set_server_back_to_default_time();
 

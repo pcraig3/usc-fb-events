@@ -13,8 +13,13 @@ ob_start();
 ?>
 
     <div id="events">
+
+        <?php if( !empty($title) ) { ?>
+
         <h1><?php echo $title; ?></h1>
         <a class="viewEvent" href="/events">View Events Calendar</a>
+
+        <?php } ?>
 
         <div class="filterjs">
 
