@@ -133,7 +133,7 @@ jQuery(function ($) {
 
         //$('#removed :checkbox').prop('checked', true);
 
-        console.log( options );
+        //console.log( options );
 
         AjaxEventsWidget.ajax_get_events( options, AjaxEventsWidget.ajax_events_gotten );
     });

@@ -159,8 +159,8 @@ var eventorganiser = window.eventorganiser || {};
 var EOAjaxFront = EOAjaxFront || {};
 var AjaxEvents = AjaxEvents || {};
 
-console.log(eventorganiser);
-console.log(EOAjaxFront);
+//console.log(eventorganiser);
+//console.log(EOAjaxFront);
 
 /**
  * Big arse bloody JS module almost totally responsible for the mobile event list under the fullcalendar

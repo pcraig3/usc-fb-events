@@ -124,7 +124,7 @@ jQuery(function ($) {
 
         //$('#removed :checkbox').prop('checked', true);
 
-        console.log(options);
+        //console.log(options);
 
         AjaxEventsPublic.ajax_get_events( options, AjaxEventsPublic.ajax_events_gotten );
     });
