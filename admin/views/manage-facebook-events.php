@@ -143,7 +143,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                     //'field_id' => 'host',
                     'attributes'	=>	array(
                         'class'     => $this->section_id . '_host',
-                        'readonly'	=>	false,
+                        'readonly'	=>	false,  //@see: do_after_manage_facebook_events_page method
                         'value'     =>  ''
                     )
                 ),
@@ -165,7 +165,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                     'label'	=>	'New Location: ',
                     'attributes'	=>	array(
                         'class'     => $this->section_id . '_location',
-                        'readonly'	=>	false,
+                        'readonly'	=>	false, //@see: do_after_manage_facebook_events_page method
                         'value'     =>  ''
                     )
                 ),
@@ -190,7 +190,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                     'label'	=>	'New Date: ',
                     'attributes'	=>	array(
                         'class'     => $this->section_id . '_start_time',
-                        'readonly'	=>	false,
+                        'readonly'	=>	false, //@see: do_after_manage_facebook_events_page method
                         'value'     =>  '',
                         'size' =>       '30',
                     )
@@ -216,7 +216,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
                     'label'	=>	'New Ticket URI: ',
                     'attributes'	=>	array(
                         'class'     => $this->section_id . '_ticket_uri',
-                        'readonly'	=>	false,
+                        'readonly'	=>	false, //@see: do_after_manage_facebook_events_page method
                         'value'     =>  ''
                     )
                 ),
@@ -372,6 +372,13 @@ class Manage_Facebook_Events extends AdminPageFramework {
 				    $('#modify_event_submit').on('click', function() {
 				        $('.hasDatepicker').datepicker( 'enable' );
 				    });
+
+				    /*  remove readonly attributes (setting them to false isn't working) */
+                    $('[class^=modify]').each( function() {
+
+                                                if( $(this).is('[readonly=\"\"]') )
+                                                        $(this).removeAttr('readonly');
+                    } );
 
 			});
 			</script>
