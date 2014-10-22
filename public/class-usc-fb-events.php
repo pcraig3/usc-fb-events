@@ -24,11 +24,11 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   1.1.0
+     * @since   1.1.2
      *
      * @var     string
      */
-    const VERSION = '1.1.0';
+    const VERSION = '1.1.2';
 
     /**
      * Unique identifier for your plugin.
@@ -643,7 +643,7 @@ class USC_FB_Events {
      *
      * @param $atts         create an associative array based on attributes and values in the shortcode
      *
-     * @since     1.0.0
+     * @since     1.1.2
      *
      * @return string       a complimentary adjective for students
      */
