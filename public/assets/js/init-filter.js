@@ -175,7 +175,7 @@
          * @author bbrame
          * @see http://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
          *
-         * @param start     date the date for which we want the 12-hour formatted time
+         * @param date     date the date for which we want the 12-hour formatted time
          *
          * @type {Function}
          * @private

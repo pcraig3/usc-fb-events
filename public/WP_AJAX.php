@@ -703,7 +703,7 @@ class WP_AJAX {
 
         $response = $this->if_stored_in_wordpress_transient_cache( $transient_name );
 
-        if( false === $response ) {
+        if( false === $response || is_null( $response ) || empty( $response ) ) {
 
             $response = $this->call_events_api( $start, $end, $calendars, $limit );
             $response['events_stored_in_cache'] = false;
