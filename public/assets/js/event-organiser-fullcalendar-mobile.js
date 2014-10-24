@@ -791,7 +791,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @type {Function}
      * @private
      *
-     * @since     1.1.0
+     * @since     1.1.3
      */
     var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
 

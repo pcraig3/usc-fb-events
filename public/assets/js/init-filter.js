@@ -180,7 +180,7 @@
          * @type {Function}
          * @private
          *
-         * @since     1.1.0
+         * @since     1.1.3
          */
         var return_12_hour_AMPM_time_string = function( date ) {
             var hours = date.getHours();

@@ -24,11 +24,11 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   1.1.2
+     * @since   1.1.3
      *
      * @var     string
      */
-    const VERSION = '1.1.2';
+    const VERSION = '1.1.3';
 
     /**
      * Unique identifier for your plugin.

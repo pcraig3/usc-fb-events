@@ -2,7 +2,7 @@
 Contributors: pcraig3
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ Yes!  It works great.
 
 
 == Changelog ==
+
+= 1.1.3 =
+* AM/PM string on front page events widget was brittle, so I cleaned it up.
+* Removed console.logs, because they were unprofessional (and I am not :P)
+* Ugly JS fix removes 'readonly' values so that Facebook Events can again be modified
 
 = 1.1.2 =
 * Shortcode 'calendars' parameter now supports plus signs (for spaces)

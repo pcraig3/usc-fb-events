@@ -36,7 +36,7 @@ jQuery(function ($) {
          *
          * @see: https://github.com/jiren/filter.js/tree/master
          *
-         * @since     1.0.0
+         * @since     1.1.3
          *
          * @param events
          * @returns {*} a list of events
@@ -125,7 +125,7 @@ jQuery(function ($) {
     /**
      * As soon as page is loaded, call the get_events function to request Facebook events.
      *
-     * @since     1.0.0
+     * @since     1.1.3
      */
     $(document).ready(function($) {
 

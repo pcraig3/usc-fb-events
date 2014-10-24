@@ -51,7 +51,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
      *
      * @remark  this is a pre-defined framework method
      *
-     * @since    0.9.0
+     * @since    1.1.3
      */
     public function setUp() {
 
@@ -351,7 +351,7 @@ class Manage_Facebook_Events extends AdminPageFramework {
      *
      * @remark  this is a pre-defined framework method
      *
-     * @since    0.6.0
+     * @since    1.1.3
      */
     public function do_after_manage_facebook_events_page() {
 
