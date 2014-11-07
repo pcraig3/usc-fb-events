@@ -632,6 +632,30 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
     });
 
     /**
+     * Function takes a JS date object and returns '10:00 pm' or '3:00 am' or whatever.
+     * Spoiler alert: I didn't write it.
+     *
+     * @author bbrame
+     * @see http://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+     *
+     * @param start     date the date for which we want the 12-hour formatted time
+     *
+     * @type {Function}
+     * @private
+     *
+     * @since     1.1.0
+     */
+    var _return_12_hour_AMPM_time_string = (function(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        return hours + ':' + minutes + ' ' + ampm;
+    });
+
+    /**
      * Heart and soul of our whole mobile event list.  Function creates an event item for each event,
      * and formats them and handles multi-day events and all that fun stuff
      *
@@ -791,7 +815,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
      * @type {Function}
      * @private
      *
-     * @since     1.1.3
+     * @since     1.1.0
      */
     var _format_start_date_return_list_item = (function( list_item, index, number_of_days ) {
 
@@ -804,12 +828,12 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
         //if this is just a one-day event, just set the time string
         if(number_of_days === 1) {
 
-            time_string = AjaxEvents.return_12_hour_AMPM_time_string( start_date );
+            time_string = _return_12_hour_AMPM_time_string( start_date );
         }
         //else, if this is the last day of a multi-day event
         else if( index === number_of_days ) {
 
-            time_string = "Until </br>" +  AjaxEvents.return_12_hour_AMPM_time_string( end_date );
+            time_string = "Until </br>" +  _return_12_hour_AMPM_time_string( end_date );
             day_string = 'Final Day';
         }
         //this is the first up to second-last day of a multi-day event
@@ -818,7 +842,7 @@ var AjaxFullCalendarList = (function ( options, AjaxEvents, eventorganiser, EOAj
             //get the time if it starts today
             //start at one because we incremented index when it was passed in
             if( index === 1 )
-                time_string = AjaxEvents.return_12_hour_AMPM_time_string( start_date );
+                time_string = _return_12_hour_AMPM_time_string( start_date );
 
             //if the time string is not set, it means this is not the first day.  Thus, there is no 'time' for today
             if( time_string === '' )
