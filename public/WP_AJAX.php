@@ -719,7 +719,7 @@ class WP_AJAX {
     /**
      * Uses the WordPress HTTP API to call our AmAzE-O Facebook events api
      *
-     * @since    1.1.2
+     * @since    1.1.5
      *
      * @param string $start     the start time (as a unix timestamp) when to start calling FB events from
      * @param string $end       the end time when to stop calling events

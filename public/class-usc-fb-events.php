@@ -24,11 +24,11 @@ class USC_FB_Events {
     /**
      * Plugin version, used for cache-busting of style and script file references.
      *
-     * @since   1.1.3
+     * @since   1.1.5
      *
      * @var     string
      */
-    const VERSION = '1.1.3';
+    const VERSION = '1.1.5';
 
     /**
      * Unique identifier for your plugin.
@@ -134,7 +134,7 @@ class USC_FB_Events {
      *  END FOREACH
      * 20. Return $eventsarray
      *
-     * @since     1.1.1
+     * @since     1.1.5
      *
      * @param array $eventsarray    the events array filled with events created in the WordPress backend using Stephen
      *                      Harris' plugin the way it's meant to be used (or it could be empty if there aren't any).
@@ -414,8 +414,8 @@ class USC_FB_Events {
 
                 'className' => $classNames,
                 // 'venue-' . strtolower( esc_html( $event['location'] ) ) ),  we're not using this right now either
-                'title' 	=> $this->decodeHtmlEnt( esc_html( $event['title'] ) ),
-                'host'      => $this->decodeHtmlEnt( esc_html( $event['host'] ) ),
+                'title' 	=> $this->decodeHtmlEnt_2( esc_html( $event['title'] ) ),
+                'host'      => $this->decodeHtmlEnt_2( esc_html( $event['host'] ) ),
                 'url'		=> esc_url($event['url']),
                 'allDay'	=> false,
                 'start'		=> $fb_start->format('Y-m-d\TH:i:s\Z'),
@@ -449,12 +449,14 @@ class USC_FB_Events {
     }
 
     /**
+     * @deprecated: relied on 'iconv' so it broke on the westernusc.ca server.
+     *
      * Function to decode HTML entities that look like &#2423;
      * Ripped off the PHP reference page from one of the comments.
-     * http://php.net/manual/en/function.html-entity-decode.php#111859
+     * @see: http://php.net/manual/en/function.html-entity-decode.php#111859
      *
      * @author Benjamin
-     * most likely a badass mofo
+     * most likely a regular mofo
      *
      * @param $str      string with horrible HTML codes to decode
      *
@@ -488,6 +490,30 @@ class USC_FB_Events {
             $p2 = $p + strlen($newchar);
         }
         return $ret;
+    }
+
+    /**
+     * NEW Function to decode HTML entities that look like &#2423; (but not! ones that look like &amp;)
+     * ONCE AGAIN Ripped off the PHP reference page from one of the comments.
+     * @see: http://php.net/manual/en/function.html-entity-decode.php#104617
+     *
+     * Afterwards does a crude string comparison to sub in ampersands.  Not too bothered about that right now.
+     *
+     * @author Martin
+     * most likely a super cool dude.
+     *
+     * @param $input      string with horrible (numeric) HTML codes to decode
+     *
+     * @since     1.1.5
+     *
+     * @return string   returns your string with the html codes swapped for sane characters
+     */
+    private function decodeHtmlEnt_2($input) {
+
+        $output = preg_replace_callback("/(&#[0-9]+;)/", function($m) { return mb_convert_encoding($m[1], "UTF-8", "HTML-ENTITIES"); }, $input);
+
+        // I know this sucks, but whatever
+        return str_replace( '&amp;', '&', $output );
     }
 
     /**
@@ -592,7 +618,7 @@ class USC_FB_Events {
      * plugin because we want a stick header, an extra js file that builds the calendar, a bunch of options for it,
      * and a CSS file that styles the mobile calendar as well as the normal calendar.
      *
-     * @since     1.1.0
+     * @since     1.1.5
      */
     public function event_organiser_mobile_view_for_fullcalender() {
 

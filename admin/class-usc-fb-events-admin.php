@@ -236,7 +236,7 @@ class USC_FB_Events_Admin {
     /**
      * Add settings action link to the plugins page.
      *
-     * @since    1.1.1
+     * @since    1.1.5
      */
     public function add_facebook_api_update_link( $links ) {
 
@@ -285,8 +285,6 @@ class USC_FB_Events_Admin {
      * Add settings action link to the plugins page.
      *
      * @since    0.1.0
-     *
-     * @TODO: Obviously, this has to be addressed eventually
      */
     public function add_action_links( $links ) {
 

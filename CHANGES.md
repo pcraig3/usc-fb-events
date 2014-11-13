@@ -1,5 +1,14 @@
 == Changelog ==
 
+= 1.1.5 =
+* Replaced references to 'testwestern.com' with references to 'westernusc.ca'
+* * Everything should work for any site this is installed on, as westernusc.ca/testwestern.com are just API links with return identical data.
+* Replaced link in the Plugins settings page for the api
+* Also swapped out my 'decodeHtmlEnt' function for another one that works on more servers.
+
+= 1.1.4 =
+* Tried to debug stuff but mostly just messed up stuff.  Reverted to 1.1.3 afterwards.
+
 = 1.1.3 =
 * AM/PM string on front page events widget was brittle, so I cleaned it up.
 * Removed console.logs, because they were unprofessional (and I am not :P)
