@@ -36,7 +36,7 @@ jQuery(function ($) {
          *
          * @see: https://github.com/jiren/filter.js/tree/master
          *
-         * @since     1.0.0
+         * @since     1.1.3
          *
          * @param events
          * @returns {*} a list of events
@@ -56,7 +56,7 @@ jQuery(function ($) {
                 var ticket_uri = ( event.ticket_uri ) ? event.ticket_uri : "";
                 var location = ( event.location ) ? event.location : "";
 
-                var past_or_upcoming_event = (AjaxEvents.is_upcoming_event( event )) ? "upcoming" : "past";
+                var past_or_upcoming_event = ( AjaxEvents.is_upcoming_event( event ) ) ? "upcoming" : "past";
 
                 html_string += '<div class="eventItem ' + past_or_upcoming_event + '">';
 
@@ -72,10 +72,8 @@ jQuery(function ($) {
                 html_string +=  '<h3>' + days[ date.getDay() ] + ', ' + months[ date.getMonth() ]
                     + " " + date.getDate() + '</h3>';
 
-                //Slice: positive #s are relative to the beginning, negative numbers are relative to the end.
-                var localeTime = date.toLocaleTimeString();
-                var firstColonPosition = localeTime.indexOf(":");
-                html_string +=  localeTime.slice(0, firstColonPosition + 3) + " " + localeTime.slice(-2);
+                html_string += AjaxEvents.return_12_hour_AMPM_time_string( date );
+
                 html_string +=  ' ';
 
                 if(location) {
@@ -127,7 +125,7 @@ jQuery(function ($) {
     /**
      * As soon as page is loaded, call the get_events function to request Facebook events.
      *
-     * @since     1.0.0
+     * @since     1.1.3
      */
     $(document).ready(function($) {
 

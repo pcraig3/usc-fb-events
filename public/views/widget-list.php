@@ -17,7 +17,7 @@ ob_start();
         <?php if( !empty($title) ) { ?>
 
         <h1><?php echo $title; ?></h1>
-        <a class="viewEvent" href="http://westernusc.org/events/">Event Calendar</a>
+        <a class="viewEvent" href="/events">View Events Calendar</a>
 
         <?php } ?>
 

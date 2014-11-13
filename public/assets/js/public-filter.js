@@ -118,7 +118,7 @@ jQuery(function ($) {
     /**
      * As soon as page is loaded, call the get_events function to request Facebook events.
      *
-     * @since     1.0.0
+     * @since     1.1.3
      */
     $(document).ready(function($) {
 

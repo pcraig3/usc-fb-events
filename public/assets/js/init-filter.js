@@ -165,8 +165,32 @@
             var current_timestamp = Math.floor((new Date()).getTime() );
             var event_timestamp = parseInt(event.start_time) * 1000;
 
-            return ( event_timestamp > current_timestamp ) ? true : false;
-        }
+            return ( event_timestamp > current_timestamp );
+        };
+
+        /**
+         * Function takes a JS date object and returns '10:00 pm' or '3:00 am' or whatever.
+         * Spoiler alert: I didn't write it.
+         *
+         * @author bbrame
+         * @see http://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+         *
+         * @param date     date the date for which we want the 12-hour formatted time
+         *
+         * @type {Function}
+         * @private
+         *
+         * @since     1.1.3
+         */
+        var return_12_hour_AMPM_time_string = function( date ) {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            return hours + ':' + minutes + ' ' + ampm;
+        };
 
         /**
          * @since     1.0.0
@@ -174,7 +198,8 @@
         return {
             ajax_get_events: ajax_get_events,
             ajax_update_wordpress_transient_cache: ajax_update_wordpress_transient_cache,
-            is_upcoming_event: is_upcoming_event
+            is_upcoming_event: is_upcoming_event,
+            return_12_hour_AMPM_time_string: return_12_hour_AMPM_time_string
         };
 
     })();

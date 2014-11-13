@@ -731,9 +731,9 @@ class WP_AJAX {
     public function call_events_api( $start = '', $end = '', $calendars = '', $limit = '' ) {
 
         //for example
-        //http://westernusc.ca/api/events/events/usc?start=1388534401&end=1392072393&calendars=custom,usc
+        //http://testwestern.com/api/events/events/usc?start=1388534401&end=1392072393&calendars=custom,usc
 
-        $api_url = 'http://westernusc.ca/api/events/events/usc?';
+        $api_url = 'http://testwestern.com/api/events/events/usc?';
 
         //there HAS to be a start and an end, so we're just going to give the class a start and end time.
         $api_url .= ( !empty( $start ) )                        ? "start=" . number_format( $start , 0 , '', '' )
