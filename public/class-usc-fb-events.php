@@ -94,10 +94,10 @@ class USC_FB_Events {
         /*add_action( 'widgets_init', array( $this, 'usc_fb_events_register_sidebars' ) ); */
 
         //hooks into a filter in the fullcalendar allows facebook events to be returned.
-        add_filter( 'eventorganiser_fullcalendar', array( $this, 'event_organiser_add_fb_events_to_fullcalendar'), 10, 2);
+        //add_filter( 'eventorganiser_fullcalendar', array( $this, 'event_organiser_add_fb_events_to_fullcalendar'), 10, 2);
 
         //creates a mobile view for the fullcalender
-        add_action( 'wp_enqueue_scripts', array( $this, 'event_organiser_mobile_view_for_fullcalender' ) );
+        //add_action( 'wp_enqueue_scripts', array( $this, 'event_organiser_mobile_view_for_fullcalender' ) );
     }
 
     /**
