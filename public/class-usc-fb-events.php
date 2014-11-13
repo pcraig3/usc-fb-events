@@ -615,8 +615,10 @@ class USC_FB_Events {
 
             wp_enqueue_script( 'jquery_sticky',  plugins_url( '../bower_components/sticky/jquery.sticky.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
+            //both of these (classList.js and indexOf.js) are utility files used by our fullcalendar-mobile file
             wp_enqueue_script( $this->plugin_slug . '-classList', plugins_url( 'assets/js/util/classList.js', __FILE__ ), array(), self::VERSION, true );
             wp_enqueue_script( $this->plugin_slug . '-indexOf', plugins_url( 'assets/js/util/indexOf.js', __FILE__ ), array(), self::VERSION, true );
+
             wp_enqueue_script( $this->plugin_slug . '-event-organiser-fullcalendar-mobile', plugins_url( 'assets/js/event-organiser-fullcalendar-mobile.js', __FILE__ ),
                 array( 'jquery', 'eo_front', 'init_filterjs', $this->plugin_slug . '-classList', $this->plugin_slug . '-indexOf' ), self::VERSION, true );
 
