@@ -242,7 +242,7 @@ class USC_FB_Events_Admin {
 
         return array_merge(
             array(
-                'update_api' => '<a href="http://testwestern.com/api" target="_blank">Link to Update Facebook API</a>',
+                'update_api' => '<a href="/api" target="_blank">Link to Update Facebook API</a>',
             ),
             $links
         );
