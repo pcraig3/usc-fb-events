@@ -43,6 +43,10 @@ Yes!  It works great.
 
 == Changelog ==
 
+= 1.1.6 =
+* Updated bower dependencies
+* classlist.js -> classList.js
+
 = 1.1.5 =
 * Replaced references to 'testwestern.com' with references to 'westernusc.ca'
 * * Everything should work for any site this is installed on, as westernusc.ca/testwestern.com are just API links with return identical data.

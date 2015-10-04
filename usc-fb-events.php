@@ -11,7 +11,7 @@
  * Plugin Name:       USC FB Events
  * Plugin URI:        https://github.com/pcraig3/usc-fb-events
  * Description:       gets events and shows events and modifies events
- * Version:           1.1.5
+ * Version:           1.1.6
  * Author:            Paul Craig
  * Author URI:        https://profiles.wordpress.org/pcraig3/
  * Text Domain:       usc-fb-events
